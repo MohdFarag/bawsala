@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.3.0](https://github.com/MohdFarag/bawsala/compare/v0.2.3...v0.3.0) (2026-11-01)
+
+
+### Features
+
+* rename the app to Bawsala (بوصلة) ([#33](https://github.com/MohdFarag/bawsala/issues/33)) ([68ec649](https://github.com/MohdFarag/bawsala/commit/68ec649161ff86e552052cf729f5af40d33c3e49))
+
+
+### Bug Fixes
+
+* **android:** Connect Google fails with Unsupported Media Type ([#31](https://github.com/MohdFarag/bawsala/issues/31)) ([22147ce](https://github.com/MohdFarag/bawsala/commit/22147ce68ef84dd63ce51f0264098352dbb2ff34))
+* **server:** patch glob and minimatch advisories ([#35](https://github.com/MohdFarag/bawsala/issues/35)) ([f96fcbc](https://github.com/MohdFarag/bawsala/commit/f96fcbc654af7724b361c97e40e8181a1d8ad1de))
+
 ## [0.2.3](https://github.com/MohdFarag/daily-life-planner/compare/v0.2.2...v0.2.3) (2026-10-31)
 
 
