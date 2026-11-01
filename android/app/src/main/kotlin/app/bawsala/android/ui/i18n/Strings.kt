@@ -151,6 +151,27 @@ private val S: Map<String, Pair<String, String>> =
         "actionFailed" to
             ("Something went wrong; your last change may not be saved" to
                 "حدث خطأ؛ ربما لم يُحفظ آخر تغيير"),
+        "appName" to ("Bawsala" to "بوصلة"),
+        "skip" to ("Skip" to "تخطٍّ"),
+        "next" to ("Next" to "التالي"),
+        "notNow" to ("Not now, use offline" to "ليس الآن، استخدمه دون اتصال"),
+        "useEmailInstead" to ("Use email instead" to "استخدم البريد الإلكتروني"),
+        "onboardWelcome" to ("Your day, in the right direction." to "يومك، في الاتجاه الصحيح."),
+        "onboardCaptureTitle" to ("Capture first, decide later" to "التقط أولًا، وقرّر لاحقًا"),
+        "onboardCaptureBody" to
+            ("Send anything to your inbox: a thought, a voice note, a photo, a link shared from Keep. When you have a minute, turn each into a task, a plan or a reference." to
+                "أرسل أي شيء إلى صندوق الوارد: فكرة، تسجيلًا صوتيًا، صورة، أو رابطًا من Keep. وحين يتوفر لك وقت، حوّل كل عنصر إلى مهمة أو خطة أو مرجع."),
+        "onboardPrayerTitle" to ("Plan around your prayers" to "خطّط حول صلواتك"),
+        "onboardPrayerBody" to
+            ("Bawsala calculates prayer times for your city and keeps them free in your plan. Pick your city:" to
+                "تحسب بوصلة مواقيت الصلاة لمدينتك وتُبقيها خالية في خطتك. اختر مدينتك:"),
+        "onboardPrayerNote" to
+            ("You can change this, or add another place, in Settings." to
+                "يمكنك تغيير ذلك أو إضافة مكان آخر من الإعدادات."),
+        "onboardSyncTitle" to ("Keep it in sync" to "حافظ على المزامنة"),
+        "onboardSyncBody" to
+            ("Sign in to use Bawsala on all your devices and connect Google Tasks and Calendar. Everything also works offline." to
+                "سجّل الدخول لاستخدام بوصلة على كل أجهزتك وربط مهام Google وتقويمه. كل شيء يعمل أيضًا دون اتصال."),
         "continueWithGoogle" to ("Continue with Google" to "المتابعة باستخدام Google"),
         "googleSignInNote" to
             ("Signs you in and connects Google Tasks and Calendar in one step." to

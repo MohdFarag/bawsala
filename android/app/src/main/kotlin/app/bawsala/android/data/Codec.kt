@@ -384,6 +384,7 @@ object Codec {
             .put("prayerConfirmed", p.prayerConfirmed)
             .put("reminderMinutes", p.reminderMinutes)
             .put("windowDays", p.windowDays)
+            .put("onboarded", p.onboarded)
 
     fun prefs(o: JSONObject) =
         Prefs(
@@ -392,6 +393,8 @@ object Codec {
             prayerConfirmed = o.optBoolean("prayerConfirmed"),
             reminderMinutes = o.optInt("reminderMinutes", 10),
             windowDays = o.optInt("windowDays", 30),
+            // Preferences saved before onboarding existed belong to someone already using the app.
+            onboarded = o.optBoolean("onboarded", true),
         )
 
     // Focus timer and time log

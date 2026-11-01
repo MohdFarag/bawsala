@@ -50,6 +50,7 @@ import app.bawsala.android.ui.i18n.LocalLang
 import app.bawsala.android.ui.i18n.tr
 import app.bawsala.android.ui.inbox.InboxScreen
 import app.bawsala.android.ui.more.MoreScreen
+import app.bawsala.android.ui.onboarding.OnboardingScreen
 import app.bawsala.android.ui.plan.EventSheet
 import app.bawsala.android.ui.plan.PlanScreen
 import app.bawsala.android.ui.plan.ScheduleSheet
@@ -86,6 +87,10 @@ fun AppRoot(vm: AppViewModel, onExit: () -> Unit) {
     ) {
         Box(Modifier.fillMaxSize().background(AppColors.canvas)) {
             if (!s.loaded) return@Box
+            if (!s.prefs.onboarded) {
+                Box(Modifier.statusBarsPadding()) { OnboardingScreen(vm, s) }
+                return@Box
+            }
             Column(Modifier.fillMaxSize().statusBarsPadding()) {
                 Box(Modifier.weight(1f)) {
                     ScreenHost(screen, vm, s)
