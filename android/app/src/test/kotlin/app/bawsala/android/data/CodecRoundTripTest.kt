@@ -195,4 +195,15 @@ class CodecRoundTripTest {
         assertEquals(null, task.parentId)
         assertEquals(null, task.keepUrl)
     }
+
+    @Test
+    fun `prefs keep onboarding state, and prefs saved before onboarding existed count as onboarded`() {
+        val fresh = Prefs()
+        assertEquals(false, fresh.onboarded)
+        assertEquals(fresh, Codec.prefs(Codec.encode(fresh)))
+        val done = Prefs(lang = "ar", onboarded = true)
+        assertEquals(done, Codec.prefs(Codec.encode(done)))
+        val legacy = Codec.encode(Prefs()).apply { remove("onboarded") }
+        assertEquals(true, Codec.prefs(legacy).onboarded)
+    }
 }

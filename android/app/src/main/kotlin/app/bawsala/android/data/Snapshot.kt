@@ -18,6 +18,8 @@ data class Prefs(
     val prayerConfirmed: Boolean = false,
     val reminderMinutes: Int = 10,
     val windowDays: Int = 30,
+    /** False until the first-launch pages are finished or skipped. */
+    val onboarded: Boolean = false,
 )
 
 /** A prayer-relative rule and the task whose sessions it generates. */
