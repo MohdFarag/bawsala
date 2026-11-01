@@ -1,7 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 108 108" width="512" height="512">
   <title>Bawsala</title>
   <rect width="108" height="108" rx="26" fill="#225C46"/>
-  <circle cx="54" cy="54" r="30" fill="#103D2D"/>
+  <rect x="31" y="31" width="46" height="46" rx="3" fill="#103D2D"/>
+  <rect x="31" y="31" width="46" height="46" rx="3" fill="#103D2D" transform="rotate(45 54 54)"/>
+  <circle cx="54" cy="54" r="21" fill="none" stroke="#D2EDB3" stroke-opacity=".35" stroke-width="1.2"/>
   <path d="M74.5 33.5L59.66 59.66L48.34 48.34Z" fill="#FFFFFF"/>
   <path d="M33.5 74.5L48.34 48.34L59.66 59.66Z" fill="#D2EDB3"/>
   <circle cx="54" cy="54" r="6.5" fill="#103D2D"/>
