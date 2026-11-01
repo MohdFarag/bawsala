@@ -9,19 +9,22 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
-/** Design tokens from the Figma "Daily Life" variables. */
+/**
+ * Design tokens: layout and neutrals from the Figma "Daily Life" variables, brand colors from the
+ * Bawsala logo (teal #05473F, sage #B2C18F; see docs/brand).
+ */
 object AppColors {
     val canvas = Color(0xFFF7F8F3)
     val surface = Color(0xFFFFFFFF)
     val border = Color(0xFFDFE5DD)
-    val text = Color(0xFF1E2D26)
+    val text = Color(0xFF17302B)
     val secondary = Color(0xFF69756E)
-    val primary = Color(0xFF225C46)
+    val primary = Color(0xFF05473F)
     val onPrimary = Color(0xFFFFFFFF)
     val subtle = Color(0xFFEEF1EB)
-    val tint = Color(0xFFE6F0E7)
-    val highlight = Color(0xFFD2EDB3)
-    val dark = Color(0xFF103D2D)
+    val tint = Color(0xFFE3EEEA)
+    val highlight = Color(0xFFB2C18F)
+    val dark = Color(0xFF033630)
     val warning = Color(0xFFF7EDDA)
     val warningText = Color(0xFF89621F)
     val danger = Color(0xFF9A3B2A)
