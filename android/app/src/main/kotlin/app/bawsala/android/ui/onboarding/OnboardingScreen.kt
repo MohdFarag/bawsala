@@ -66,7 +66,7 @@ private const val PAGES = 4
 fun OnboardingScreen(vm: AppViewModel, s: Snapshot) {
     var page by rememberSaveable { mutableIntStateOf(0) }
     val account by vm.account.account.collectAsStateWithLifecycle()
-    val finish = { vm.settings.savePrefs(s.prefs.copy(onboarded = true)) }
+    val finish: () -> Unit = { vm.settings.savePrefs(s.prefs.copy(onboarded = true)) }
 
     // Signing in on the last page completes onboarding.
     LaunchedEffect(account) { if (account != null && page == PAGES - 1) finish() }
