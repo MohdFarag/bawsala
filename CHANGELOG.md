@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/MohdFarag/bawsala/compare/v0.4.0...v0.5.0) (2026-11-01)
+
+
+### Features
+
+* Bawsala logo with an eight-point star dial and Ruqaa wordmark ([#40](https://github.com/MohdFarag/bawsala/issues/40)) ([94412ce](https://github.com/MohdFarag/bawsala/commit/94412ce6d08e33ce223b675df82fd5ccec231f82))
+
 ## [0.4.0](https://github.com/MohdFarag/bawsala/compare/v0.3.0...v0.4.0) (2026-11-01)
 
 
