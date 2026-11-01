@@ -21,3 +21,7 @@ Code for all P0 requirements is in place; these need accounts or infrastructure:
    consent screen is verified, add test users in the console.
 3. **App:** set the `API_SERVER_URL` repository variable so release builds pre-fill the server, and
    the signing secrets in the `release` environment.
+
+## License
+
+Copyright (C) 2026 Mohamed Farag. Bawsala is free software under the [GNU Affero General Public License v3.0](LICENSE) (AGPL-3.0-only): you may use, study, change and share it, and anyone who distributes it, or runs a modified version as a network service, must publish their source under the same license.
