@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/MohdFarag/bawsala/compare/v0.5.0...v0.6.0) (2026-11-01)
+
+
+### Features
+
+* adopt the Bawsala Masar logo ([#43](https://github.com/MohdFarag/bawsala/issues/43)) ([7dc82c3](https://github.com/MohdFarag/bawsala/commit/7dc82c39f49043df7c7c6a669b45163ed830125b))
+
 ## [0.5.0](https://github.com/MohdFarag/bawsala/compare/v0.4.0...v0.5.0) (2026-11-01)
 
 
