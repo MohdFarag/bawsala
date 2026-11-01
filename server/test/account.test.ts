@@ -23,7 +23,7 @@ describe("account", () => {
     expect(res.statusCode).toBe(200);
     expect(res.headers["content-disposition"]).toContain("attachment");
     const data = res.json();
-    expect(data).toMatchObject({ format: "daily-life-planner/1", user: { email }, media: [] });
+    expect(data).toMatchObject({ format: "bawsala/1", user: { email }, media: [] });
     expect(data.records).toEqual([{ entity: "lists", id: "work", version: 1, doc: { name: "Work" } }]);
   });
 

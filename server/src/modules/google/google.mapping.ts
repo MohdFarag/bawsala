@@ -68,7 +68,7 @@ export function newTaskFromGoogle(g: GTask, listId: string, parentId: string | u
 export function sessionToEvent(session: SessionDoc, taskTitle: string, reminderMinutes: number): Partial<GEvent> {
   return {
     summary: taskTitle,
-    description: "Work session planned in Daily Life Planner.",
+    description: "Work session planned in Bawsala.",
     start: { dateTime: session.start },
     end: { dateTime: session.end },
     reminders: { useDefault: false, overrides: reminderMinutes > 0 ? [{ method: "popup", minutes: reminderMinutes }] : [] },

@@ -63,4 +63,4 @@ jobs:
         with:
           persist-credentials: false
       - name: Build
-        run: docker build -t daily-life-planner-server:ci server
+        run: docker build -t bawsala-server:ci server

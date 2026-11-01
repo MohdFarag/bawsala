@@ -1,4 +1,4 @@
-# Daily Life Planner — Android
+# Bawsala — Android
 
 Kotlin + Jetpack Compose app. Slice 1 of the P0 plan: offline inbox, sharing, triage, tasks,
 sessions, time blocks, prayer times and prayer-relative scheduling, focus timer and local reminders.

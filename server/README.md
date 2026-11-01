@@ -1,4 +1,4 @@
-# Daily Life Planner — Server
+# Bawsala — Server
 
 Backend for accounts, multi-device sync and media. Node 22, Fastify 5, PostgreSQL 16, TypeScript.
 Interactive API docs (OpenAPI) are served at `/docs`.
@@ -117,7 +117,7 @@ Enabled when `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI` a
 (see `.env.example`); otherwise the endpoints answer `503 google_not_configured`.
 
 - **Connecting:** the app calls `POST /google/connect` and opens the returned Google consent page. Google
-  redirects to `/google/callback`, which hands control back to the app (`dailylife://google-connected`).
+  redirects to `/google/callback`, which hands control back to the app (`bawsala://google-connected`).
   The flow uses PKCE and a single-use state that expires after 10 minutes, and requests offline access.
 - **Tokens (SEC01):** refresh and access tokens are encrypted with AES-256-GCM (`SECRETS_KEY`), never
   sent to devices, exported or logged, revoked on disconnect, and revoked and deleted with the account.

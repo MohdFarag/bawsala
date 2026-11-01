@@ -73,7 +73,7 @@ export async function buildApp(deps: AppDeps) {
   });
   await app.register(swagger, {
     openapi: {
-      info: { title: "Daily Life Planner API", version: "0.1.0" },
+      info: { title: "Bawsala API", version: "0.1.0" },
       components: { securitySchemes: { bearer: { type: "http", scheme: "bearer" } } },
     },
     transform: jsonSchemaTransform,

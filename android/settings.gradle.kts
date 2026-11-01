@@ -26,7 +26,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "daily-life-planner"
+rootProject.name = "bawsala"
 include(":app")
 
 // Platform-independent domain logic; also buildable alone with `./gradlew -p core test` (no Android SDK needed).

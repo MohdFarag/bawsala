@@ -15,8 +15,8 @@ import { syncLists, syncTasks } from "./google.tasks-sync.js";
 
 const STATE_TTL_SECONDS = 600;
 const REFRESH_MARGIN_MS = 60_000;
-const SESSIONS_CALENDAR = "Daily Life Planner · Sessions";
-const BLOCKS_CALENDAR = "Daily Life Planner · Time blocks";
+const SESSIONS_CALENDAR = "Bawsala · Sessions";
+const BLOCKS_CALENDAR = "Bawsala · Time blocks";
 
 export interface GoogleStatus {
   enabled: boolean;

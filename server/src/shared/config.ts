@@ -32,7 +32,7 @@ const Env = z.object({
   /** Public URL of GET /v1/google/callback, registered in the Google Cloud console. */
   GOOGLE_REDIRECT_URI: z.string().default(""),
   /** Where the browser goes after connecting; the Android app handles this link. */
-  GOOGLE_APP_RETURN_URI: z.string().default("dailylife://google-connected"),
+  GOOGLE_APP_RETURN_URI: z.string().default("bawsala://google-connected"),
   GOOGLE_SYNC_INTERVAL_SECONDS: z.coerce.number().int().positive().default(300),
   /** 32 random bytes, base64: encrypts OAuth tokens at rest (SEC01). */
   SECRETS_KEY: z.string().default(""),

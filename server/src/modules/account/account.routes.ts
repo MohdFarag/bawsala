@@ -15,9 +15,7 @@ export function accountRoutes(account: AccountService): FastifyPluginAsyncZod {
       },
       async (request, reply) => {
         const data = await account.export(principalOf(request));
-        return reply
-          .header("content-disposition", `attachment; filename="daily-life-planner-${data.exportedAt.slice(0, 10)}.json"`)
-          .send(data);
+        return reply.header("content-disposition", `attachment; filename="bawsala-${data.exportedAt.slice(0, 10)}.json"`).send(data);
       },
     );
 

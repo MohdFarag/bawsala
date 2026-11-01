@@ -1,7 +1,7 @@
 import { seed } from "./seed";
 import type { Data } from "./types";
 
-const KEY = "daily-life-planner/v1";
+const KEY = "bawsala/v1";
 
 /** Stored data, falling back to the sample data when nothing usable is saved. */
 export function loadData(): Data {
