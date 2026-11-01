@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.0](https://github.com/MohdFarag/bawsala/compare/v0.3.0...v0.4.0) (2026-11-01)
+
+
+### Features
+
+* **android:** onboarding pages on first launch ([#38](https://github.com/MohdFarag/bawsala/issues/38)) ([6d64327](https://github.com/MohdFarag/bawsala/commit/6d64327450ce7fccc37e0cb516edacfc58b4d532))
+* sign in with Google, connecting Tasks and Calendar in one step ([#37](https://github.com/MohdFarag/bawsala/issues/37)) ([88f86d4](https://github.com/MohdFarag/bawsala/commit/88f86d4531672754856e261b832eab2ed1477c51))
+
 ## [0.3.0](https://github.com/MohdFarag/bawsala/compare/v0.2.3...v0.3.0) (2026-11-01)
 
 
