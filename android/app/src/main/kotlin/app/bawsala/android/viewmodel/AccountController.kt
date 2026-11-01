@@ -42,6 +42,27 @@ class AccountController(private val ctx: ControllerScope) {
         ctx.container.syncRunner.run()
     }
 
+    /**
+     * Sign in with Google, step 1: asks the server which web client to request a code for, then
+     * [requestCode] opens Google's account picker and consent.
+     */
+    fun startGoogleSignIn(server: String, requestCode: (webClientId: String) -> Unit) = act {
+        val clientId = service.googleWebClientId(server)
+        if (clientId == null) action.fail(AccountError("googleNotConfigured"))
+        else requestCode(clientId)
+    }
+
+    /** Step 2: Google returned a code; the server signs in and connects Tasks and Calendar. */
+    fun finishGoogleSignIn(server: String, code: String) = act {
+        service.signInWithGoogle(server, code, ctx.snapshot.lang)
+        SyncWorker.schedulePeriodic(ctx.container.appContext)
+        ctx.messages.show("signedIn")
+        ctx.container.syncRunner.run()
+    }
+
+    /** Google's screen failed (not when the user simply closed it). */
+    fun googleSignInFailed(reason: String) = action.fail(AccountError("googleSignInFailed", reason))
+
     fun signOut() = act {
         SyncWorker.cancel(ctx.container.appContext)
         service.signOut()

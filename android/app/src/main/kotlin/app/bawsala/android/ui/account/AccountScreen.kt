@@ -56,15 +56,28 @@ private fun SignInForm(vm: AppViewModel) {
     var server by rememberSaveable { mutableStateOf(BuildConfig.DEFAULT_SERVER_URL) }
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
+    var advanced by rememberSaveable { mutableStateOf(BuildConfig.DEFAULT_SERVER_URL.isBlank()) }
+    val requestGoogleCode = rememberGoogleCodeRequest { result ->
+        when (result) {
+            is GoogleCode.Received -> vm.account.finishGoogleSignIn(server, result.code)
+            is GoogleCode.Failed -> vm.account.googleSignInFailed(result.reason)
+            GoogleCode.Cancelled -> Unit
+        }
+    }
     Text(tr("syncIntro"), style = AppType.small)
+    AppButton(
+        tr("continueWithGoogle"),
+        { vm.account.startGoogleSignIn(server, requestGoogleCode) },
+        enabled = !vm.account.busy && server.isNotBlank(),
+    )
+    Text(tr("googleSignInNote"), style = AppType.micro)
+    SectionLabel(tr("orUseEmail"))
     Segmented(
         listOf("signIn" to tr("signIn"), "create" to tr("createAccount")),
         if (create) "create" else "signIn",
         { create = it == "create" },
         Modifier.fillMaxWidth(),
     )
-    SectionLabel(tr("serverAddress"))
-    Field(server, "https://") { server = it }
     SectionLabel(tr("email"))
     Field(email, "name@example.com") { email = it }
     SectionLabel(tr("password"))
@@ -74,8 +87,16 @@ private fun SignInForm(vm: AppViewModel) {
         { vm.account.signIn(server, email, password, create) },
         enabled =
             !vm.account.busy && server.isNotBlank() && email.isNotBlank() && password.isNotEmpty(),
+        style = ButtonStyle.SECONDARY,
     )
     Text(tr("dataStaysNote"), style = AppType.micro)
+    // The app's own server is built in; another one is only for self-hosting or testing.
+    if (advanced) {
+        SectionLabel(tr("serverAddress"))
+        Field(server, "https://") { server = it }
+    } else {
+        AppButton(tr("advancedServer"), { advanced = true }, style = ButtonStyle.QUIET)
+    }
 }
 
 @Composable
@@ -86,7 +107,9 @@ private fun SignedIn(vm: AppViewModel, s: Snapshot, account: Account, status: Sy
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         Text(account.email, style = AppType.label)
-        Text(account.serverUrl, style = AppType.micro)
+        // Only worth showing when it is not the app's own server (self-hosting, testing).
+        if (account.serverUrl.trimEnd('/') != BuildConfig.DEFAULT_SERVER_URL.trimEnd('/'))
+            Text(account.serverUrl, style = AppType.micro)
     }
     DetailRow(tr("syncState"), syncStateText(status, s.outbox.queued.size, lang))
     AppButton(
@@ -140,7 +163,7 @@ private fun DeleteAccount(vm: AppViewModel) {
     }
     SectionLabel(tr("deleteAccount"))
     Text(tr("deleteAccountExplain"), style = AppType.small)
-    Field(password, tr("password"), secret = true) { password = it }
+    Field(password, tr("passwordOrEmail"), secret = true) { password = it }
     AppButton(
         tr("deleteAccountConfirm"),
         { vm.account.deleteAccount(password) },

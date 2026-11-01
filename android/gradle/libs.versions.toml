@@ -10,6 +10,8 @@ coroutines = "1.11.0"
 # 0.0.6+ is compiled for Java 21; 0.0.5 targets Java 17 like the rest of the app.
 adhan = "0.0.5"
 json = "20260814"
+# Google Identity Services: AuthorizationClient for Sign in with Google with Tasks/Calendar scopes.
+play-services-auth = "21.3.0"
 ktfmt-plugin = "0.27.0"
 
 [libraries]
@@ -29,6 +31,7 @@ androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
 androidx-work-runtime = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
+play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "play-services-auth" }
 org-json = { module = "org.json:json", version.ref = "json" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 

@@ -36,6 +36,36 @@ class AccountService(
                     if (create) "/v1/auth/register" else "/v1/auth/login",
                     Body.Json(body),
                 )!!
+        completeSignIn(server, result)
+    }
+
+    /**
+     * The web client to request a Google code for, or null when the server has no Google sign-in.
+     */
+    suspend fun googleWebClientId(serverUrl: String): String? {
+        val server = requireNotNull(normalizeServerUrl(serverUrl)) { "Invalid server address" }
+        val config = Http(server).json("GET", "/v1/auth/google/config")!!
+        return config.optString("webClientId").takeIf {
+            config.optBoolean("enabled") && it.isNotEmpty()
+        }
+    }
+
+    /**
+     * Signs in with a Google server auth code: the server finds, links or creates the account and
+     * connects Tasks and Calendar in the same step.
+     */
+    suspend fun signInWithGoogle(serverUrl: String, code: String, locale: String) {
+        val server = requireNotNull(normalizeServerUrl(serverUrl)) { "Invalid server address" }
+        val body =
+            org.json
+                .JSONObject()
+                .put("code", code)
+                .put("locale", locale)
+                .put("deviceName", Build.MODEL.take(100))
+        completeSignIn(server, Http(server).json("POST", "/v1/auth/google", Body.Json(body))!!)
+    }
+
+    private suspend fun completeSignIn(server: String, result: org.json.JSONObject) {
         val user = result.getJSONObject("user")
         val account = Account(server, user.getString("email"), user.getString("id"))
         // This device's data last synced with another account: upload all of it to this one.

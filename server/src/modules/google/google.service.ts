@@ -5,6 +5,7 @@ import type { Db } from "../../shared/db.js";
 import { ApiError, badRequest } from "../../shared/errors.js";
 import { SecretBox } from "../../shared/secret-box.js";
 import { isTimeZone } from "../../shared/zoned-time.js";
+import type { AuthService, PublicUser, TokenPair } from "../auth/auth.service.js";
 import type { SyncService } from "../sync/sync.service.js";
 import { type GoogleApi, GoogleApiError, GoogleHttpApi } from "./google.api.js";
 import { pullEvents, pushBlocks, pushLocalEvents, pushSessions, syncCalendarList } from "./google.calendar-sync.js";
@@ -52,6 +53,7 @@ export class GoogleService {
   constructor(
     private readonly db: Db,
     private readonly sync: SyncService,
+    private readonly auth: AuthService,
     config: Config,
     private readonly deps: GoogleDeps = {},
   ) {
@@ -75,6 +77,41 @@ export class GoogleService {
     const { verifier, challenge } = pkce();
     await repo.saveState(this.db, state, userId, verifier, STATE_TTL_SECONDS);
     return { url: oauth.authorizationUrl(state, challenge) };
+  }
+
+  /** What the Android app needs to offer "Continue with Google": the web client to request a code for. */
+  signInConfig(): { enabled: boolean; webClientId: string | null } {
+    return { enabled: this.enabled, webClientId: this.oauth?.clientId ?? null };
+  }
+
+  /**
+   * Sign in with Google in one step: the app's server auth code identifies the user and grants
+   * Tasks and Calendar together. Signs in (or creates, or links by verified email) the account,
+   * then stores the Google connection as connecting from Settings would.
+   */
+  async signIn(code: string, locale: string, deviceName?: string): Promise<{ user: PublicUser; tokens: TokenPair }> {
+    const oauth = this.requireOAuth();
+    const granted = await oauth.exchangeServerAuthCode(code).catch((err: unknown) => {
+      if (err instanceof GoogleApiError) throw badRequest("invalid_google_code", "Google did not accept the sign-in; try again");
+      throw err;
+    });
+    if (!granted.sub || !granted.email) throw badRequest("incomplete_grant", "Google did not share the account's identity");
+    if (!granted.emailVerified) throw badRequest("email_not_verified", "This Google account's email is not verified");
+    const result = await this.auth.signInWithGoogle({ sub: granted.sub, email: granted.email, name: granted.name }, locale, deviceName);
+    // Without offline access (Tasks and Calendar declined) the user is still signed in, just not connected.
+    if (granted.refreshToken) {
+      const box = this.requireBox();
+      await repo.saveAccount(this.db, {
+        userId: result.user.id,
+        googleSub: granted.sub,
+        email: granted.email,
+        scopes: granted.scope,
+        refreshTokenEnc: box.seal(granted.refreshToken),
+        accessTokenEnc: box.seal(granted.accessToken),
+        accessExpiresAt: granted.expiresAt,
+      });
+    }
+    return result;
   }
 
   /** Completes the consent: stores the tokens and returns the user it was for. */

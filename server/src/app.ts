@@ -40,7 +40,7 @@ export function createServices({ config, db, storage, google: googleDeps }: Pick
   const auth = new AuthService(db, config);
   const sync = new SyncService(db);
   const media = new MediaService(db, storage ?? new LocalDiskStorage(config.MEDIA_DIR), config);
-  const google = new GoogleService(db, sync, config, googleDeps);
+  const google = new GoogleService(db, sync, auth, config, googleDeps);
   const account = new AccountService(db, auth, sync, media, google);
   const planner = new PlannerService(sync);
   const mcpTokens = new McpTokenService(db);
@@ -88,7 +88,7 @@ export async function buildApp(deps: AppDeps) {
       await v1.register(mediaRoutes(services.media));
       await v1.register(accountRoutes(services.account));
       await v1.register(mcpRoutes(services.mcpTokens, services.planner));
-      await v1.register(googleRoutes(services.google, config.GOOGLE_APP_RETURN_URI));
+      await v1.register(googleRoutes(services.google, config.GOOGLE_APP_RETURN_URI, config.AUTH_RATE_LIMIT_PER_MINUTE));
     },
     { prefix: "/v1" },
   );

@@ -17,6 +17,8 @@ export interface GoogleTokens {
   /** From the ID token of the first exchange. */
   sub?: string;
   email?: string;
+  emailVerified?: boolean;
+  name?: string;
 }
 
 export interface OAuthSettings {
@@ -38,6 +40,11 @@ export class GoogleOAuth {
     private readonly fetchImpl: typeof fetch = fetch,
   ) {}
 
+  /** Public: the Android app requests offline access for this client. */
+  get clientId(): string {
+    return this.settings.clientId;
+  }
+
   authorizationUrl(state: string, codeChallenge: string): string {
     const params = new URLSearchParams({
       client_id: this.settings.clientId,
@@ -56,6 +63,14 @@ export class GoogleOAuth {
 
   exchange(code: string, codeVerifier: string): Promise<GoogleTokens> {
     return this.token({ grant_type: "authorization_code", code, code_verifier: codeVerifier, redirect_uri: this.settings.redirectUri });
+  }
+
+  /**
+   * Exchanges a server auth code obtained by the Android app (Google Identity Services, offline
+   * access for this web client). Such codes carry no redirect URI and no PKCE verifier.
+   */
+  exchangeServerAuthCode(code: string): Promise<GoogleTokens> {
+    return this.token({ grant_type: "authorization_code", code, redirect_uri: "" });
   }
 
   refresh(refreshToken: string): Promise<GoogleTokens> {
@@ -85,8 +100,7 @@ export class GoogleOAuth {
       expiresAt: new Date(Date.now() + Number(body.expires_in ?? 3600) * 1000),
       refreshToken: typeof body.refresh_token === "string" ? body.refresh_token : undefined,
       scope: typeof body.scope === "string" ? body.scope : "",
-      sub: claims.sub,
-      email: claims.email,
+      ...claims,
     };
   }
 }
@@ -95,12 +109,15 @@ export class GoogleOAuth {
  * Reads the ID token's claims. It came straight from Google's token endpoint over TLS in exchange
  * for our code and secret, so its signature need not be checked (OpenID Connect Core 3.1.3.7).
  */
-function idTokenClaims(idToken: string): { sub?: string; email?: string } {
+function idTokenClaims(idToken: string): Pick<GoogleTokens, "sub" | "email" | "emailVerified" | "name"> {
   const payload = idToken.split(".")[1];
   if (!payload) return {};
   const claims = JSON.parse(Buffer.from(payload, "base64url").toString("utf8")) as Record<string, unknown>;
+  const text = (key: string) => (typeof claims[key] === "string" ? claims[key] : undefined);
   return {
-    sub: typeof claims.sub === "string" ? claims.sub : undefined,
-    email: typeof claims.email === "string" ? claims.email : undefined,
+    sub: text("sub"),
+    email: text("email"),
+    emailVerified: claims.email_verified === true || claims.email_verified === "true",
+    name: text("name"),
   };
 }
