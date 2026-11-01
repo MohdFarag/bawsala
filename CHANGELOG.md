@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.4](https://github.com/MohdFarag/daily-life-planner/compare/v0.2.3...v0.2.4) (2026-11-01)
+
+
+### Bug Fixes
+
+* **android:** Connect Google fails with Unsupported Media Type ([#31](https://github.com/MohdFarag/daily-life-planner/issues/31)) ([22147ce](https://github.com/MohdFarag/daily-life-planner/commit/22147ce68ef84dd63ce51f0264098352dbb2ff34))
+
 ## [0.2.3](https://github.com/MohdFarag/daily-life-planner/compare/v0.2.2...v0.2.3) (2026-10-31)
 
 
