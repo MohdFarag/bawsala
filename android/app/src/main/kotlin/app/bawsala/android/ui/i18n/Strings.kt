@@ -151,6 +151,23 @@ private val S: Map<String, Pair<String, String>> =
         "actionFailed" to
             ("Something went wrong; your last change may not be saved" to
                 "حدث خطأ؛ ربما لم يُحفظ آخر تغيير"),
+        "continueWithGoogle" to ("Continue with Google" to "المتابعة باستخدام Google"),
+        "googleSignInNote" to
+            ("Signs you in and connects Google Tasks and Calendar in one step." to
+                "يسجّل دخولك ويربط مهام Google وتقويمه في خطوة واحدة."),
+        "orUseEmail" to ("or use email" to "أو استخدم البريد الإلكتروني"),
+        "advancedServer" to ("Advanced: change server" to "متقدم: تغيير الخادم"),
+        "googleSignInFailed" to
+            ("Signing in with Google did not work" to "لم ينجح تسجيل الدخول باستخدام Google"),
+        "googleAccountMismatch" to
+            ("This email already belongs to an account linked to a different Google account" to
+                "هذا البريد مرتبط بحساب متصل بحساب Google آخر"),
+        "googleEmailNotVerified" to
+            ("This Google account's email is not verified" to
+                "البريد الإلكتروني لحساب Google هذا غير مُوثَّق"),
+        "passwordOrEmail" to
+            ("Password (or your email, if you signed up with Google)" to
+                "كلمة المرور (أو بريدك الإلكتروني إن سجّلت باستخدام Google)"),
         "serverError" to ("The server returned an error" to "أعاد الخادم خطأ"),
         "today" to ("Today" to "اليوم"),
         "inbox" to ("Inbox" to "الوارد"),

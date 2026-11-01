@@ -2,6 +2,7 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { z } from "zod";
 import { principalOf } from "../../http/authenticate.js";
 import { ErrorBody } from "../../http/errors.js";
+import { AuthResult } from "../auth/auth.schemas.js";
 import type { GoogleService } from "./google.service.js";
 
 const secured = [{ bearer: [] }];
@@ -14,7 +15,7 @@ const Status = z.object({
 });
 
 /** Connecting Google and syncing on demand. The callback is opened by the browser, not the app. */
-export function googleRoutes(google: GoogleService, appReturnUri: string): FastifyPluginAsyncZod {
+export function googleRoutes(google: GoogleService, appReturnUri: string, credentialsPerMinute: number): FastifyPluginAsyncZod {
   const authenticated: FastifyPluginAsyncZod = async (app) => {
     app.addHook("preHandler", app.authenticate);
 
@@ -81,6 +82,43 @@ export function googleRoutes(google: GoogleService, appReturnUri: string): Fasti
 
   return async (app) => {
     await app.register(authenticated);
+
+    app.get(
+      "/auth/google/config",
+      {
+        schema: {
+          tags: ["auth"],
+          summary: "Whether Sign in with Google is available, and the web client the app requests a code for",
+          response: { 200: z.object({ enabled: z.boolean(), webClientId: z.string().nullable() }) },
+        },
+      },
+      async () => google.signInConfig(),
+    );
+
+    app.post(
+      "/auth/google",
+      {
+        config: { rateLimit: { max: credentialsPerMinute, timeWindow: "1 minute" } },
+        schema: {
+          tags: ["auth"],
+          summary: "Sign in with Google (and connect Tasks and Calendar) using a server auth code from the app",
+          body: z.object({
+            code: z.string().min(1).max(2000),
+            locale: z.enum(["en", "ar"]).default("en"),
+            deviceName: z.string().trim().min(1).max(100).optional(),
+          }),
+          response: { 200: AuthResult, 400: ErrorBody, 409: ErrorBody, 503: ErrorBody },
+        },
+      },
+      async (request) => {
+        const { code, locale, deviceName } = request.body;
+        const result = await google.signIn(code, locale, deviceName);
+        void google.syncUser(result.user.id).catch((err: unknown) => {
+          request.log.error({ err }, "first Google sync failed");
+        });
+        return result;
+      },
+    );
 
     // Google redirects the browser here; the page hands control back to the app.
     app.get(

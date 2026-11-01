@@ -80,9 +80,46 @@ export class AuthService {
     }
   }
 
+  /**
+   * Signs in with a Google identity whose email Google has verified: the account already linked to
+   * it, else the account with that email (which gets linked), else a new account without a password.
+   */
+  async signInWithGoogle(
+    identity: { sub: string; email: string; name?: string },
+    locale: string,
+    deviceName?: string,
+    retry = true,
+  ): Promise<{ user: PublicUser; tokens: TokenPair }> {
+    try {
+      return await withTx(this.db, async (tx) => {
+        let user = await users.findByGoogleSub(tx, identity.sub);
+        if (!user) {
+          const byEmail = await users.findByEmail(tx, identity.email);
+          if (byEmail?.googleSub) throw conflict("google_account_mismatch", "This email is linked to a different Google account");
+          if (byEmail) await users.setGoogleSub(tx, byEmail.id, identity.sub);
+          user =
+            byEmail ??
+            (await users.insert(tx, {
+              email: identity.email,
+              passwordHash: null,
+              googleSub: identity.sub,
+              displayName: identity.name?.slice(0, 100) ?? null,
+              locale,
+            }));
+        }
+        const tokens = await this.startSession(tx, user.id, deviceName);
+        return { user: toPublicUser(user), tokens };
+      });
+    } catch (err) {
+      // Two first sign-ins at once: the unique index decides, and the retry finds the account.
+      if (retry && (err as { code?: string }).code === UNIQUE_VIOLATION) return this.signInWithGoogle(identity, locale, deviceName, false);
+      throw err;
+    }
+  }
+
   async login(input: { email: string; password: string; deviceName?: string }) {
     const user = await users.findByEmail(this.db, input.email);
-    const valid = user
+    const valid = user?.passwordHash
       ? await verifyPassword(input.password, user.passwordHash)
       : await verifyPassword(input.password, await (this.dummyHash ??= hashPassword("unused"))).then(() => false);
     if (!user || !valid) throw unauthorized("Email or password is incorrect");
@@ -150,9 +187,16 @@ export class AuthService {
     return repo.deleteExpiredSessions(this.db);
   }
 
+  /**
+   * Confirms a sensitive action. An account created with Google has no password, so it confirms by
+   * typing its email address instead.
+   */
   async verifyCurrentPassword(principal: Principal, password: string): Promise<void> {
     const user = await users.findById(this.db, principal.userId);
-    if (!user || !(await verifyPassword(password, user.passwordHash))) {
+    const confirmed = user?.passwordHash
+      ? await verifyPassword(password, user.passwordHash)
+      : user !== undefined && password.trim().toLowerCase() === user.email.toLowerCase();
+    if (!confirmed) {
       throw forbidden("wrong_password", "Password is incorrect");
     }
   }

@@ -3,13 +3,16 @@ import { one, type Queryable } from "../../shared/db.js";
 export interface UserRow {
   id: string;
   email: string;
-  passwordHash: string;
+  /** Null for accounts created with Google that never set a password. */
+  passwordHash: string | null;
+  googleSub: string | null;
   displayName: string | null;
   locale: string;
   createdAt: Date;
 }
 
-const USER_COLUMNS = `id, email, password_hash AS "passwordHash", display_name AS "displayName", locale, created_at AS "createdAt"`;
+const USER_COLUMNS = `id, email, password_hash AS "passwordHash", google_sub AS "googleSub", display_name AS "displayName", locale,
+  created_at AS "createdAt"`;
 
 /**
  * SQL for user rows. The user is the root every other table hangs off, so this is the one
@@ -26,12 +29,24 @@ export const usersRepository = {
     return rows[0];
   },
 
-  async insert(q: Queryable, user: { email: string; passwordHash: string; displayName: string | null; locale: string }): Promise<UserRow> {
+  async findByGoogleSub(q: Queryable, googleSub: string): Promise<UserRow | undefined> {
+    const { rows } = await q.query<UserRow>(`SELECT ${USER_COLUMNS} FROM users WHERE google_sub = $1`, [googleSub]);
+    return rows[0];
+  },
+
+  async insert(
+    q: Queryable,
+    user: { email: string; passwordHash: string | null; googleSub?: string; displayName: string | null; locale: string },
+  ): Promise<UserRow> {
     const { rows } = await q.query<UserRow>(
-      `INSERT INTO users (email, password_hash, display_name, locale) VALUES ($1, $2, $3, $4) RETURNING ${USER_COLUMNS}`,
-      [user.email, user.passwordHash, user.displayName, user.locale],
+      `INSERT INTO users (email, password_hash, google_sub, display_name, locale) VALUES ($1, $2, $3, $4, $5) RETURNING ${USER_COLUMNS}`,
+      [user.email, user.passwordHash, user.googleSub ?? null, user.displayName, user.locale],
     );
     return one(rows);
+  },
+
+  async setGoogleSub(q: Queryable, id: string, googleSub: string): Promise<void> {
+    await q.query("UPDATE users SET google_sub = $2 WHERE id = $1", [id, googleSub]);
   },
 
   /** Row-locks the user for the rest of the transaction, serializing per-user checks (e.g. quota). */

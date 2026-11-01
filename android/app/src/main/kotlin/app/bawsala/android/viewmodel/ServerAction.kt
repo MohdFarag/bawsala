@@ -54,6 +54,10 @@ class ServerAction(private val scope: CoroutineScope) {
                 "wrong_password" -> AccountError("wrongPassword")
                 "rate_limited" -> AccountError("tooManyAttempts")
                 "google_not_configured" -> AccountError("googleNotConfigured")
+                "google_account_mismatch" -> AccountError("googleAccountMismatch")
+                "email_not_verified" -> AccountError("googleEmailNotVerified")
+                "invalid_google_code",
+                "incomplete_grant" -> AccountError("googleSignInFailed")
                 else -> AccountError("serverError", e.message)
             }
     }
