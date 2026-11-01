@@ -1,5 +1,7 @@
 <resources>
     <color name="canvas">#F7F8F3</color>
     <color name="surface">#FFFFFF</color>
-    <color name="primary">#225C46</color>
+    <color name="primary">#05473F</color>
+    <!-- Brand teal from the Bawsala logo pack; the launcher icon background. -->
+    <color name="brand">#05473F</color>
 </resources>

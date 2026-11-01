@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/brand/bawsala-logo.svg" alt="Bawsala · بوصلة" width="400">
+  <img src="docs/brand/bawsala-logo.svg" alt="Bawsala · بوصلة" width="260">
 </p>
 
 <p align="center">

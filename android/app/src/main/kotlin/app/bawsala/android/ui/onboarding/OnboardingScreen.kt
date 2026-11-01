@@ -150,12 +150,7 @@ private fun ColumnScope.Symbol(icon: ImageVector) {
 /** The name, the needle, and the language, so every later page reads right. */
 @Composable
 private fun ColumnScope.Welcome(vm: AppViewModel, s: Snapshot) {
-    Box(
-        Modifier.size(112.dp).clip(RoundedCornerShape(30.dp)).background(AppColors.primary),
-        contentAlignment = Alignment.Center,
-    ) {
-        Image(painterResource(R.drawable.ic_launcher_foreground), null, Modifier.size(112.dp))
-    }
+    Image(painterResource(R.drawable.brand_mark), null, Modifier.size(160.dp))
     Heading(tr("appName"), tr("onboardWelcome"))
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         Chip("English", s.lang == "en", { vm.settings.savePrefs(s.prefs.copy(lang = "en")) })
