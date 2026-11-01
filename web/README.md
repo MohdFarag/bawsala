@@ -1,4 +1,4 @@
-# Daily Life Planner
+# Bawsala — web prototype
 
 A mobile-first planner built from the Figma file _Daily Life Planner – Mobile UI_ (Core mobile experience / v0.1).
 

@@ -95,7 +95,7 @@ describe("Google connection", () => {
     expect(url.searchParams.get("access_type")).toBe("offline");
     expect(url.searchParams.get("scope")).toContain("https://www.googleapis.com/auth/tasks");
     expect(back.statusCode).toBe(200);
-    expect(back.body).toContain("dailylife://google-connected?status=connected");
+    expect(back.body).toContain("bawsala://google-connected?status=connected");
 
     const exchange = tokenRequests.find((r) => r.get("code") === "auth-code")!;
     expect(exchange.get("code_verifier")).toHaveLength(43);

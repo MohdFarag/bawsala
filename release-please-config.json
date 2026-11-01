@@ -4,7 +4,7 @@
   "packages": {
     ".": {
       "release-type": "simple",
-      "package-name": "daily-life-planner",
+      "package-name": "bawsala",
       "changelog-path": "CHANGELOG.md",
       "extra-files": [
         { "type": "json", "path": "server/package.json", "jsonpath": "$.version" },

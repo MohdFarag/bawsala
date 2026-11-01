@@ -61,7 +61,7 @@ Releases are automated with [release-please](https://github.com/googleapis/relea
    version and `CHANGELOG.md`, computed from the Conventional Commit titles since the last release.
 2. Merging the release PR tags `vX.Y.Z` and creates the GitHub release. The release workflow then
    attaches the Android APK, AAB and `SHA256SUMS.txt`, and publishes the server image to
-   `ghcr.io/mohdfarag/daily-life-planner/server` (with build provenance and an SBOM).
+   `ghcr.io/mohdfarag/bawsala/server` (with build provenance and an SBOM).
 
 The version lives in `version.txt` and is mirrored into `server/package.json` and `web/package.json`.
 Pushing a `v*` tag by hand rebuilds the artifacts for that tag.

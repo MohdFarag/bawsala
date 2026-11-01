@@ -1,5 +1,5 @@
 {
-  "name": "daily-life-planner",
+  "name": "bawsala-web",
   "version": "0.2.3",
   "scripts": {
     "dev": "vite",

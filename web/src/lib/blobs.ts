@@ -1,5 +1,5 @@
 // Tiny IndexedDB wrapper for captured audio, photos and files (too large for localStorage).
-const DB = "daily-life-planner";
+const DB = "bawsala";
 const STORE = "blobs";
 
 function open(): Promise<IDBDatabase> {

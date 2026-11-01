@@ -11,11 +11,11 @@ ktfmt { kotlinLangStyle() }
 val keystorePath: String? = System.getenv("ANDROID_KEYSTORE_PATH")
 
 android {
-    namespace = "app.dailylife.android"
+    namespace = "app.bawsala.android"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "app.dailylife.android"
+        applicationId = "app.bawsala"
         minSdk = 26 // java.time without desugaring; open PRD decision (§1.1)
         targetSdk = 35
         versionCode = System.getenv("VERSION_CODE")?.toIntOrNull() ?: 1
@@ -73,7 +73,7 @@ android {
 kotlin { compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17) } }
 
 dependencies {
-    implementation(libs.dailylife.core)
+    implementation(libs.bawsala.core)
 
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)

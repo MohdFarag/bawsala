@@ -118,7 +118,7 @@ function useStoreValue() {
     busyOn,
     todaysTasks,
     freeMinutesToday: () => freeMinutes(busyOn(today)),
-    exportData: () => downloadJson(`daily-life-planner-${today}.json`, { exportedAt: new Date().toISOString(), ...data }),
+    exportData: () => downloadJson(`bawsala-${today}.json`, { exportedAt: new Date().toISOString(), ...data }),
     reset: () => {
       setData({ ...seed(), lang: data.lang });
       nav.home();

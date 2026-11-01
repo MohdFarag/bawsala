@@ -1,4 +1,4 @@
-# Daily Life Planner
+# Bawsala · بوصلة
 
 | Folder | What | Status |
 | --- | --- | --- |
@@ -13,7 +13,7 @@ Product requirements: Daily Life Planning App PRD v0.1. Contributing, checks and
 
 Code for all P0 requirements is in place; these need accounts or infrastructure:
 
-1. **Server hosting:** run the image `ghcr.io/mohdfarag/daily-life-planner/server` (published by the
+1. **Server hosting:** run the image `ghcr.io/mohdfarag/bawsala/server` (published by the
    release workflow) with PostgreSQL 16 and HTTPS, configured from `server/.env.example`.
 2. **Google:** create a Google Cloud project, enable the Tasks and Calendar APIs, create an OAuth client
    of type "Web application" with `https://<server>/v1/google/callback` as redirect URI, and set

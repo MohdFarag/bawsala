@@ -14,7 +14,7 @@ ktfmt-plugin = "0.27.0"
 
 [libraries]
 # Included build (android/core), substituted by Gradle; no version needed.
-dailylife-core = { module = "app.dailylife:core" }
+bawsala-core = { module = "app.bawsala:core" }
 adhan = { module = "com.batoulapps.adhan:adhan2", version.ref = "adhan" }
 compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
 compose-ui = { module = "androidx.compose.ui:ui" }

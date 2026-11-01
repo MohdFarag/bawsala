@@ -1,0 +1,8 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
+    <!-- Themed-icon version of the needle: one color, the tail half lighter. -->
+    <group android:rotation="45" android:pivotX="54" android:pivotY="54">
+        <path android:fillColor="#FFFFFF" android:pathData="M54,26L62,54L46,54Z" />
+        <path android:fillColor="#FFFFFF" android:fillAlpha="0.5" android:pathData="M54,82L62,54L46,54Z" />
+    </group>
+</vector>

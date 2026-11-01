@@ -1,5 +1,5 @@
 <resources>
-    <style name="Theme.DailyLife" parent="android:Theme.Material.Light.NoActionBar">
+    <style name="Theme.Bawsala" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:windowBackground">@color/canvas</item>
         <item name="android:statusBarColor">@color/canvas</item>
         <item name="android:navigationBarColor">@color/surface</item>

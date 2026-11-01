@@ -125,6 +125,6 @@ function returnPage(status: string, target: string): string {
   const message =
     status === "connected" ? "Google is connected." : status === "denied" ? "Access was not granted." : "Connecting Google did not work.";
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="refresh" content="0;url=${target}"><title>Daily Life Planner</title></head>
+<meta http-equiv="refresh" content="0;url=${target}"><title>Bawsala</title></head>
 <body style="font-family:sans-serif;padding:32px"><p>${message}</p><p><a href="${target}">Return to the app</a></p></body></html>`;
 }

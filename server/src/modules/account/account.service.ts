@@ -23,7 +23,7 @@ export class AccountService {
       this.media.list(principal.userId),
     ]);
     return {
-      format: "daily-life-planner/1" as const,
+      format: "bawsala/1" as const,
       exportedAt: new Date().toISOString(),
       user,
       records: records.map(({ entity, id, version, doc }) => ({ entity, id, version, doc })),

@@ -6,7 +6,7 @@ plugins {
 
 ktfmt { kotlinLangStyle() }
 
-group = "app.dailylife"
+group = "app.bawsala"
 
 version = "0.1.0"
 
