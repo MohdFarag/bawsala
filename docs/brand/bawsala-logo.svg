@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 108" width="420" height="108">
+  <title>Bawsala · بوصلة</title>
+  <rect width="108" height="108" rx="26" fill="#225C46"/>
+  <circle cx="54" cy="54" r="30" fill="#103D2D"/>
+  <path d="M74.5 33.5L59.66 59.66L48.34 48.34Z" fill="#FFFFFF"/>
+  <path d="M33.5 74.5L48.34 48.34L59.66 59.66Z" fill="#D2EDB3"/>
+  <circle cx="54" cy="54" r="6.5" fill="#103D2D"/>
+  <circle cx="54" cy="54" r="2.5" fill="#FFFFFF"/>
+  <text x="128" y="64" font-family="Inter, Segoe UI, Roboto, sans-serif" font-size="40" font-weight="700" fill="#103D2D">Bawsala</text>
+  <text x="300" y="64" font-family="Noto Kufi Arabic, Tahoma, sans-serif" font-size="32" font-weight="600" fill="#225C46">بوصلة</text>
+</svg>

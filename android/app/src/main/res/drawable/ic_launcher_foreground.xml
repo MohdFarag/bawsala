@@ -1,10 +1,9 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
-    <!-- Bawsala needle: a compass needle pointing forward (up-right), inside the 66dp safe zone. -->
-    <group android:rotation="45" android:pivotX="54" android:pivotY="54">
-        <path android:fillColor="#D2EDB3" android:pathData="M54,26L62,54L46,54Z" />
-        <path android:fillColor="#FFFFFF" android:pathData="M54,82L62,54L46,54Z" />
-    </group>
-    <path android:fillColor="#103D2D" android:pathData="M54,49.5a4.5,4.5 0,1 1,0 9a4.5,4.5 0,1 1,0 -9z" />
-    <path android:fillColor="#D2EDB3" android:pathData="M54,52a2,2 0,1 1,0 4a2,2 0,1 1,0 -4z" />
+    <!-- Bawsala dial: a compass face with the needle pointing forward (up-right), inside the 66dp safe zone. -->
+    <path android:fillColor="#103D2D" android:pathData="M54,24a30,30 0,1 1,0 60a30,30 0,1 1,0 -60z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M74.5,33.5L59.66,59.66L48.34,48.34Z" />
+    <path android:fillColor="#D2EDB3" android:pathData="M33.5,74.5L48.34,48.34L59.66,59.66Z" />
+    <path android:fillColor="#103D2D" android:pathData="M54,47.5a6.5,6.5 0,1 1,0 13a6.5,6.5 0,1 1,0 -13z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M54,51.5a2.5,2.5 0,1 1,0 5a2.5,2.5 0,1 1,0 -5z" />
 </vector>
