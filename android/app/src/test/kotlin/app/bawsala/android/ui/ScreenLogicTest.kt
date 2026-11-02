@@ -111,6 +111,30 @@ class ScreenLogicTest {
         val lists = listOf(TaskList("work", "Work"), TaskList("personal", "Personal"))
         assertEquals("personal", TaskEdits.nextList(task, lists).listId)
         assertEquals("work", TaskEdits.nextList(task.copy(listId = "personal"), lists).listId)
+        val projects =
+            listOf(
+                app.bawsala.core.model.Project(
+                    "p2",
+                    "Later",
+                    createdAt = java.time.Instant.ofEpochSecond(2),
+                ),
+                app.bawsala.core.model.Project(
+                    "p1",
+                    "First",
+                    createdAt = java.time.Instant.ofEpochSecond(1),
+                ),
+                app.bawsala.core.model.Project(
+                    "done",
+                    "Done",
+                    status = app.bawsala.core.model.ProjectStatus.COMPLETED,
+                    createdAt = java.time.Instant.EPOCH,
+                ),
+            )
+        val p1 = TaskEdits.nextProject(task, projects)
+        assertEquals("p1", p1.projectId)
+        assertEquals("p2", TaskEdits.nextProject(p1, projects).projectId)
+        assertEquals(null, TaskEdits.nextProject(p1.copy(projectId = "p2"), projects).projectId)
+        assertEquals(null, TaskEdits.nextProject(p1.copy(projectId = "done"), projects).projectId)
         assertEquals(
             setOf("calls", "deep work"),
             TaskEdits.withTags(task, " calls, ,deep work ").tags,

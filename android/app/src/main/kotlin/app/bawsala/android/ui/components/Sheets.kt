@@ -12,8 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -23,9 +21,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import app.bawsala.android.R
+import app.bawsala.android.ui.design.IconAction
 import app.bawsala.android.ui.i18n.tr
 import app.bawsala.android.ui.theme.AppColors
-import app.bawsala.android.ui.theme.AppType
+import app.bawsala.android.ui.theme.TypeScale
 
 /** A full-height bottom sheet with the app's handle, padding and scrolling content. */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -63,7 +63,7 @@ fun SheetHeader(title: String, onClose: () -> Unit) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(title, style = AppType.h2)
-        AppIconButton(Icons.Outlined.Close, tr("close"), onClose)
+        Text(title, style = TypeScale.pageTitle, modifier = Modifier.weight(1f))
+        IconAction(R.drawable.ic_lucide_x, tr("close"), onClose)
     }
 }

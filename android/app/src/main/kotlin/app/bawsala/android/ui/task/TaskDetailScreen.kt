@@ -158,6 +158,12 @@ private fun DetailsCard(task: Task, s: Snapshot, vm: AppViewModel, save: (Task) 
         DetailRow(tr("listLabel"), listName(s, task.listId) ?: "—") {
             save(TaskEdits.nextList(task, s.lists))
         }
+        DetailRow(
+            tr("project"),
+            s.projects.firstOrNull { it.id == task.projectId }?.title ?: tr("noProject"),
+        ) {
+            save(TaskEdits.nextProject(task, s.projects))
+        }
         DetailRow(tr("context"), task.context?.let { tr("context_$it") } ?: tr("anywhere")) {
             save(TaskEdits.nextContext(task))
         }

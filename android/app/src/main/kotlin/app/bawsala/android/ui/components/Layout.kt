@@ -8,20 +8,18 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.MoreHoriz
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import app.bawsala.android.R
+import app.bawsala.android.ui.design.IconAction
 import app.bawsala.android.ui.i18n.tr
-import app.bawsala.android.ui.theme.AppColors
-import app.bawsala.android.ui.theme.AppType
+import app.bawsala.android.ui.theme.TypeScale
 
 @Composable
 fun ScreenColumn(
@@ -33,7 +31,7 @@ fun ScreenColumn(
     androidx.compose.foundation.lazy.LazyColumn(
         modifier = modifier,
         contentPadding =
-            PaddingValues(start = 24.dp, end = 24.dp, top = 16.dp, bottom = bottomPadding),
+            PaddingValues(start = 22.dp, end = 22.dp, top = 9.dp, bottom = bottomPadding),
     ) {
         item { Column(verticalArrangement = Arrangement.spacedBy(gap)) { content() } }
     }
@@ -52,12 +50,12 @@ fun PageHeading(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Text(title, style = AppType.h1, modifier = Modifier.weight(1f))
-            if (onSearch != null) AppIconButton(Icons.Outlined.Search, tr("search"), onSearch)
+            Text(title, style = TypeScale.pageTitle, modifier = Modifier.weight(1f))
+            if (onSearch != null) IconAction(R.drawable.ic_lucide_search, tr("search"), onSearch)
             // V3: settings and the rest of "More" sit behind the header's menu button.
-            if (onMenu != null) AppIconButton(Icons.Outlined.MoreHoriz, tr("menu"), onMenu)
+            if (onMenu != null) IconAction(R.drawable.ic_lucide_ellipsis, tr("menu"), onMenu)
         }
-        Text(subtitle, style = AppType.small)
+        Text(subtitle, style = TypeScale.tiny)
     }
 }
 
@@ -72,8 +70,14 @@ fun TopBar(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        AppIconButton(Icons.AutoMirrored.Outlined.ArrowBack, tr("back"), onBack)
-        Text(title, style = AppType.label, color = AppColors.secondary)
+        // "Back" is drawn pointing left and mirrored in Arabic, like the design's chevrons.
+        IconAction(R.drawable.ic_lucide_arrow_left, tr("back"), onBack)
+        Text(
+            title,
+            style = TypeScale.sectionTitle,
+            maxLines = 1,
+            modifier = Modifier.weight(1f).padding(horizontal = 8.dp),
+        )
         trailing()
     }
 }

@@ -22,9 +22,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import app.bawsala.android.ui.theme.AppColors
-import app.bawsala.android.ui.theme.AppType
+import app.bawsala.android.ui.theme.Palette
+import app.bawsala.android.ui.theme.Radius
+import app.bawsala.android.ui.theme.TypeScale
 
 val Corner8 = RoundedCornerShape(8.dp)
 
@@ -45,14 +50,14 @@ fun Badge(
     onClick: (() -> Unit)? = null,
 ) {
     Box(
-        Modifier.height(28.dp)
-            .clip(Corner8)
+        Modifier.height(25.dp)
+            .clip(Radius.pill)
             .background(bg)
             .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
-            .padding(horizontal = 8.dp),
+            .padding(horizontal = 10.dp),
         contentAlignment = Alignment.Center,
     ) {
-        Text(text, style = AppType.micro, color = fg)
+        Text(text, style = TypeScale.tiny, color = fg)
     }
 }
 
@@ -66,10 +71,10 @@ fun Chip(
 ) {
     Row(
         modifier
-            .height(44.dp)
-            .clip(Corner12)
-            .background(if (selected) AppColors.primary else AppColors.surface)
-            .border(1.dp, if (selected) AppColors.primary else AppColors.border, Corner12)
+            .height(48.dp)
+            .clip(Radius.chip)
+            .background(if (selected) Palette.green900 else Palette.white)
+            .border(1.dp, if (selected) Palette.green900 else Palette.line, Radius.chip)
             .clickable(role = Role.Tab, onClick = onClick)
             .padding(horizontal = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -79,13 +84,13 @@ fun Chip(
             Icon(
                 icon,
                 null,
-                tint = if (selected) AppColors.onPrimary else AppColors.secondary,
+                tint = if (selected) Palette.white else Palette.ink,
                 modifier = Modifier.size(18.dp),
             )
         Text(
             text,
-            style = AppType.label,
-            color = if (selected) AppColors.onPrimary else AppColors.secondary,
+            style = TypeScale.chip,
+            color = if (selected) Palette.white else Palette.ink,
         )
     }
 }
@@ -98,23 +103,27 @@ fun Segmented(
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier.clip(Corner12).background(AppColors.subtle).padding(4.dp),
+        modifier
+            .clip(Radius.md)
+            .background(Palette.white)
+            .border(1.dp, Palette.line, Radius.md)
+            .padding(4.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         options.forEach { (key, label) ->
             val on = key == selected
             Box(
                 Modifier.weight(1f)
-                    .height(36.dp)
-                    .clip(Corner8)
-                    .background(if (on) AppColors.surface else Color.Transparent)
+                    .height(40.dp)
+                    .clip(Radius.sm)
+                    .background(if (on) Palette.green900 else Color.Transparent)
                     .clickable(role = Role.Tab) { onSelect(key) },
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
                     label,
-                    style = AppType.label,
-                    color = if (on) AppColors.primary else AppColors.secondary,
+                    style = TypeScale.chip,
+                    color = if (on) Palette.white else Palette.ink,
                 )
             }
         }
@@ -126,29 +135,49 @@ fun Segmented(
 fun DetailRow(label: String, value: String, onClick: (() -> Unit)? = null) {
     Row(
         Modifier.fillMaxWidth()
-            .heightIn(min = 40.dp)
+            .heightIn(min = 48.dp)
             .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        Text(label, style = AppType.small)
-        Text(value, style = AppType.label)
+        Text(label, style = TypeScale.small.copy(color = Palette.muted))
+        Text(value, style = TypeScale.button)
     }
 }
 
 @Composable
 fun SectionLabel(text: String) =
-    Text(text, style = AppType.micro, modifier = Modifier.padding(top = 4.dp))
+    Text(
+        text,
+        style = TypeScale.overline.copy(color = Palette.muted),
+        modifier = Modifier.padding(top = 6.dp),
+    )
 
 @Composable
 fun Empty(icon: ImageVector, title: String, hint: String? = null) {
     Column(
-        Modifier.fillMaxWidth().padding(vertical = 32.dp),
+        Modifier.fillMaxWidth().padding(horizontal = 15.dp, vertical = 38.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(13.dp),
     ) {
-        Icon(icon, null, tint = AppColors.secondary, modifier = Modifier.size(32.dp))
-        Text(title, style = AppType.label)
-        if (hint != null) Text(hint, style = AppType.small)
+        // `.empty-state`: the icon in a 70dp sage square, a title and a muted line.
+        Box(
+            Modifier.size(70.dp).clip(RoundedCornerShape(24.dp)).background(Palette.sage100),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(icon, null, tint = Palette.green900, modifier = Modifier.size(32.dp))
+        }
+        Text(
+            title,
+            style = TypeScale.sectionTitle.copy(fontSize = 20.sp),
+            textAlign = TextAlign.Center,
+        )
+        if (hint != null)
+            Text(
+                hint,
+                style =
+                    TypeScale.overline.copy(color = Palette.muted, fontWeight = FontWeight.Normal),
+                textAlign = TextAlign.Center,
+            )
     }
 }
