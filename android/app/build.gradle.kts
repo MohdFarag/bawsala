@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ktfmt)
+    alias(libs.plugins.roborazzi)
 }
 
 ktfmt { kotlinLangStyle() }
@@ -20,9 +21,10 @@ android {
         targetSdk = 35
         versionCode = System.getenv("VERSION_CODE")?.toIntOrNull() ?: 1
         versionName = System.getenv("VERSION_NAME") ?: "0.1.0"
-        // Pre-filled on the sign-in screen; the user can change it. Set per build with
-        // -PserverUrl=https://... (for example in the release workflow).
-        val serverUrl = (project.findProperty("serverUrl") as String?).orEmpty()
+        // The app's server; self-hosted builds set their own with -PserverUrl=https://...
+        // (an empty value brings back the sign-in form with a server address field).
+        val serverUrl =
+            (project.findProperty("serverUrl") as String?) ?: "https://bawsala-i1jm.onrender.com"
         buildConfigField("String", "DEFAULT_SERVER_URL", "\"$serverUrl\"")
     }
 
@@ -59,7 +61,11 @@ android {
         compose = true
         buildConfig = true
     }
-    testOptions { unitTests.all { it.useJUnitPlatform() } }
+    testOptions {
+        unitTests.all { it.useJUnitPlatform() }
+        // Screenshot tests render real resources (fonts, icons) under Robolectric.
+        unitTests.isIncludeAndroidResources = true
+    }
     lint {
         abortOnError = true
         checkReleaseBuilds = true
@@ -93,4 +99,14 @@ dependencies {
 
     testImplementation(libs.kotlin.test)
     testImplementation(libs.org.json) // android.jar's org.json is a stub in local unit tests
+
+    // Screenshot tests (JUnit 4 under Robolectric, run by the JUnit Platform's vintage engine).
+    testImplementation(libs.roborazzi)
+    testImplementation(libs.roborazzi.compose)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.compose.ui.test.junit4)
+    testImplementation(libs.androidx.test.ext.junit)
+    testImplementation(libs.junit4)
+    testRuntimeOnly(libs.junit.vintage)
+    debugImplementation(libs.compose.ui.test.manifest)
 }

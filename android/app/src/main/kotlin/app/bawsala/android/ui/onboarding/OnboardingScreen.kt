@@ -212,8 +212,8 @@ private fun Illustration(page: Int, modifier: Modifier) {
                     Note(R.drawable.ic_lucide_check_check, "onboard3NoteTop", lilac = true) to
                         Note(R.drawable.ic_lucide_clock_3, "onboard3NoteBottom")
             }
-        FloatingNote(top, Modifier.align(Alignment.TopEnd).offset(y = 8.dp))
-        FloatingNote(bottom, Modifier.align(Alignment.BottomStart).offset(y = (-24).dp))
+        FloatingNote(top, Modifier.align(Alignment.TopStart).offset(y = 8.dp))
+        FloatingNote(bottom, Modifier.align(Alignment.BottomEnd).offset(y = (-24).dp))
     }
 }
 

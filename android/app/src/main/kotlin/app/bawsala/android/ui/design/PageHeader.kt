@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,7 +31,7 @@ fun PageHeader(
     Row(
         modifier
             .fillMaxWidth()
-            .height(if (wide) 96.dp else 69.dp)
+            .heightIn(min = if (wide) 96.dp else 69.dp)
             .padding(
                 start = if (wide) 30.dp else 22.dp,
                 end = if (wide) 30.dp else 22.dp,

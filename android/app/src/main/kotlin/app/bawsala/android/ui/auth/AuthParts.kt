@@ -107,13 +107,16 @@ private fun AuthForm(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Column(Modifier.widthIn(max = if (wide) 420.dp else 460.dp).fillMaxWidth()) {
+            // The boards' back button is an arrow pointing right in Arabic (arrow_left mirrors to
+            // it): at the end edge on phones (AM01), at the start edge on tablets (AT01), where
+            // the wordmark is on the brand panel instead.
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                // On tablets the wordmark is on the brand panel.
+                if (wide && onBack != null)
+                    IconAction(R.drawable.ic_lucide_arrow_left, tr("back"), onBack, soft = true)
                 if (!wide) Wordmark(fontSize = 34)
                 Spacer(Modifier.weight(1f))
-                // The boards' back button is a forward arrow at the end edge in Arabic.
-                if (onBack != null)
-                    IconAction(R.drawable.ic_lucide_arrow_right, tr("back"), onBack, soft = true)
+                if (!wide && onBack != null)
+                    IconAction(R.drawable.ic_lucide_arrow_left, tr("back"), onBack, soft = true)
             }
             if (symbol != null)
                 Box(
