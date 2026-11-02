@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.8.0](https://github.com/MohdFarag/bawsala/compare/v0.7.0...v0.8.0) (2026-11-02)
+
+
+### Features
+
+* **android:** V3 onboarding, sign-in/sign-up and task detail ([#59](https://github.com/MohdFarag/bawsala/issues/59)) ([8849700](https://github.com/MohdFarag/bawsala/commit/88497002883eb3a411fd5728fcda6c3e16b3d98f))
+* **server:** email confirmation and password reset ([#58](https://github.com/MohdFarag/bawsala/issues/58)) ([f0b116d](https://github.com/MohdFarag/bawsala/commit/f0b116dca97a167d46491b49ac3229fb5984f61e))
+
 ## [0.7.0](https://github.com/MohdFarag/bawsala/compare/v0.6.0...v0.7.0) (2026-11-02)
 
 
