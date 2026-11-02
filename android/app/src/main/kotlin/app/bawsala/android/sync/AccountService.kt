@@ -20,6 +20,7 @@ class AccountService(
         password: String,
         create: Boolean,
         locale: String,
+        name: String? = null,
     ) {
         val server = requireNotNull(normalizeServerUrl(serverUrl)) { "Invalid server address" }
         val body =
@@ -28,7 +29,10 @@ class AccountService(
                 .put("email", email.trim())
                 .put("password", password)
                 .put("deviceName", Build.MODEL.take(100))
-        if (create) body.put("locale", locale)
+        if (create) {
+            body.put("locale", locale)
+            name?.trim()?.takeIf { it.isNotEmpty() }?.let { body.put("displayName", it.take(100)) }
+        }
         val result =
             Http(server)
                 .json(
@@ -37,6 +41,20 @@ class AccountService(
                     Body.Json(body),
                 )!!
         completeSignIn(server, result)
+    }
+
+    /** Emails a password reset link (V3 AM03); the server answers the same for unknown emails. */
+    suspend fun requestPasswordReset(serverUrl: String, email: String) {
+        val server = requireNotNull(normalizeServerUrl(serverUrl)) { "Invalid server address" }
+        val body = org.json.JSONObject().put("email", email.trim())
+        Http(server).json("POST", "/v1/auth/password/forgot", Body.Json(body))
+    }
+
+    /** Emails a new confirmation link (V3 AM05). */
+    suspend fun resendVerification(serverUrl: String, email: String) {
+        val server = requireNotNull(normalizeServerUrl(serverUrl)) { "Invalid server address" }
+        val body = org.json.JSONObject().put("email", email.trim())
+        Http(server).json("POST", "/v1/auth/email/resend", Body.Json(body))
     }
 
     /**

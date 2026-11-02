@@ -19,6 +19,8 @@ import app.bawsala.android.BuildConfig
 import app.bawsala.android.data.Snapshot
 import app.bawsala.android.sync.Account
 import app.bawsala.android.sync.SyncStatus
+import app.bawsala.android.ui.auth.AuthFlow
+import app.bawsala.android.ui.auth.AuthStep
 import app.bawsala.android.ui.components.AppButton
 import app.bawsala.android.ui.components.ButtonStyle
 import app.bawsala.android.ui.components.DetailRow
@@ -42,6 +44,15 @@ import java.time.Instant
 fun AccountScreen(vm: AppViewModel, s: Snapshot) {
     val account by vm.account.account.collectAsStateWithLifecycle()
     val status by vm.account.status.collectAsStateWithLifecycle()
+    // Signed out, with the app's own server: the V3 sign-in screens (AM01–AM06). The older form
+    // below stays for self-hosting, where the server address is typed in.
+    val otherServer = BuildConfig.DEFAULT_SERVER_URL.isBlank()
+    if (account == null && !otherServer) {
+        Column {
+            AuthFlow(vm, AuthStep.LOGIN, onBack = { vm.navigator.back() }, onDone = {})
+        }
+        return
+    }
     ScreenColumn {
         TopBar(tr("accountSync"), { vm.navigator.back() })
         val current = account

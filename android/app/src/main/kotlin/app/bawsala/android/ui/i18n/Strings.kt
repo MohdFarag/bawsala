@@ -103,8 +103,6 @@ private val S: Map<String, Pair<String, String>> =
         "signIn" to ("Sign in" to "تسجيل الدخول"),
         "createAccount" to ("Create account" to "إنشاء حساب"),
         "serverAddress" to ("Server address" to "عنوان الخادم"),
-        "email" to ("Email" to "البريد الإلكتروني"),
-        "password" to ("Password" to "كلمة المرور"),
         "passwordHint" to ("At least 10 characters" to "10 أحرف على الأقل"),
         "dataStaysNote" to
             ("Data already on this phone stays here and is uploaded after you sign in." to
@@ -152,6 +150,110 @@ private val S: Map<String, Pair<String, String>> =
             ("Something went wrong; your last change may not be saved" to
                 "حدث خطأ؛ ربما لم يُحفظ آخر تغيير"),
         "triage" to ("Triage" to "الفرز"),
+        // V3 onboarding (OM01–OM03).
+        "onboard1Eyebrow" to ("A clearer direction" to "اتجاه أوضح"),
+        "onboard1Title" to
+            ("From a crowd of thoughts,\nto one clear step." to "من زحمة الأفكار،\nلخطوة واضحة."),
+        "onboard1Body" to
+            ("Everything on your mind in one place. Capture, sort, and choose what deserves your time today." to
+                "كل اللي يشغلك في مكان واحد. التقط، رتّب، واختر ما يستحق وقتك اليوم."),
+        "onboard1NoteTop" to ("One step is enough to start" to "خطوة واحدة تكفي للبداية"),
+        "onboard1NoteBottom" to ("Time for what matters" to "وقت لما يهمك"),
+        "onboard2Eyebrow" to ("Effortless capture" to "التقط بلا مجهود"),
+        "onboard2Title" to ("An idea comes?\nGive it a place." to "الفكرة تيجي؟\nسيب لها مكان."),
+        "onboard2Body" to
+            ("Type it or say it the moment it comes. Bawsala keeps it until you review it calmly." to
+                "اكتبها أو سجّلها بصوتك في لحظتها. بوصلة تحتفظ بها لحد ما تراجعها بهدوء."),
+        "onboard2NoteTop" to ("Quick capture" to "التقاط سريع"),
+        "onboard2NoteBottom" to ("Writing or voice" to "كتابة أو صوت"),
+        "onboard3Eyebrow" to ("Move with clarity" to "تحرّك بوضوح"),
+        "onboard3Title" to
+            ("You don't have to do everything.\nChoose your next step." to
+                "مش لازم تعمل كل شيء.\nاختار خطوتك التالية."),
+        "onboard3Body" to
+            ("Turn ideas into actions, plan with realistic time, and focus on one task at a time." to
+                "حوّل الأفكار لأفعال، خطّط بوقت واقعي، وركّز على مهمة واحدة في كل مرة."),
+        "onboard3NoteTop" to ("Within your energy" to "على قدّ طاقتك"),
+        "onboard3NoteBottom" to ("A review that reorients" to "مراجعة تعيد الاتجاه"),
+        "onboardFooter" to
+            ("Start simply; the rest comes step by step." to "ابدأ ببساطة، والباقي خطوة بخطوة."),
+        "startWithBawsala" to ("Start with Bawsala" to "ابدأ مع بوصلة"),
+        // V3 sign-in and sign-up (AM01–AM06).
+        "brandPanelTitle" to ("Your space for a clearer day." to "مساحتك ليوم أوضح."),
+        "brandPanelBody" to
+            ("Gather what's on your mind, choose your next step, and return to what matters." to
+                "اجمع ما يشغل بالك، وحدّد خطوتك التالية، وارجع لما يهمك."),
+        "brandPanelCapture" to ("Quick capture, without the fuss" to "التقاط سريع، من غير تعقيد"),
+        "brandPanelSteps" to ("Clear steps, within your energy" to "خطوات واضحة، على قدّ طاقتك"),
+        "brandPanelReview" to ("A weekly pause that reorients" to "وقفة أسبوعية تعيد الاتجاه"),
+        "brandPanelFooter" to
+            ("Bawsala · One idea, then a step." to "بوصلة · فكرة واحدة، ثم خطوة."),
+        "authFooter" to ("A small step, and a calmer mind." to "خطوة صغيرة، ومساحة ذهنية أهدأ."),
+        "authFooterSaved" to
+            ("Take your time; your next steps are saved." to "خذ وقتك، خطواتك التالية محفوظة."),
+        "welcomeBack" to ("Welcome back." to "أهلًا بعودتك."),
+        "welcomeBackHint" to
+            ("Your space is waiting. Return to your next step." to
+                "مساحتك مستنياك. ارجع لخطوتك التالية."),
+        "email" to ("Email" to "البريد الإلكتروني"),
+        "password" to ("Password" to "كلمة المرور"),
+        "enterPassword" to ("Enter your password" to "أدخل كلمة المرور"),
+        "createPassword" to ("Create a password" to "أنشئ كلمة مرور"),
+        "showPassword" to ("Show password" to "إظهار كلمة المرور"),
+        "hidePassword" to ("Hide password" to "إخفاء كلمة المرور"),
+        "forgotPassword" to ("Forgot your password?" to "نسيت كلمة المرور؟"),
+        "tryAgain" to ("Try again" to "حاول مرة أخرى"),
+        "firstTimeHere" to ("First time here?" to "أول مرة هنا؟"),
+        "createAccountAction" to ("Create an account" to "أنشئ حسابًا"),
+        "haveAccount" to ("Already have an account?" to "عندك حساب بالفعل؟"),
+        "useWithoutAccount" to
+            ("Use on this device without an account" to "استخدمه على هذا الجهاز بدون حساب"),
+        "signUpTitle" to ("Start your own space." to "ابدأ مساحتك الخاصة."),
+        "signUpHint" to
+            ("One account that gathers your ideas and steps." to "حساب واحد يجمع أفكارك وخطواتك."),
+        "name" to ("Name" to "الاسم"),
+        "namePlaceholder" to ("What should we call you?" to "بماذا نناديك؟"),
+        "passwordRule" to
+            ("10 characters at least. Use a password that's hard to guess." to
+                "١٠ أحرف على الأقل. استخدم كلمة يصعب تخمينها."),
+        "termsNote" to
+            ("By creating an account, you agree to the Terms of Use and Privacy Policy." to
+                "بإنشاء حساب، أنت توافق على شروط الاستخدام وسياسة الخصوصية."),
+        "forgotTitle" to ("Let's get you back in." to "نرجّع لك الوصول."),
+        "forgotHint" to
+            ("Enter your account email, and we'll send you a link to reset your password." to
+                "اكتب بريد حسابك، وهنرسل لك رابطًا لإعادة تعيين كلمة المرور."),
+        "sendResetLink" to ("Send the reset link" to "أرسل رابط الاستعادة"),
+        "forgotNote" to
+            ("If the email is registered with us, the reset link will reach you. Check your spam folder too." to
+                "لو البريد مسجّل عندنا، هيوصلك رابط الاستعادة. راجع البريد غير المرغوب فيه أيضًا."),
+        "backToSignIn" to ("Back to sign in" to "الرجوع لتسجيل الدخول"),
+        "checkEmailTitle" to ("Check your email." to "تفقد بريدك."),
+        "checkEmailHint" to
+            ("If the email has an account, a reset link is on its way." to
+                "لو البريد مرتبط بحساب، هيوصلك رابط لإعادة تعيين كلمة المرور."),
+        "checkEmailStep" to
+            ("Open the newest message and follow the reset steps." to
+                "افتح أحدث رسالة واتبع خطوات الاستعادة."),
+        "checkSpam" to
+            ("Didn't get it? Check your spam folder." to "لم تصلك؟ راجع البريد غير المرغوب فيه."),
+        "verifyTitle" to ("One last step." to "خطوة أخيرة، ونتقابل."),
+        "verifyHint" to
+            ("Open the confirmation link in your email to activate your Bawsala account." to
+                "افتح رابط التأكيد في بريدك لتفعيل حساب بوصلة."),
+        "verifyStep" to
+            ("Open the message and tap \u201cConfirm email\u201d." to
+                "افتح الرسالة واضغط «تأكيد البريد»."),
+        "verifyAfter" to
+            ("You can start now; confirming keeps your account safe." to
+                "تقدر تبدأ الآن؛ التأكيد يحمي حسابك."),
+        "continueToApp" to ("Continue to Bawsala" to "تابع إلى بوصلة"),
+        "resendLink" to ("Resend the link" to "إعادة إرسال الرابط"),
+        "changeEmail" to ("Change the email" to "تعديل البريد الإلكتروني"),
+        "linkResent" to ("A new link is on its way." to "رابط جديد في الطريق."),
+        "wrongCredentialsLong" to
+            ("The email or password is incorrect. Check them and try again." to
+                "البريد أو كلمة المرور غير صحيحة. راجع بياناتك وحاول مرة أخرى."),
         // V3 triage (M04/T03): one idea at a time.
         "triageSubtitle" to ("One idea. One step." to "فكرة واحدة. خطوة واحدة."),
         "triageEmptySubtitle" to
@@ -413,24 +515,6 @@ private val S: Map<String, Pair<String, String>> =
         "appName" to ("Bawsala" to "بوصلة"),
         "skip" to ("Skip" to "تخطٍّ"),
         "next" to ("Next" to "التالي"),
-        "notNow" to ("Not now, use offline" to "ليس الآن، استخدمه دون اتصال"),
-        "useEmailInstead" to ("Use email instead" to "استخدم البريد الإلكتروني"),
-        "onboardWelcome" to ("Your day, in the right direction." to "يومك، في الاتجاه الصحيح."),
-        "onboardCaptureTitle" to ("Capture first, decide later" to "التقط أولًا، وقرّر لاحقًا"),
-        "onboardCaptureBody" to
-            ("Send anything to your inbox: a thought, a voice note, a photo, a link shared from Keep. When you have a minute, turn each into a task, a plan or a reference." to
-                "أرسل أي شيء إلى صندوق الوارد: فكرة، تسجيلًا صوتيًا، صورة، أو رابطًا من Keep. وحين يتوفر لك وقت، حوّل كل عنصر إلى مهمة أو خطة أو مرجع."),
-        "onboardPrayerTitle" to ("Plan around your prayers" to "خطّط حول صلواتك"),
-        "onboardPrayerBody" to
-            ("Bawsala calculates prayer times for your city and keeps them free in your plan. Pick your city:" to
-                "تحسب بوصلة مواقيت الصلاة لمدينتك وتُبقيها خالية في خطتك. اختر مدينتك:"),
-        "onboardPrayerNote" to
-            ("You can change this, or add another place, in Settings." to
-                "يمكنك تغيير ذلك أو إضافة مكان آخر من الإعدادات."),
-        "onboardSyncTitle" to ("Keep it in sync" to "حافظ على المزامنة"),
-        "onboardSyncBody" to
-            ("Sign in to use Bawsala on all your devices and connect Google Tasks and Calendar. Everything also works offline." to
-                "سجّل الدخول لاستخدام بوصلة على كل أجهزتك وربط مهام Google وتقويمه. كل شيء يعمل أيضًا دون اتصال."),
         "continueWithGoogle" to ("Continue with Google" to "المتابعة باستخدام Google"),
         "googleSignInNote" to
             ("Signs you in and connects Google Tasks and Calendar in one step." to
