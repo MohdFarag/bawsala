@@ -25,12 +25,12 @@ object SampleData {
 
     private val zone = ZoneId.of("Africa/Cairo")
 
-    private fun today() = LocalDate.now(zone)
+    private fun today() = LocalDate.now(ScreenshotApp.CLOCK)
 
     private fun at(time: String, day: LocalDate = today()) =
         day.atTime(LocalTime.parse(time)).atZone(zone).toInstant()
 
-    private val ago = Instant.now().minusSeconds(2 * 3600)
+    private val ago = ScreenshotApp.CLOCK.instant().minusSeconds(2 * 3600)
 
     suspend fun seed(r: Repository) {
         r.saveArea(Area("work", "العمل", "laptop", ago))

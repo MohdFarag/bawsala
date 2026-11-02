@@ -16,9 +16,11 @@ open class PlannerApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        container = AppContainer(this)
+        container = createContainer()
         startBackgroundWork()
     }
+
+    protected open fun createContainer(): AppContainer = AppContainer(this)
 
     /** Notification channels and scheduled work; screenshot tests run without them. */
     protected open fun startBackgroundWork() {

@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import app.bawsala.android.ui.format.LocalAppClock
 import app.bawsala.android.R
 import app.bawsala.android.data.Snapshot
 import app.bawsala.android.navigation.Screen
@@ -78,6 +79,7 @@ fun AppRoot(vm: AppViewModel, onExit: () -> Unit) {
 
     CompositionLocalProvider(
         LocalLang provides s.lang,
+        LocalAppClock provides vm.clock,
         LocalLayoutDirection provides
             if (s.lang == "ar") LayoutDirection.Rtl else LayoutDirection.Ltr,
     ) {

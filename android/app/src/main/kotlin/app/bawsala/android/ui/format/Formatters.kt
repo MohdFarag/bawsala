@@ -2,6 +2,9 @@ package app.bawsala.android.ui.format
 
 import app.bawsala.android.ui.i18n.localizeDigits
 import app.bawsala.android.ui.i18n.translate
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.staticCompositionLocalOf
+import java.time.Clock
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
@@ -56,3 +59,9 @@ fun relative(at: Instant, lang: String, now: Instant = Instant.now()): String {
         else -> translate(lang, "daysAgo", min / (60 * 24))
     }
 }
+
+/** Presentation time shares the controller clock, including in visual regression tests. */
+val LocalAppClock = staticCompositionLocalOf { Clock.systemDefaultZone() }
+
+@Composable
+fun relativeTime(at: Instant, lang: String): String = relative(at, lang, LocalAppClock.current.instant())

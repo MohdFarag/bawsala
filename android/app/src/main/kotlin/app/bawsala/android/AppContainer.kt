@@ -11,11 +11,12 @@ import app.bawsala.android.sync.ApiClient
 import app.bawsala.android.sync.SyncRunner
 import app.bawsala.android.work.SyncWorker
 import java.io.File
+import java.time.Clock
 
 /**
  * Creates the app's long-lived objects once; the UI and background workers receive them from here.
  */
-class AppContainer(context: Context) {
+class AppContainer(context: Context, val clock: Clock = Clock.systemDefaultZone(), val backgroundWork: Boolean = true) {
     val appContext: Context = context.applicationContext
     val repository = Repository(context)
     val dayPlanner = DayPlanner()
@@ -29,7 +30,7 @@ class AppContainer(context: Context) {
     init {
         // Every local change is sent soon after it is saved, while signed in.
         repository.onLocalChange = {
-            if (accounts.account.value != null) SyncWorker.requestSoon(appContext)
+            if (backgroundWork && accounts.account.value != null) SyncWorker.requestSoon(appContext)
         }
     }
 }

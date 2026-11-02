@@ -30,7 +30,7 @@ import app.bawsala.android.ui.components.SectionLabel
 import app.bawsala.android.ui.components.Segmented
 import app.bawsala.android.ui.components.TopBar
 import app.bawsala.android.ui.components.card
-import app.bawsala.android.ui.format.relative
+import app.bawsala.android.ui.format.relativeTime
 import app.bawsala.android.ui.i18n.LocalLang
 import app.bawsala.android.ui.i18n.tr
 import app.bawsala.android.ui.theme.AppColors
@@ -198,7 +198,7 @@ private fun syncStateText(status: SyncStatus, waiting: Int, lang: String): Strin
         status.error != null -> tr(errorKey(status.error))
         waiting > 0 -> tr("waitingToSync", waiting)
         status.lastSyncedAt != null ->
-            tr("lastSynced", relative(Instant.ofEpochMilli(status.lastSyncedAt), lang))
+            tr("lastSynced", relativeTime(Instant.ofEpochMilli(status.lastSyncedAt), lang))
         else -> tr("notSyncedYet")
     }
 
