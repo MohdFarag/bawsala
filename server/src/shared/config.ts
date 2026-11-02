@@ -34,6 +34,11 @@ const Env = z.object({
   /** Where the browser goes after connecting; the Android app handles this link. */
   GOOGLE_APP_RETURN_URI: z.string().default("bawsala://google-connected"),
   GOOGLE_SYNC_INTERVAL_SECONDS: z.coerce.number().int().positive().default(300),
+  /** Email (password reset, email confirmation) through Resend; logged instead when unset. */
+  RESEND_API_KEY: z.string().default(""),
+  MAIL_FROM: z.string().default("Bawsala <onboarding@resend.dev>"),
+  /** The server's public address, used in links sent by email, e.g. https://bawsala.onrender.com. */
+  PUBLIC_URL: z.string().default("http://localhost:8080"),
   /** 32 random bytes, base64: encrypts OAuth tokens at rest (SEC01). */
   SECRETS_KEY: z.string().default(""),
 });

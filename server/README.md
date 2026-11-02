@@ -111,6 +111,21 @@ stateless) that lets an assistant work with the user's planner. Tools: `get_dail
 To connect an MCP client, point it at `https://<server>/v1/mcp` with the header
 `Authorization: Bearer dlp_mcp_…`.
 
+### Email: confirmation and password reset (V3 AM03–AM05)
+
+Emails go through [Resend](https://resend.com) when `RESEND_API_KEY` is set; otherwise they are only
+logged, so local development needs no provider. `PUBLIC_URL` is the server's address, used in links;
+`MAIL_FROM` is the sender (Resend's `onboarding@resend.dev` works until you verify a domain, but only
+delivers to the Resend account's own email).
+
+- **Confirmation:** sign-up emails a link (valid 3 days) that opens `GET /v1/auth/email/verify` and
+  marks the address confirmed (`emailVerified` on `/me`). The account works before confirmation.
+  `POST /v1/auth/email/resend` sends a new link. Google sign-in counts as confirmed.
+- **Password reset:** `POST /v1/auth/password/forgot` emails a link (valid 1 hour) to a page with a
+  form; `POST /v1/auth/password/reset` is the same as JSON. A new password signs every device out.
+- Requests answer `204` whether or not the email has an account. Links are single-use, a new link
+  replaces older ones, and only SHA-256 digests of their tokens are stored.
+
 ### Google Tasks and Calendar (PRD §6, §7)
 
 Enabled when `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI` and `SECRETS_KEY` are set
