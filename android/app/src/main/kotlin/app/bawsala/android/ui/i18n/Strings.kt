@@ -152,6 +152,34 @@ private val S: Map<String, Pair<String, String>> =
             ("Something went wrong; your last change may not be saved" to
                 "حدث خطأ؛ ربما لم يُحفظ آخر تغيير"),
         "triage" to ("Triage" to "الفرز"),
+        "captureTitle" to ("An idea now, its place later." to "فكرة الآن، مكانها بعدين."),
+        "captureDesc" to
+            ("Write as you think. Bawsala notices the details with you." to
+                "اكتب كما تفكّر. بوصلة تلتقط التفاصيل معك."),
+        "captureFocusTitle" to
+            ("Leave the thought, keep your focus." to "اترك الفكرة، وكمّل تركيزك."),
+        "captureFocusDesc" to
+            ("It goes to triage. The focus timer keeps running." to
+                "ستذهب للفرز. مؤقّت التركيز يستمر في الخلفية."),
+        "captureQuestion" to ("What's on your mind?" to "ما الذي يشغل بالك؟"),
+        "detectedDetails" to
+            ("Details we noticed · you can edit them" to "تفاصيل التقطناها · يمكنك تعديلها"),
+        "noTagsHint" to
+            ("Any time or project you mention shows up here." to
+                "أي وقت أو مشروع تذكره سيظهر هنا."),
+        "removeTag" to ("Remove tag %1" to "إزالة الوسم %1"),
+        "saveToTriage" to ("Save to triage" to "احفظ في الفرز"),
+        "saveAndBack" to ("Save and return to focus" to "احفظ وارجع للتركيز"),
+        "captureHint" to
+            ("No title needed. No project required. Just capture it." to
+                "لا عنوان مطلوب. لا مشروع إجباري. فقط التقطها."),
+        "voiceHint" to
+            ("You can review the thought before saving it." to "تقدر تراجع الفكرة قبل حفظها."),
+        "listening" to ("Capturing your thought…" to "نلتقط الفكرة..."),
+        "recordingStopped" to ("Recording stopped" to "التسجيل متوقف"),
+        "voiceInstead" to ("Capture by voice" to "التقاط بالصوت"),
+        "writeInstead" to ("Write instead" to "الكتابة بدل الصوت"),
+        "otherKinds" to ("List, photo, video or file" to "قائمة أو صورة أو فيديو أو ملف"),
         "greetingMorning" to ("Good morning" to "صباح الخير"),
         "greetingEvening" to ("Good evening" to "مساء الخير"),
         "todayHeading" to ("Your day, in a clearer direction." to "يومك، باتجاه أوضح."),
@@ -298,7 +326,7 @@ private val S: Map<String, Pair<String, String>> =
             ("Works offline. No project or date needed." to
                 "يعمل دون اتصال. لا حاجة لمشروع أو تاريخ."),
         "saveToInbox" to ("Save to Inbox" to "احفظ في الوارد"),
-        "savedToInbox" to ("Saved to Inbox" to "تم الحفظ في الوارد"),
+        "savedToInbox" to ("Saved to triage" to "حُفظت في الفرز"),
         "captureFooter" to
             ("Text, links, notes — one place for everything." to
                 "نصوص وروابط وملاحظات — مكان واحد لكل شيء."),

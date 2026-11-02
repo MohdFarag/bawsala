@@ -14,6 +14,7 @@ data class CaptureInput(
     val text: String,
     val attachments: List<Attachment> = emptyList(),
     val source: SourceRef = SourceRef("app"),
+    val tags: List<String> = emptyList(),
 )
 
 /**
@@ -72,6 +73,7 @@ object CaptureFactory {
             capturedAt = capturedAt,
             attachments = input.attachments,
             entries = entries,
+            tags = input.tags,
         )
     }
 

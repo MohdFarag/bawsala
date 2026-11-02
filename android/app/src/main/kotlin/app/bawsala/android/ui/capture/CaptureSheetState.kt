@@ -39,6 +39,13 @@ class CaptureSheetState(private val context: Context, private val mediaDir: File
     var micUnavailable by mutableStateOf(false)
         private set
 
+    /** Detected tags the user removed from this capture. */
+    val removedTags = mutableStateListOf<String>()
+
+    fun removeTag(tag: String) {
+        removedTags += tag
+    }
+
     val canSave: Boolean
         get() = text.isNotBlank() || attachments.isNotEmpty()
 

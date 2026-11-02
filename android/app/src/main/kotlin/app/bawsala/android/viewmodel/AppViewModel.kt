@@ -54,8 +54,12 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     /** Set when capture was opened by holding the capture button: start in voice and record. */
     var captureVoice by mutableStateOf(false)
 
-    fun openCapture(voice: Boolean = false) {
+    /** Set when capture was opened from focus (M08): it says the timer keeps running. */
+    var captureFromFocus by mutableStateOf(false)
+
+    fun openCapture(voice: Boolean = false, fromFocus: Boolean = false) {
         captureVoice = voice
+        captureFromFocus = fromFocus
         captureOpen = true
     }
 
