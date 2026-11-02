@@ -1,160 +1,188 @@
 package app.bawsala.android.ui.more
 
+import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
-import androidx.compose.material.icons.automirrored.outlined.List
-import androidx.compose.material.icons.outlined.Checklist
-import androidx.compose.material.icons.outlined.FolderOpen
-import androidx.compose.material.icons.outlined.NightsStay
-import androidx.compose.material.icons.outlined.Palette
-import androidx.compose.material.icons.outlined.Sync
-import androidx.compose.material.icons.outlined.Tune
-import androidx.compose.material.icons.outlined.ViewTimeline
-import androidx.compose.material3.Icon
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.bawsala.android.BuildConfig
+import app.bawsala.android.R
 import app.bawsala.android.data.Snapshot
 import app.bawsala.android.navigation.Screen
-import app.bawsala.android.ui.components.Corner12
-import app.bawsala.android.ui.components.PageHeading
-import app.bawsala.android.ui.components.ScreenColumn
-import app.bawsala.android.ui.components.SectionLabel
-import app.bawsala.android.ui.components.card
+import app.bawsala.android.ui.design.ActionList
+import app.bawsala.android.ui.design.Avatar
+import app.bawsala.android.ui.design.IconAction
+import app.bawsala.android.ui.design.LucideIcon
+import app.bawsala.android.ui.design.OptionRow
+import app.bawsala.android.ui.design.PageHeader
 import app.bawsala.android.ui.format.cityLabel
 import app.bawsala.android.ui.format.listLabel
 import app.bawsala.android.ui.i18n.tr
-import app.bawsala.android.ui.theme.AppColors
-import app.bawsala.android.ui.theme.AppType
+import app.bawsala.android.ui.theme.Palette
+import app.bawsala.android.ui.theme.TypeScale
 import app.bawsala.android.viewmodel.AppViewModel
 import app.bawsala.core.model.TaskStatus
 import java.io.File
 
+/**
+ * "More", reached from the avatar and the header menus: the account card, then your space, settings
+ * and data as V3 option lists.
+ */
 @Composable
-private fun NavRow(icon: ImageVector, title: String, subtitle: String, onClick: () -> Unit) {
+fun MoreScreen(vm: AppViewModel, s: Snapshot) {
+    val context = LocalContext.current
+    val account = vm.account.account.collectAsStateWithLifecycle().value
+    Column(Modifier.fillMaxSize().background(Palette.paper)) {
+        PageHeader(tr("more"), tr("moreSubtitle"), wide = false) {
+            IconAction(R.drawable.ic_lucide_x, tr("close"), { vm.navigator.back() })
+        }
+        Column(
+            Modifier.fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(start = 22.dp, end = 22.dp, top = 9.dp, bottom = 104.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Column(
+                Modifier.widthIn(max = 640.dp).fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                AccountCard(account?.email) { vm.navigator.open(Screen.Account) }
+                Section(tr("yourSpace")) {
+                    OptionRow(
+                        tr("allTasks"),
+                        R.drawable.ic_lucide_list_checks,
+                        { vm.navigator.open(Screen.Tasks) },
+                        subtitle =
+                            tr("openCount", s.tasks.count { it.status != TaskStatus.COMPLETED }),
+                    )
+                    OptionRow(
+                        tr("collections"),
+                        R.drawable.ic_lucide_book_open,
+                        { vm.navigator.open(Screen.Collections) },
+                        subtitle = tr("collectionsSub"),
+                    )
+                    OptionRow(
+                        tr("lists"),
+                        R.drawable.ic_lucide_list,
+                        { vm.navigator.open(Screen.Lists) },
+                        subtitle = s.lists.joinToString { listLabel(it, s.lang) },
+                        divider = false,
+                    )
+                }
+                Section(tr("settings")) {
+                    OptionRow(
+                        tr("prayerTimes"),
+                        R.drawable.ic_lucide_moon,
+                        { vm.navigator.open(Screen.PrayerSettings) },
+                        subtitle = cityLabel(s.prayer, s.lang),
+                    )
+                    OptionRow(
+                        tr("timeBlocks"),
+                        R.drawable.ic_lucide_layout_grid,
+                        { vm.navigator.open(Screen.Blocks) },
+                        subtitle = tr("timeBlocksSub"),
+                    )
+                    OptionRow(
+                        tr("preferences"),
+                        R.drawable.ic_lucide_settings_2,
+                        { vm.navigator.open(Screen.Preferences) },
+                        subtitle = tr("preferencesSub"),
+                        divider = BuildConfig.DEBUG,
+                    )
+                    if (BuildConfig.DEBUG)
+                        OptionRow(
+                            tr("designGallery"),
+                            R.drawable.ic_lucide_palette,
+                            { vm.navigator.open(Screen.DesignGallery) },
+                            subtitle = "V3",
+                            divider = false,
+                        )
+                }
+                Section(tr("data")) {
+                    OptionRow(
+                        tr("exportData"),
+                        R.drawable.ic_lucide_send,
+                        { shareExport(context, vm) },
+                    )
+                    OptionRow(
+                        tr("trash"),
+                        R.drawable.ic_lucide_trash,
+                        { vm.navigator.open(Screen.Trash) },
+                        divider = false,
+                    )
+                }
+            }
+        }
+    }
+}
+
+/** The signed-in account, or "only on this device", opening account and sync. */
+@Composable
+private fun AccountCard(email: String?, onClick: () -> Unit) {
     Row(
         Modifier.fillMaxWidth()
-            .heightIn(min = 66.dp)
-            .card()
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .clip(RoundedCornerShape(20.dp))
+            .background(Palette.white)
+            .border(1.dp, Palette.line, RoundedCornerShape(20.dp))
+            .clickable(role = Role.Button, onClick = onClick)
+            .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        Box(
-            Modifier.size(36.dp).clip(Corner12).background(AppColors.tint),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(icon, null, tint = AppColors.primary)
-        }
+        Avatar(email?.take(1)?.uppercase() ?: "م")
         Column(Modifier.weight(1f)) {
-            Text(title, style = AppType.body)
-            Text(subtitle, style = AppType.micro)
+            Text(tr("accountSync"), style = TypeScale.button)
+            Text(email ?: tr("localOnly"), style = TypeScale.tiny, maxLines = 1)
         }
-        Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, null, tint = AppColors.secondary)
+        LucideIcon(R.drawable.ic_lucide_chevron_right, tint = Palette.muted, size = 18.dp)
     }
 }
 
 @Composable
-fun MoreScreen(vm: AppViewModel, s: Snapshot) {
-    val context = LocalContext.current
-    ScreenColumn {
-        PageHeading(tr("more"), tr("moreSubtitle"), null)
-        SectionLabel(tr("yourSpace"))
-        NavRow(
-            Icons.Outlined.Checklist,
-            tr("allTasks"),
-            tr("openCount", s.tasks.count { it.status != TaskStatus.COMPLETED }),
-        ) {
-            vm.navigator.open(Screen.Tasks)
-        }
-        NavRow(Icons.Outlined.FolderOpen, tr("collections"), tr("collectionsSub")) {
-            vm.navigator.open(Screen.Collections)
-        }
-        SectionLabel(tr("settings"))
-        val account = vm.account.account.collectAsStateWithLifecycle().value
-        NavRow(Icons.Outlined.Sync, tr("accountSync"), account?.email ?: tr("localOnly")) {
-            vm.navigator.open(Screen.Account)
-        }
-        NavRow(Icons.Outlined.NightsStay, tr("prayerTimes"), cityLabel(s.prayer, s.lang)) {
-            vm.navigator.open(Screen.PrayerSettings)
-        }
-        NavRow(Icons.Outlined.ViewTimeline, tr("timeBlocks"), tr("timeBlocksSub")) {
-            vm.navigator.open(Screen.Blocks)
-        }
-        NavRow(
-            Icons.AutoMirrored.Outlined.List,
-            tr("lists"),
-            s.lists.joinToString { listLabel(it, s.lang) },
-        ) {
-            vm.navigator.open(Screen.Lists)
-        }
-        NavRow(Icons.Outlined.Tune, tr("preferences"), tr("preferencesSub")) {
-            vm.navigator.open(Screen.Preferences)
-        }
-        if (BuildConfig.DEBUG) {
-            NavRow(Icons.Outlined.Palette, tr("designGallery"), "V3") {
-                vm.navigator.open(Screen.DesignGallery)
-            }
-        }
-        Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
-            Text(
-                tr("exportData"),
-                style = AppType.label,
-                color = AppColors.primary,
-                modifier =
-                    Modifier.clickable {
-                            // Documented, restorable JSON export shared through the system sheet
-                            // (SEC02).
-                            val f =
-                                File(vm.mediaDir, "bawsala-export.json").apply {
-                                    writeText(vm.settings.exportJson())
-                                }
-                            val uri =
-                                FileProvider.getUriForFile(
-                                    context,
-                                    "${context.packageName}.files",
-                                    f,
-                                )
-                            context.startActivity(
-                                Intent.createChooser(
-                                    Intent(Intent.ACTION_SEND)
-                                        .setType("application/json")
-                                        .putExtra(Intent.EXTRA_STREAM, uri)
-                                        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION),
-                                    null,
-                                )
-                            )
-                        }
-                        .padding(vertical = 12.dp),
-            )
-            Text(
-                tr("trash"),
-                style = AppType.label,
-                color = AppColors.primary,
-                modifier =
-                    Modifier.clickable { vm.navigator.open(Screen.Trash) }
-                        .padding(vertical = 12.dp),
-            )
-        }
-    }
+private fun Section(title: String, content: @Composable ColumnScope.() -> Unit) {
+    Text(
+        title,
+        style = TypeScale.overline.copy(color = Palette.muted),
+        modifier = Modifier.padding(top = 12.dp, start = 4.dp),
+    )
+    ActionList(
+        Modifier.border(1.dp, Palette.line, RoundedCornerShape(16.dp)),
+        content = content,
+    )
+}
+
+/** A documented, restorable JSON export, shared through the system sheet (SEC02). */
+private fun shareExport(context: Context, vm: AppViewModel) {
+    val f = File(vm.mediaDir, "bawsala-export.json").apply { writeText(vm.settings.exportJson()) }
+    val uri = FileProvider.getUriForFile(context, "${context.packageName}.files", f)
+    context.startActivity(
+        Intent.createChooser(
+            Intent(Intent.ACTION_SEND)
+                .setType("application/json")
+                .putExtra(Intent.EXTRA_STREAM, uri)
+                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION),
+            null,
+        )
+    )
 }

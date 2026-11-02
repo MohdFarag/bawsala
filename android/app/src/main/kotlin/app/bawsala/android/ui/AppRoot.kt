@@ -51,7 +51,7 @@ import app.bawsala.android.ui.plan.ScheduleSheet
 import app.bawsala.android.ui.planner.WeekPlannerScreen
 import app.bawsala.android.ui.projects.ProjectsScreen
 import app.bawsala.android.ui.review.ReviewScreen
-import app.bawsala.android.ui.search.SearchScreen
+import app.bawsala.android.ui.search.SearchSheet
 import app.bawsala.android.ui.settings.BlocksScreen
 import app.bawsala.android.ui.settings.ListsScreen
 import app.bawsala.android.ui.settings.PrayerSettingsScreen
@@ -88,6 +88,7 @@ fun AppRoot(vm: AppViewModel, onExit: () -> Unit) {
                 return@Box
             }
             Shell(vm, s, screen)
+            if (screen == Screen.Search) SearchSheet(vm, s)
             if (vm.captureOpen) CaptureSheet(vm)
             vm.scheduling?.let { ScheduleSheet(vm, s, it) }
             vm.editingEvent?.let { EventSheet(vm, s, it) }
@@ -110,7 +111,7 @@ private fun ScreenHost(screen: Screen, vm: AppViewModel, s: Snapshot) =
         is Screen.Process -> TriageScreen(vm, s, screen.itemId, opened = true)
         is Screen.TaskDetail -> TaskDetailScreen(vm, s, screen.id, screen.fresh)
         Screen.Focus -> FocusScreen(vm, s)
-        Screen.Search -> SearchScreen(vm, s)
+        Screen.Search -> Unit // drawn as a sheet by AppRoot
         Screen.Tasks -> TasksScreen(vm, s)
         Screen.Collections -> CollectionsScreen(vm, s)
         Screen.Trash -> TrashScreen(vm, s)
@@ -128,7 +129,9 @@ private fun ScreenHost(screen: Screen, vm: AppViewModel, s: Snapshot) =
  * windows 840dp and wider (tablets). Focus hides the bottom bar, as in the design.
  */
 @Composable
-private fun Shell(vm: AppViewModel, s: Snapshot, screen: Screen) {
+private fun Shell(vm: AppViewModel, s: Snapshot, current: Screen) {
+    // Search opens as a sheet over the screen it was opened from (prototype `search` overlay).
+    val screen = if (current == Screen.Search) vm.navigator.beneath ?: Screen.Today else current
     val inboxCount = s.items.count { it.state == CaptureState.INBOX }
     val destinations =
         Tab.entries.associateWith { tab ->

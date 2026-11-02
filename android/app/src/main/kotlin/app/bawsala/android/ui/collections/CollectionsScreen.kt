@@ -1,14 +1,14 @@
 package app.bawsala.android.ui.collections
 
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.FolderOpen
 import androidx.compose.runtime.Composable
+import app.bawsala.android.R
 import app.bawsala.android.data.Snapshot
 import app.bawsala.android.ui.components.Empty
 import app.bawsala.android.ui.components.ScreenColumn
 import app.bawsala.android.ui.components.SectionLabel
 import app.bawsala.android.ui.components.TopBar
+import app.bawsala.android.ui.design.lucide
 import app.bawsala.android.ui.format.shortDate
 import app.bawsala.android.ui.i18n.num
 import app.bawsala.android.ui.i18n.tr
@@ -26,7 +26,7 @@ fun CollectionsScreen(vm: AppViewModel, s: Snapshot) {
     ScreenColumn {
         TopBar(tr("collections"), { vm.navigator.back() })
         if (s.items.none { i -> groups.any { it.first == i.state } })
-            Empty(Icons.Outlined.FolderOpen, tr("emptyCollection"))
+            Empty(lucide(R.drawable.ic_lucide_folder), tr("emptyCollection"))
         groups.forEach { (state, label) ->
             val items = s.items.filter { it.state == state }
             if (items.isEmpty()) return@forEach

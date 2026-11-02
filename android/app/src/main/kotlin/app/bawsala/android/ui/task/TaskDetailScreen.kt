@@ -13,9 +13,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.MoreHoriz
-import androidx.compose.material.icons.outlined.StickyNote2
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import app.bawsala.android.R
 import app.bawsala.android.data.Snapshot
 import app.bawsala.android.navigation.Screen
 import app.bawsala.android.ui.components.AppButton
@@ -42,6 +40,7 @@ import app.bawsala.android.ui.components.card
 import app.bawsala.android.ui.components.kindIcon
 import app.bawsala.android.ui.components.pickDate
 import app.bawsala.android.ui.components.rememberDraft
+import app.bawsala.android.ui.design.lucide
 import app.bawsala.android.ui.format.listName
 import app.bawsala.android.ui.format.shortDate
 import app.bawsala.android.ui.i18n.tr
@@ -86,7 +85,7 @@ fun TaskDetailScreen(vm: AppViewModel, s: Snapshot, id: String, fresh: Boolean) 
 private fun TaskTopBar(vm: AppViewModel, task: Task, fresh: Boolean) {
     var menuOpen by remember { mutableStateOf(false) }
     TopBar(if (fresh) tr("newTask") else tr("task"), { vm.navigator.back() }) {
-        AppIconButton(Icons.Outlined.MoreHoriz, tr("more"), { menuOpen = !menuOpen })
+        AppIconButton(lucide(R.drawable.ic_lucide_ellipsis), tr("more"), { menuOpen = !menuOpen })
     }
     if (menuOpen) {
         Column(Modifier.fillMaxWidth().card().padding(4.dp)) {
@@ -276,7 +275,7 @@ private fun KeepLink(url: String) {
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(Icons.Outlined.StickyNote2, null, tint = AppColors.primary)
+        Icon(lucide(R.drawable.ic_lucide_sticky_note), null, tint = AppColors.primary)
         Text(tr("openInKeep"), style = AppType.label)
     }
 }
