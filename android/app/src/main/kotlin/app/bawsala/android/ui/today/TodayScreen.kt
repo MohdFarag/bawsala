@@ -23,15 +23,18 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.bawsala.android.R
 import app.bawsala.android.data.Snapshot
+import app.bawsala.android.location.DeviceLocation
 import app.bawsala.android.navigation.Screen
 import app.bawsala.android.navigation.Tab
 import app.bawsala.android.ui.design.ActionButton
@@ -55,6 +58,9 @@ import app.bawsala.android.ui.format.listName
 import app.bawsala.android.ui.format.prayerName
 import app.bawsala.android.ui.i18n.num
 import app.bawsala.android.ui.i18n.tr
+import app.bawsala.android.ui.settings.MethodSuggestionCard
+import app.bawsala.android.ui.settings.TravelCard
+import app.bawsala.android.ui.settings.UseMyLocation
 import app.bawsala.android.ui.theme.Palette
 import app.bawsala.android.ui.theme.TypeScale
 import app.bawsala.android.viewmodel.AppViewModel
@@ -79,6 +85,17 @@ fun TodayScreen(vm: AppViewModel, s: Snapshot) {
     val state = buildTodayState(s, vm.dayPlanner, today, now)
     val account by vm.account.account.collectAsStateWithLifecycle()
     val initial = account?.email?.take(1)?.uppercase() ?: "م"
+    // Away from the saved place? Checked once per start, and only if location was already allowed:
+    // Today never asks for permission by itself.
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        if (
+            s.prefs.prayerConfirmed &&
+                DeviceLocation.granted(context) &&
+                vm.settings.shouldCheckTravel()
+        )
+            vm.settings.checkTravel(DeviceLocation.current(context, s.lang))
+    }
 
     BoxWithConstraints(Modifier.fillMaxSize().background(Palette.paper)) {
         val wide = maxWidth.value >= WIDE_DP
@@ -98,10 +115,14 @@ fun TodayScreen(vm: AppViewModel, s: Snapshot) {
                 verticalArrangement = Arrangement.spacedBy(if (wide) 24.dp else 20.dp),
             ) {
                 Intro(state, s, today, now, wide) { vm.navigator.open(Screen.Collections) }
-                if (!s.prefs.prayerConfirmed)
+                if (!s.prefs.prayerConfirmed) {
                     SetCityCard(cityLabel(s.prayer, s.lang)) {
                         vm.navigator.open(Screen.PrayerSettings)
                     }
+                    UseMyLocation(vm)
+                }
+                vm.settings.travelFix?.let { TravelCard(vm, it) }
+                vm.settings.methodSuggestion?.let { MethodSuggestionCard(vm, it) }
                 if (wide) {
                     Row(
                         Modifier.fillMaxWidth().height(IntrinsicSize.Min),
