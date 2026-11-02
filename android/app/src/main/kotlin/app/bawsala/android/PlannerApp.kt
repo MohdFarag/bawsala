@@ -10,13 +10,18 @@ import app.bawsala.android.work.MaintenanceWorker
 import app.bawsala.android.work.SyncWorker
 import java.util.concurrent.TimeUnit
 
-class PlannerApp : Application() {
+open class PlannerApp : Application() {
     lateinit var container: AppContainer
         private set
 
     override fun onCreate() {
         super.onCreate()
         container = AppContainer(this)
+        startBackgroundWork()
+    }
+
+    /** Notification channels and scheduled work; screenshot tests run without them. */
+    protected open fun startBackgroundWork() {
         val nm = getSystemService(NotificationManager::class.java)
         nm.createNotificationChannel(
             NotificationChannel(

@@ -111,7 +111,8 @@ jobs:
       - name: Unit tests, lint, debug and release (R8) builds
         run: |
           set -o pipefail
-          ./gradlew :app:ktfmtCheck :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:assembleRelease --stacktrace 2>&1 | tee "$RUNNER_TEMP/gradle.log"
+          # -Proborazzi.test.record=true also saves the V3 screenshots (phase 7) during the unit tests.
+          ./gradlew :app:ktfmtCheck :app:testDebugUnitTest -Proborazzi.test.record=true :app:lintDebug :app:assembleDebug :app:assembleRelease --stacktrace 2>&1 | tee "$RUNNER_TEMP/gradle.log"
 
       - name: Explain failure
         if: failure()
@@ -133,6 +134,14 @@ jobs:
           path: android/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 14
+      - name: Upload V3 screenshots
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: v3-screenshots
+          path: android/app/build/outputs/roborazzi/
+          if-no-files-found: warn
+          retention-days: 30
       - name: Upload reports
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

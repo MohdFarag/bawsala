@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ktfmt)
+    alias(libs.plugins.roborazzi)
 }
 
 ktfmt { kotlinLangStyle() }
@@ -59,7 +60,11 @@ android {
         compose = true
         buildConfig = true
     }
-    testOptions { unitTests.all { it.useJUnitPlatform() } }
+    testOptions {
+        unitTests.all { it.useJUnitPlatform() }
+        // Screenshot tests render real resources (fonts, icons) under Robolectric.
+        unitTests.isIncludeAndroidResources = true
+    }
     lint {
         abortOnError = true
         checkReleaseBuilds = true
@@ -93,4 +98,14 @@ dependencies {
 
     testImplementation(libs.kotlin.test)
     testImplementation(libs.org.json) // android.jar's org.json is a stub in local unit tests
+
+    // Screenshot tests (JUnit 4 under Robolectric, run by the JUnit Platform's vintage engine).
+    testImplementation(libs.roborazzi)
+    testImplementation(libs.roborazzi.compose)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.compose.ui.test.junit4)
+    testImplementation(libs.androidx.test.ext.junit)
+    testImplementation(libs.junit4)
+    testRuntimeOnly(libs.junit.vintage)
+    debugImplementation(libs.compose.ui.test.manifest)
 }
