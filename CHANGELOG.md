@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.0](https://github.com/MohdFarag/bawsala/compare/v0.9.0...v0.10.0) (2026-11-02)
+
+
+### Features
+
+* **android:** prayer features switch ([#78](https://github.com/MohdFarag/bawsala/issues/78)) ([eb110b6](https://github.com/MohdFarag/bawsala/commit/eb110b632492292981dae9a27d4ffbec083d78fd))
+
 ## [0.9.0](https://github.com/MohdFarag/bawsala/compare/v0.8.0...v0.9.0) (2026-11-02)
 
 
