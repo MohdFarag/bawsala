@@ -1,4 +1,4 @@
-package app.bawsala.android.ui.process
+package app.bawsala.android.ui.triage
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -10,9 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.MoreHoriz
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,7 +28,6 @@ import app.bawsala.android.ui.components.Checkbox
 import app.bawsala.android.ui.components.Chip
 import app.bawsala.android.ui.components.Corner16
 import app.bawsala.android.ui.components.Field
-import app.bawsala.android.ui.components.MenuRow
 import app.bawsala.android.ui.components.Segmented
 import app.bawsala.android.ui.components.card
 import app.bawsala.android.ui.components.pickDate
@@ -41,61 +37,12 @@ import app.bawsala.android.ui.theme.AppColors
 import app.bawsala.android.ui.theme.AppType
 import app.bawsala.android.viewmodel.AppViewModel
 import app.bawsala.core.model.CaptureItem
-import app.bawsala.core.model.CaptureKind
 import app.bawsala.core.model.WaitingFor
 import java.time.LocalDate
 
-@Composable
-internal fun Decisions(
-    vm: AppViewModel,
-    item: CaptureItem,
-    panel: Panel,
-    setPanel: (Panel) -> Unit,
-) {
-    Text(tr("whatBecome"), style = AppType.h3)
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        AppButton(tr("createTask"), { vm.inbox.toTask(item) })
-        AppButton(tr("doNow"), { vm.inbox.startDoNow(item) }, style = ButtonStyle.SECONDARY)
-        AppButton(
-            tr("saveReference"),
-            { vm.inbox.toReference(item) },
-            style = ButtonStyle.SECONDARY,
-        )
-        Row(
-            Modifier.fillMaxWidth().heightIn(min = 48.dp).clickable {
-                setPanel(if (panel == Panel.NONE) Panel.MENU else Panel.NONE)
-            },
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(tr("otherDecisions"), style = AppType.small)
-            Icon(Icons.Outlined.MoreHoriz, null, tint = AppColors.secondary)
-        }
-        when (panel) {
-            Panel.MENU -> OtherDecisionsMenu(vm, item, setPanel)
-            Panel.SOMEDAY -> SomedayPanel(vm) { reviewOn -> vm.inbox.toSomeday(item, reviewOn) }
-            Panel.WAITING -> WaitingPanel(vm) { waiting -> vm.inbox.toWaiting(item, waiting) }
-            Panel.SPLIT -> SplitPanel(item) { parts -> vm.inbox.split(item, parts) }
-            Panel.NONE -> Unit
-        }
-    }
-}
-
-@Composable
-private fun OtherDecisionsMenu(vm: AppViewModel, item: CaptureItem, setPanel: (Panel) -> Unit) {
-    Column(Modifier.fillMaxWidth().card().padding(4.dp)) {
-        MenuRow(tr("someday")) { setPanel(Panel.SOMEDAY) }
-        MenuRow(tr("waitingFor")) { setPanel(Panel.WAITING) }
-        MenuRow(tr("split")) { setPanel(Panel.SPLIT) }
-        if (item.kind == CaptureKind.TEXT)
-            MenuRow(tr("convertToList")) { vm.inbox.convertToList(item) }
-        MenuRow(tr("moveToTrash"), danger = true) { vm.inbox.trash(item) }
-    }
-}
-
 /** Someday with an optional review date (TRI05). */
 @Composable
-private fun SomedayPanel(vm: AppViewModel, onConfirm: (LocalDate?) -> Unit) {
+internal fun SomedayPanel(vm: AppViewModel, onConfirm: (LocalDate?) -> Unit) {
     val context = LocalContext.current
     var reviewOn by remember { mutableStateOf<LocalDate?>(null) }
     PanelCard {
@@ -111,7 +58,7 @@ private fun SomedayPanel(vm: AppViewModel, onConfirm: (LocalDate?) -> Unit) {
 
 /** Who the user is waiting for and when to follow up; nobody is messaged (TRI06). */
 @Composable
-private fun WaitingPanel(vm: AppViewModel, onConfirm: (WaitingFor) -> Unit) {
+internal fun WaitingPanel(vm: AppViewModel, onConfirm: (WaitingFor) -> Unit) {
     val context = LocalContext.current
     var who by remember { mutableStateOf("") }
     var followUpOn by remember { mutableStateOf(vm.today().plusDays(3)) }
@@ -132,7 +79,7 @@ private fun WaitingPanel(vm: AppViewModel, onConfirm: (WaitingFor) -> Unit) {
 
 /** One part per line; each becomes its own inbox item (TRI07). */
 @Composable
-private fun SplitPanel(item: CaptureItem, onConfirm: (List<String>) -> Unit) {
+internal fun SplitPanel(item: CaptureItem, onConfirm: (List<String>) -> Unit) {
     var text by remember {
         mutableStateOf(listOf(item.title, item.body).filter { it.isNotBlank() }.joinToString("\n"))
     }
