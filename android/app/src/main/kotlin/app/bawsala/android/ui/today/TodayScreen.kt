@@ -264,13 +264,14 @@ private fun Priority(vm: AppViewModel, s: Snapshot, state: TodayState, wide: Boo
 }
 
 /**
- * "Project · context" style meta for a task: its list, its context, and optionally its estimate.
+ * `.task-meta`, as in M01: the project (or the list when the task has none), its context, and
+ * optionally its estimate.
  */
 @Composable
 private fun taskMeta(s: Snapshot, task: Task, includeMinutes: Boolean): List<String> =
     listOfNotNull(
+        s.projects.firstOrNull { it.id == task.projectId }?.title ?: listName(s, task.listId),
         task.context?.let { tr("context_$it") },
-        listName(s, task.listId),
         if (includeMinutes) task.estimateMin?.let { tr("minutes", it) } else null,
     )
 

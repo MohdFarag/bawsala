@@ -513,7 +513,7 @@ private val S: Map<String, Pair<String, String>> =
         "help" to ("Help" to "مساعدة"),
         "designGallery" to ("Design gallery" to "معرض التصميم"),
         "appName" to ("Bawsala" to "بوصلة"),
-        "skip" to ("Skip" to "تخطٍّ"),
+        "skip" to ("Skip" to "تخطي"),
         "next" to ("Next" to "التالي"),
         "continueWithGoogle" to ("Continue with Google" to "المتابعة باستخدام Google"),
         "googleSignInNote" to

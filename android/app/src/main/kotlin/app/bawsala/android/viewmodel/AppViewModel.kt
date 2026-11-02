@@ -96,7 +96,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         // Re-arm local reminders when what they depend on changes. Tables a write did not touch
         // keep
         // the same list instance, so the identity checks skip all other writes cheaply.
-        viewModelScope.launch {
+        viewModelScope.launch(failures) {
             state
                 .filter { it.loaded }
                 .distinctUntilChanged { a, b ->

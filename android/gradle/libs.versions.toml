@@ -6,6 +6,8 @@ core-ktx = "1.15.0"
 activity-compose = "1.9.3"
 lifecycle = "2.8.7"
 work = "2.10.0"
+roborazzi = "1.32.2"
+robolectric = "4.14.1"
 coroutines = "1.11.0"
 # 0.0.6+ is compiled for Java 21; 0.0.5 targets Java 17 like the rest of the app.
 adhan = "0.0.5"
@@ -15,6 +17,15 @@ play-services-auth = "21.3.0"
 ktfmt-plugin = "0.27.0"
 
 [libraries]
+# Screenshot tests (V3 phase 7): Compose rendered by Robolectric, captured by Roborazzi.
+roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = "roborazzi" }
+roborazzi-compose = { module = "io.github.takahirom.roborazzi:roborazzi-compose", version.ref = "roborazzi" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
+compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
+androidx-test-ext-junit = { module = "androidx.test.ext:junit", version = "1.2.1" }
+junit4 = { module = "junit:junit", version = "4.13.2" }
+junit-vintage = { module = "org.junit.vintage:junit-vintage-engine", version = "5.11.4" }
 # Included build (android/core), substituted by Gradle; no version needed.
 bawsala-core = { module = "app.bawsala:core" }
 adhan = { module = "com.batoulapps.adhan:adhan2", version.ref = "adhan" }
@@ -37,6 +48,7 @@ kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotl
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
+roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
