@@ -150,3 +150,40 @@ jobs:
           path: android/app/build/reports/
           if-no-files-found: ignore
           retention-days: 14
+
+  # Publishes the V3 screenshots (phase 7) to the v3-screenshots branch, one folder per PR, so they
+  # can be compared with the Penpot boards without downloading artifacts. Only for PRs from this
+  # repository; the build job above stays read-only.
+  screenshots:
+    name: Publish V3 screenshots
+    needs: app
+    if: ${{ !cancelled() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && needs.app.result != 'skipped' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: v3-screenshots
+          path: shots
+      - name: Push to the v3-screenshots branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          git init -q publish && cd publish
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          if git fetch -q --depth 1 origin v3-screenshots; then git checkout -q FETCH_HEAD; else git checkout -q --orphan v3-screenshots; fi
+          rm -rf "pr-${PR}" && mkdir -p "pr-${PR}" && cp -r ../shots/. "pr-${PR}/"
+          echo "${SHA}" > "pr-${PR}/COMMIT"
+          git add -A
+          git commit -q -m "Screenshots for PR #${PR} at ${SHA}" || exit 0
+          git push -q origin HEAD:refs/heads/v3-screenshots

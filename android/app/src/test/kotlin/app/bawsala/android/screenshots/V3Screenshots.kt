@@ -2,6 +2,7 @@ package app.bawsala.android.screenshots
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onRoot
+import androidx.lifecycle.viewModelScope
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.bawsala.android.PlannerApp
@@ -12,6 +13,7 @@ import app.bawsala.android.ui.AppRoot
 import app.bawsala.android.ui.theme.PlannerTheme
 import app.bawsala.android.viewmodel.AppViewModel
 import com.github.takahirom.roborazzi.captureRoboImage
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.runBlocking
 import org.junit.Rule
 import org.junit.Test
@@ -52,6 +54,9 @@ abstract class V3Screenshots(private val device: String) {
         compose.setContent { PlannerTheme { AppRoot(vm, onExit = {}) } }
         compose.waitForIdle()
         compose.onRoot().captureRoboImage("build/outputs/roborazzi/$device/$name.png")
+        // Stop the screen's background work (reminders, sync scheduling) so it cannot fail after
+        // this test, inside the next one.
+        vm.viewModelScope.cancel()
     }
 
     @Test fun today() = shot("01-today")
