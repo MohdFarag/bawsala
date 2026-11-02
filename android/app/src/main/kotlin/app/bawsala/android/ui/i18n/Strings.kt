@@ -150,6 +150,9 @@ private val S: Map<String, Pair<String, String>> =
             ("Something went wrong; your last change may not be saved" to
                 "حدث خطأ؛ ربما لم يُحفظ آخر تغيير"),
         "triage" to ("Triage" to "الفرز"),
+        // P1: home-screen widget.
+        "widgetNextStop" to ("Next stop" to "المحطة القادمة"),
+        "widgetPriority" to ("Priority now" to "الأولوية الآن"),
         // P1: prayer times from the phone's location.
         "useMyLocation" to ("Use my location" to "استخدم موقعي"),
         "locationUnavailable" to
