@@ -98,4 +98,12 @@ abstract class V3Screenshots(private val device: String) {
         }
 
     @Test fun onboarding() = shot("10-onboarding", onboarded = false)
+
+    /** Signed out, the account screen is the V3 sign-in (AM01 / AT01). */
+    @Test
+    fun signIn() =
+        shot("11-sign-in") {
+            it.navigator.switchTo(Tab.TODAY)
+            it.navigator.open(Screen.Account)
+        }
 }
