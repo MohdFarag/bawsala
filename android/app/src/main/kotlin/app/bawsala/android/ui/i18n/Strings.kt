@@ -278,6 +278,7 @@ private val S: Map<String, Pair<String, String>> =
         "actionsOf" to ("%1 of %2 actions" to "%1 من %2 إجراءات"),
         "noActionsYet" to ("No actions yet" to "لا إجراءات بعد"),
         "percent" to ("%1%" to "%1٪"),
+        "byPriority" to ("Priority" to "الأولوية"),
         "nextIs" to ("Next: %1" to "التالي: %1"),
         "setNextAction" to ("Set the next action" to "تحديد الإجراء التالي"),
         "newProjectTitle" to ("What outcome do you want?" to "ما النتيجة التي تريدها؟"),
@@ -323,7 +324,6 @@ private val S: Map<String, Pair<String, String>> =
             ("Completed and archived projects rest here." to
                 "المشاريع المكتملة والمؤرشفة ترتاح هنا."),
         "backToTriage" to ("Back to triage" to "أرجعها للفرز"),
-        "pageOptions" to ("Page options" to "خيارات الصفحة"),
         "review" to ("Review" to "المراجعة"),
         "capture" to ("Capture" to "التقاط"),
         "menu" to ("Menu" to "القائمة"),

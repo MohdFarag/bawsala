@@ -187,15 +187,30 @@ private fun ProjectsTab(
     widest: Boolean,
     open: (ProjectsSheet) -> Unit,
 ) {
-    Text(
-        tr("activeProjects", state.active.size),
-        style =
-            TypeScale.overline.copy(color = Palette.muted, fontWeight = TypeScale.small.fontWeight),
-        modifier = Modifier.padding(top = 16.dp),
-    )
+    // "الأولوية": projects whose next action is most urgent first; projects with none go last.
+    var byPriority by rememberSaveable { mutableStateOf(false) }
+    val projects =
+        if (byPriority) state.active.sortedWith(compareBy(nullsLast(priorityOrder)) { it.next })
+        else state.active
+    Row(
+        Modifier.fillMaxWidth().padding(top = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            tr("activeProjects", state.active.size),
+            style = TypeScale.overline.mutedNormal(),
+            modifier = Modifier.weight(1f),
+        )
+        TextAction(
+            tr("byPriority"),
+            { byPriority = !byPriority },
+            icon = R.drawable.ic_lucide_sliders_horizontal,
+            color = if (byPriority) Palette.green900 else Palette.muted,
+        )
+    }
     if (state.active.isEmpty()) Empty(tr("noProjectsYet"), R.drawable.ic_lucide_folder)
     Grid(
-        state.active,
+        projects,
         columns = if (widest) 3 else if (wide) 2 else 1,
         gap = if (wide) 18.dp else 12.dp,
         Modifier.padding(top = 19.dp),
