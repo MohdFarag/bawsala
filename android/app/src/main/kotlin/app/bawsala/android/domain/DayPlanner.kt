@@ -11,20 +11,21 @@ import java.time.LocalDate
 /** Builds the planning view of a day — prayers, events, sessions, blocks — from stored data. */
 class DayPlanner(private val engine: PrayerEngine = PrayerEngine()) {
 
-    /** Prayer anchors for [date]; empty if the settings cannot produce a valid timetable. */
-    fun anchors(snapshot: Snapshot, date: LocalDate): List<PrayerAnchor> = runCatching {
-        engine.anchors(date, snapshot.prayer)
-    }
-        .getOrDefault(emptyList())
+    /**
+     * Prayer anchors for [date]; empty if the settings cannot produce a valid timetable, or when
+     * prayer features are off (every screen, reminder and schedule check reads prayers here).
+     */
+    fun anchors(snapshot: Snapshot, date: LocalDate): List<PrayerAnchor> =
+        if (!snapshot.prefs.prayerFeatures) emptyList()
+        else runCatching { engine.anchors(date, snapshot.prayer) }.getOrDefault(emptyList())
 
     /**
      * Like [anchors], but null when no reliable timetable exists, so callers can keep the last
      * valid one (REL04).
      */
-    fun anchorsOrNull(snapshot: Snapshot, date: LocalDate): List<PrayerAnchor>? = runCatching {
-        engine.anchors(date, snapshot.prayer)
-    }
-        .getOrNull()
+    fun anchorsOrNull(snapshot: Snapshot, date: LocalDate): List<PrayerAnchor>? =
+        if (!snapshot.prefs.prayerFeatures) emptyList()
+        else runCatching { engine.anchors(date, snapshot.prayer) }.getOrNull()
 
     fun dayContext(snapshot: Snapshot, date: LocalDate): DayContext {
         val zone = snapshot.prayer.zone

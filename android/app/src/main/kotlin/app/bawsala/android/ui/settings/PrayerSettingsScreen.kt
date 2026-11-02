@@ -56,6 +56,14 @@ fun PrayerSettingsScreen(vm: AppViewModel, s: Snapshot) {
 
     ScreenColumn {
         TopBar(tr("prayerTimes"), { vm.navigator.back() })
+        // The prayer module switch (#74): off makes Bawsala a general planner.
+        SwitchRow(tr("prayerFeatures"), s.prefs.prayerFeatures) {
+            vm.settings.savePrefs(s.prefs.copy(prayerFeatures = it))
+        }
+        if (!s.prefs.prayerFeatures) {
+            Text(tr("prayerFeaturesOff"), style = AppType.small)
+            return@ScreenColumn
+        }
         UseMyLocation(vm)
         vm.settings.methodSuggestion?.let { MethodSuggestionCard(vm, it) }
         CityPicker(settings) { save(PrayerSettingsEdits.withCity(settings, it)) }

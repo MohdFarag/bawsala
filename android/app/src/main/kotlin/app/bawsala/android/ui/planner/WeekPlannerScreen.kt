@@ -241,7 +241,7 @@ private fun WeekGrid(
             )
             Legend(tr("legendFocus"), Palette.green100)
             Legend(tr("legendEvent"), Palette.lilac)
-            Legend(tr("legendPrayer"), Palette.amberTint)
+            if (s.prefs.prayerFeatures) Legend(tr("legendPrayer"), Palette.amberTint)
         }
         val hScroll = rememberScrollState()
         val vScroll = rememberScrollState()

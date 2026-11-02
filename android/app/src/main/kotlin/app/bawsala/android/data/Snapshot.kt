@@ -19,6 +19,11 @@ data class Prefs(
     /** Arabic first (V3 design); English keeps the same layout, left to right. */
     val lang: String = "ar",
     val protectPrayers: Boolean = true,
+    /**
+     * The prayer module: when off, Bawsala is a general planner (no prayer times, protected
+     * prayers, prayer-relative sessions or location prompts). Issue #74.
+     */
+    val prayerFeatures: Boolean = true,
     val prayerConfirmed: Boolean = false,
     val reminderMinutes: Int = 10,
     val windowDays: Int = 30,
