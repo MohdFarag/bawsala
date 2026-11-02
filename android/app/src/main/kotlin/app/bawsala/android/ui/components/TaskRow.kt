@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.NightsStay
@@ -32,15 +33,21 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import app.bawsala.android.ui.i18n.tr
 import app.bawsala.android.ui.theme.AppColors
-import app.bawsala.android.ui.theme.AppType
+import app.bawsala.android.ui.theme.Palette
+import app.bawsala.android.ui.theme.Radius
+import app.bawsala.android.ui.theme.TypeScale
 
 @Composable
 fun Checkbox(checked: Boolean) {
     Box(
-        Modifier.size(24.dp)
-            .clip(Corner8)
-            .background(if (checked) AppColors.primary else AppColors.surface)
-            .border(1.5.dp, if (checked) AppColors.primary else AppColors.border, Corner8),
+        Modifier.size(20.dp)
+            .clip(RoundedCornerShape(7.dp))
+            .background(if (checked) Palette.green900 else Palette.white)
+            .border(
+                1.5.dp,
+                if (checked) Palette.green900 else Palette.line,
+                RoundedCornerShape(7.dp),
+            ),
         contentAlignment = Alignment.Center,
     ) {
         if (checked)
@@ -48,7 +55,7 @@ fun Checkbox(checked: Boolean) {
                 Icons.Outlined.Check,
                 null,
                 tint = AppColors.onPrimary,
-                modifier = Modifier.size(16.dp),
+                modifier = Modifier.size(14.dp),
             )
     }
 }
@@ -87,14 +94,14 @@ fun TaskRowView(
             Text(
                 title,
                 style =
-                    AppType.body.copy(
-                        color = if (done) AppColors.secondary else AppColors.text,
+                    TypeScale.button.copy(
+                        color = if (done) Palette.muted else Palette.ink,
                         textDecoration = if (done) TextDecoration.LineThrough else null,
                     ),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
-            Text(meta, style = AppType.micro)
+            Text(meta, style = TypeScale.tiny)
         }
         trailing?.invoke(this)
     }
@@ -105,16 +112,16 @@ fun PrayerRow(name: String, time: String) {
     Row(
         Modifier.fillMaxWidth()
             .defaultMinSize(minHeight = 60.dp)
-            .clip(Corner16)
-            .background(AppColors.tint)
+            .clip(Radius.md)
+            .background(Palette.amberTint)
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Icon(Icons.Outlined.NightsStay, null, tint = AppColors.primary)
+        Icon(Icons.Outlined.NightsStay, null, tint = Palette.amber)
         Column {
-            Text(name, style = AppType.label, color = AppColors.primary)
-            Text("$time · ${tr("protectedTime")}", style = AppType.micro)
+            Text(name, style = TypeScale.button, color = Palette.amber)
+            Text("$time · ${tr("protectedTime")}", style = TypeScale.tiny)
         }
     }
 }

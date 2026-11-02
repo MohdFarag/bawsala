@@ -26,7 +26,9 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import app.bawsala.android.ui.theme.AppColors
-import app.bawsala.android.ui.theme.AppType
+import app.bawsala.android.ui.theme.Palette
+import app.bawsala.android.ui.theme.Radius
+import app.bawsala.android.ui.theme.TypeScale
 
 @Composable
 fun AppIconButton(
@@ -37,7 +39,9 @@ fun AppIconButton(
 ) {
     Box(
         Modifier.size(48.dp)
-            .card()
+            .clip(Radius.button)
+            .background(Palette.white)
+            .border(1.dp, Palette.line, Radius.button)
             .clickable(role = Role.Button, onClickLabel = label, onClick = onClick)
             .semantics { contentDescription = label },
         contentAlignment = Alignment.Center,
@@ -67,17 +71,17 @@ fun AppButton(
             ButtonStyle.PRIMARY -> Triple(AppColors.primary, AppColors.onPrimary, null)
             ButtonStyle.SECONDARY ->
                 Triple(AppColors.surface, AppColors.primary, BorderStroke(1.dp, AppColors.border))
-            ButtonStyle.LIGHT -> Triple(AppColors.surface, AppColors.primary, null)
+            ButtonStyle.LIGHT -> Triple(Palette.sage100, Palette.green900, null)
             ButtonStyle.QUIET -> Triple(Color.Transparent, AppColors.primary, null)
         }
     // Full width by default; a caller's own size (applied first) still takes precedence.
     Row(
         modifier
             .fillMaxWidth()
-            .heightIn(min = 52.dp)
-            .clip(Corner16)
+            .heightIn(min = 50.dp)
+            .clip(Radius.button)
             .background(if (enabled) bg else bg.copy(alpha = 0.45f))
-            .then(if (border != null) Modifier.border(border, Corner16) else Modifier)
+            .then(if (border != null) Modifier.border(border, Radius.button) else Modifier)
             .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
             .padding(horizontal = 20.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.Center,
@@ -87,6 +91,6 @@ fun AppButton(
             Icon(icon, null, tint = fg, modifier = Modifier.size(20.dp))
             Spacer(Modifier.width(8.dp))
         }
-        Text(text, style = AppType.button, color = if (enabled) fg else fg.copy(alpha = 0.6f))
+        Text(text, style = TypeScale.button, color = if (enabled) fg else fg.copy(alpha = 0.6f))
     }
 }

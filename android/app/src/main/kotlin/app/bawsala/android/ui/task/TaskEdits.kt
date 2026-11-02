@@ -1,5 +1,7 @@
 package app.bawsala.android.ui.task
 
+import app.bawsala.core.model.Project
+import app.bawsala.core.model.ProjectStatus
 import app.bawsala.core.model.Task
 import app.bawsala.core.model.TaskList
 import java.time.LocalDate
@@ -20,6 +22,24 @@ object TaskEdits {
         return task.copy(
             estimateMin = if (index == ESTIMATES.lastIndex) null else ESTIMATES[index + 1]
         )
+    }
+
+    /**
+     * The next of: no project, then each active or on-hold project in turn (V3 decision 4: a task
+     * may belong to a project, separately from its list). A finished project the task is in stays
+     * shown until the user moves on from it.
+     */
+    fun nextProject(task: Task, projects: List<Project>): Task {
+        val choices =
+            listOf<String?>(null) +
+                projects
+                    .filter {
+                        it.status == ProjectStatus.ACTIVE || it.status == ProjectStatus.ON_HOLD
+                    }
+                    .sortedBy { it.createdAt }
+                    .map { it.id }
+        val index = choices.indexOf(task.projectId)
+        return task.copy(projectId = choices[(index + 1) % choices.size])
     }
 
     fun nextList(task: Task, lists: List<TaskList>): Task {

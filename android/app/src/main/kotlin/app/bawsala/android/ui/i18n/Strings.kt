@@ -166,6 +166,7 @@ private val S: Map<String, Pair<String, String>> =
         "triageQuestion" to ("Is there a step you can take?" to "هل فيها خطوة يمكن تنفيذها؟"),
         "nextAction" to ("Next action" to "إجراء تالي"),
         "project" to ("Project" to "مشروع"),
+        "noProject" to ("No project" to "بدون مشروع"),
         "reference" to ("Reference" to "مرجع"),
         "later" to ("Later" to "لاحقًا"),
         "deleteIdea" to ("Delete idea" to "حذف الفكرة"),
