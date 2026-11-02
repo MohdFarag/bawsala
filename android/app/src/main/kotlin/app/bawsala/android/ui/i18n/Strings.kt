@@ -262,6 +262,33 @@ private val S: Map<String, Pair<String, String>> =
         "stepsDoneToday" to ("steps done today" to "خطوة اكتملت اليوم"),
         "projects" to ("Projects" to "المشاريع"),
         "projectsSubtitle" to ("Everything in a place that serves it" to "كل شيء في مكان يخدمه"),
+        // V3 weekly planner (T04).
+        "weekPlanner" to ("Weekly planner" to "المخطط الأسبوعي"),
+        "weekPlannerSubtitle" to ("Realistic room for what matters" to "مساحة واقعية لما يهم"),
+        "plannerHeading" to ("Your steps, in their time." to "خطواتك، في وقتها."),
+        "plannerHint" to
+            ("Drag an action onto the calendar, or choose \u201cPlan\u201d." to
+                "اسحب إجراءً للتقويم، أو اختر «جدولة»."),
+        "thisWeek" to ("This week" to "هذا الأسبوع"),
+        "nextWeek" to ("Next week" to "الأسبوع القادم"),
+        "lastWeek" to ("Last week" to "الأسبوع الماضي"),
+        "weeksAway" to ("%1 weeks away" to "بعد %1 أسابيع"),
+        "previousWeek" to ("Previous week" to "الأسبوع السابق"),
+        "nextWeekAction" to ("Following week" to "الأسبوع التالي"),
+        "legendFocus" to ("Focus" to "تركيز"),
+        "legendEvent" to ("Appointment" to "موعد"),
+        "legendPrayer" to ("Prayer" to "صلاة"),
+        "readyCount" to ("%1 ready" to "%1 جاهزة"),
+        "nothingToPlan" to
+            ("Every next action has a time. Nicely done." to "كل إجراء تالٍ له وقت. أحسنت."),
+        "dragCardHint" to
+            ("Long-press a card and drag it to a good time in the week." to
+                "اضغط مطولًا على البطاقة واسحبها لوقت مناسب في الأسبوع."),
+        "leaveSpace" to
+            ("Leave room between tasks. Not every free hour needs filling." to
+                "اترك مساحة بين المهام. ليس كل وقت متاح يحتاج امتلاء."),
+        "minutesShort" to ("%1 min" to "%1 د"),
+        "dayView" to ("Day view and agenda" to "عرض اليوم والأجندة"),
         // V3 weekly review (M06/T08); the AI note is left out (decision 2).
         "reviewSubtitle" to ("A small pause, and a lighter week" to "وقفة صغيرة، وأسبوع أخفّ"),
         "weekNumber" to ("Week %1" to "الأسبوع %1"),

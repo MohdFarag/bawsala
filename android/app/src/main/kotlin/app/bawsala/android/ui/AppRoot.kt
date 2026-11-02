@@ -48,6 +48,7 @@ import app.bawsala.android.ui.onboarding.OnboardingScreen
 import app.bawsala.android.ui.plan.EventSheet
 import app.bawsala.android.ui.plan.PlanScreen
 import app.bawsala.android.ui.plan.ScheduleSheet
+import app.bawsala.android.ui.planner.WeekPlannerScreen
 import app.bawsala.android.ui.projects.ProjectsScreen
 import app.bawsala.android.ui.review.ReviewScreen
 import app.bawsala.android.ui.search.SearchScreen
@@ -101,7 +102,8 @@ private fun ScreenHost(screen: Screen, vm: AppViewModel, s: Snapshot) =
         Screen.Today -> TodayScreen(vm, s)
         Screen.Inbox -> TriageScreen(vm, s)
         Screen.InboxList -> InboxScreen(vm, s)
-        Screen.Plan -> PlanScreen(vm, s)
+        Screen.Plan -> WeekPlannerScreen(vm, s)
+        Screen.DayPlan -> PlanScreen(vm, s)
         Screen.Review -> ReviewScreen(vm, s)
         Screen.More -> MoreScreen(vm, s)
         Screen.Projects -> ProjectsScreen(vm, s)

@@ -8,6 +8,9 @@ sealed interface Screen {
 
     data object Plan : Screen
 
+    /** The day timeline and agenda (the earlier planner), from the week planner's options. */
+    data object DayPlan : Screen
+
     /** V3 "المراجعة" tab: the weekly review; the planner opens from it. */
     data object Review : Screen
 
@@ -77,4 +80,5 @@ val Screen.showsBottomBar: Boolean
                     Screen.More,
                     Screen.InboxList,
                     Screen.Plan,
+                    Screen.DayPlan,
                 )
