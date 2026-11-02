@@ -14,7 +14,7 @@ import org.json.JSONObject
  * Every local write is also recorded in the outbox, in the same transaction, so it reaches the
  * server even if the app is closed before syncing (SYN01).
  */
-class Db(context: Context) : SQLiteOpenHelper(context, "planner.db", null, 2) {
+class Db(context: Context) : SQLiteOpenHelper(context, "planner.db", null, 3) {
     private val changed = mutableSetOf<Table>()
 
     /** Tables, named like the server's entities; all of them sync. */
@@ -32,6 +32,9 @@ class Db(context: Context) : SQLiteOpenHelper(context, "planner.db", null, 2) {
         // Calendar events: read from Google by the server, or created here and sent to Google.
         events("CREATE TABLE events (id TEXT PRIMARY KEY, doc TEXT NOT NULL)"),
         settings("CREATE TABLE settings (id TEXT PRIMARY KEY, doc TEXT NOT NULL)"),
+        // PARA projects and areas (V3); tasks point at a project with projectId.
+        projects("CREATE TABLE projects (id TEXT PRIMARY KEY, doc TEXT NOT NULL)"),
+        areas("CREATE TABLE areas (id TEXT PRIMARY KEY, doc TEXT NOT NULL)"),
     }
 
     override fun onConfigure(db: SQLiteDatabase) {
@@ -46,6 +49,11 @@ class Db(context: Context) : SQLiteOpenHelper(context, "planner.db", null, 2) {
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        // New tables first, so the version 2 step below can read every table.
+        if (oldVersion < 3) {
+            db.execSQL(Table.projects.sql)
+            db.execSQL(Table.areas.sql)
+        }
         if (oldVersion < 2) {
             createSyncTables(db)
             // Everything created before sync existed still has to reach the server.

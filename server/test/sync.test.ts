@@ -84,6 +84,32 @@ describe("sync", () => {
     expect(stale.results[0]).toMatchObject({ status: "rejected", reason: "deleted" });
   });
 
+  it("syncs projects and areas, and tasks that point at a project", async () => {
+    const { headers } = await signUp(ctx);
+    const at = "2026-11-02T09:00:00Z";
+    const r = await push(headers, [
+      { mutationId: mid(), entity: "areas", id: "a1", op: "upsert", baseVersion: 0, fields: { title: "Health", archived: false } },
+      {
+        mutationId: mid(),
+        entity: "projects",
+        id: "p1",
+        op: "upsert",
+        baseVersion: 0,
+        fields: { title: "Run 5k", outcome: "", areaId: "a1", status: "ACTIVE", createdAt: at },
+      },
+      task("t1", { title: "Buy shoes", listId: "personal", status: "NEEDS_ACTION", projectId: "p1" }),
+      { mutationId: mid(), entity: "projects", id: "p2", op: "upsert", baseVersion: 0, fields: { createdAt: "yesterday" } },
+    ]);
+    expect(r.results.map((x) => x.status)).toEqual(["applied", "applied", "applied", "rejected"]);
+    const pulled = await pull(headers);
+    expect(pulled.changes.map((c) => [c.entity, c.id])).toEqual([
+      ["areas", "a1"],
+      ["projects", "p1"],
+      ["tasks", "t1"],
+    ]);
+    expect(pulled.changes[2]?.doc).toMatchObject({ projectId: "p1" });
+  });
+
   it("rejects invalid fields without saving anything", async () => {
     const { headers } = await signUp(ctx);
     const r = await push(headers, [task("t1", { title: 42 }), task("t2", { "bad-name": 1 })]);

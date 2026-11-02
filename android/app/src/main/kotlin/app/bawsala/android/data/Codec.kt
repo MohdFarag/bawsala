@@ -4,6 +4,7 @@ import app.bawsala.core.focus.EntryKind
 import app.bawsala.core.focus.FocusSession
 import app.bawsala.core.focus.FocusState
 import app.bawsala.core.focus.TimeEntry
+import app.bawsala.core.model.Area
 import app.bawsala.core.model.Attachment
 import app.bawsala.core.model.BlockPolicy
 import app.bawsala.core.model.CalendarEvent
@@ -13,6 +14,8 @@ import app.bawsala.core.model.CaptureState
 import app.bawsala.core.model.ListEntry
 import app.bawsala.core.model.PrayerName
 import app.bawsala.core.model.PrayerPoint
+import app.bawsala.core.model.Project
+import app.bawsala.core.model.ProjectStatus
 import app.bawsala.core.model.Relation
 import app.bawsala.core.model.RelativeRule
 import app.bawsala.core.model.SessionState
@@ -200,6 +203,7 @@ object Codec {
             .put("keepUrl", t.keepUrl)
             .put("googleUrl", t.googleUrl)
             .put("context", t.context)
+            .put("projectId", t.projectId)
 
     fun task(o: JSONObject) =
         Task(
@@ -221,11 +225,58 @@ object Codec {
             keepUrl = o.str("keepUrl"),
             googleUrl = o.str("googleUrl"),
             context = o.str("context"),
+            projectId = o.str("projectId"),
         )
 
     fun encode(l: TaskList): JSONObject = JSONObject().put("id", l.id).put("name", l.name)
 
     fun list(o: JSONObject) = TaskList(o.getString("id"), o.getString("name"))
+
+    // Projects and areas (PARA)
+    fun encode(p: Project): JSONObject =
+        JSONObject()
+            .put("id", p.id)
+            .put("title", p.title)
+            .put("outcome", p.outcome)
+            .put("areaId", p.areaId)
+            .put("status", p.status.name)
+            .put("icon", p.icon)
+            .put("createdAt", p.createdAt.toString())
+            .put("completedAt", p.completedAt?.toString())
+            .put("sourceItemId", p.sourceItemId)
+
+    fun project(o: JSONObject) =
+        Project(
+            id = o.getString("id"),
+            title = o.getString("title"),
+            outcome = o.optString("outcome"),
+            areaId = o.str("areaId"),
+            // A status from a newer app version reads as active rather than hiding the project.
+            status =
+                o.str("status")?.let { s -> ProjectStatus.entries.firstOrNull { it.name == s } }
+                    ?: ProjectStatus.ACTIVE,
+            icon = o.str("icon") ?: "folder",
+            createdAt = Instant.parse(o.getString("createdAt")),
+            completedAt = o.inst("completedAt"),
+            sourceItemId = o.str("sourceItemId"),
+        )
+
+    fun encode(a: Area): JSONObject =
+        JSONObject()
+            .put("id", a.id)
+            .put("title", a.title)
+            .put("icon", a.icon)
+            .put("createdAt", a.createdAt.toString())
+            .put("archived", a.archived)
+
+    fun area(o: JSONObject) =
+        Area(
+            id = o.getString("id"),
+            title = o.getString("title"),
+            icon = o.str("icon") ?: "layers",
+            createdAt = Instant.parse(o.getString("createdAt")),
+            archived = o.optBoolean("archived"),
+        )
 
     // Rules and sessions
     fun encode(r: RelativeRule): JSONObject =

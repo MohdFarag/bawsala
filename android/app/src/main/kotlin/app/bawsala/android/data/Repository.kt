@@ -6,9 +6,11 @@ import app.bawsala.android.data.Db.Table
 import app.bawsala.core.focus.FocusSession
 import app.bawsala.core.inbox.TriageOutcome
 import app.bawsala.core.inbox.Undo
+import app.bawsala.core.model.Area
 import app.bawsala.core.model.Attachment
 import app.bawsala.core.model.CalendarEvent
 import app.bawsala.core.model.CaptureItem
+import app.bawsala.core.model.Project
 import app.bawsala.core.model.Task
 import app.bawsala.core.model.TaskList
 import app.bawsala.core.model.TaskSession
@@ -66,12 +68,14 @@ class Repository(context: Context) : SyncStore, AttachmentStore {
         putItem(outcome.item)
         outcome.newItems.forEach(::putItem)
         outcome.newTasks.forEach(::putTask)
+        outcome.newProjects.forEach(::putProject)
     }
 
     suspend fun undo(undo: Undo) = write {
         putItem(undo.previous)
         undo.createdItemIds.forEach { db.delete(Table.items, it) }
         undo.createdTaskIds.forEach(::removeTaskRows)
+        undo.createdProjectIds.forEach(::removeProjectRows)
     }
 
     /** Permanently deletes items and their local media (DEL03). */
@@ -98,6 +102,28 @@ class Repository(context: Context) : SyncStore, AttachmentStore {
 
     suspend fun saveList(list: TaskList) = write {
         db.put(Table.lists, list.id, Codec.encode(list))
+    }
+
+    // Projects and areas (PARA) ------------------------------------------------------------
+
+    suspend fun saveProject(project: Project) = write { putProject(project) }
+
+    /** Changes a project starting from its stored value, like [updateTask]. */
+    suspend fun updateProject(id: String, change: (Project) -> Project) = write {
+        db.get(Table.projects, id)?.let(Codec::project)?.let { putProject(change(it)) }
+    }
+
+    /** Deletes a project; its tasks stay and simply leave the project. */
+    suspend fun deleteProject(id: String) = write { removeProjectRows(id) }
+
+    suspend fun saveArea(area: Area) = write { putDoc(Table.areas, area.id, Codec.encode(area)) }
+
+    /** Deletes an area; its projects stay, without an area. */
+    suspend fun deleteArea(id: String) = write {
+        decodeAll(Table.projects, Codec::project)
+            .filter { it.areaId == id }
+            .forEach { putProject(it.copy(areaId = null)) }
+        db.delete(Table.areas, id)
     }
 
     suspend fun saveBlock(block: TimeBlock) = write {
@@ -335,6 +361,9 @@ class Repository(context: Context) : SyncStore, AttachmentStore {
         if (Table.items in tables) s = s.copy(items = decodeAll(Table.items, Codec::item))
         if (Table.tasks in tables) s = s.copy(tasks = decodeAll(Table.tasks, Codec::task))
         if (Table.lists in tables) s = s.copy(lists = decodeAll(Table.lists, Codec::list))
+        if (Table.projects in tables)
+            s = s.copy(projects = decodeAll(Table.projects, Codec::project))
+        if (Table.areas in tables) s = s.copy(areas = decodeAll(Table.areas, Codec::area))
         if (Table.sessions in tables)
             s = s.copy(sessions = decodeAll(Table.sessions, Codec::session))
         if (Table.rules in tables) s = s.copy(rules = decodeAll(Table.rules, Codec::ruleBinding))
@@ -385,6 +414,16 @@ class Repository(context: Context) : SyncStore, AttachmentStore {
     private fun putItem(item: CaptureItem) = putDoc(Table.items, item.id, Codec.encode(item))
 
     private fun putTask(task: Task) = putDoc(Table.tasks, task.id, Codec.encode(task))
+
+    private fun putProject(project: Project) =
+        putDoc(Table.projects, project.id, Codec.encode(project))
+
+    private fun removeProjectRows(projectId: String) {
+        decodeAll(Table.tasks, Codec::task)
+            .filter { it.projectId == projectId }
+            .forEach { putTask(it.copy(projectId = null)) }
+        db.delete(Table.projects, projectId)
+    }
 
     private fun putSession(session: TaskSession) =
         putDoc(Table.sessions, session.id, Codec.encode(session))

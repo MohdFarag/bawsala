@@ -78,7 +78,7 @@ treated as theft and signs that device out. Only SHA-256 digests of tokens are s
   changed the same field after `baseVersion`, the server keeps its value and returns a `conflict`
   with the server value for the app to show.
 - Deletes leave a tombstone. A stale copy of a deleted record is rejected instead of resurrecting it.
-- Entities: `items`, `tasks`, `lists`, `sessions`, `rules`, `blocks`, `settings`, `timeEntries`.
+- Entities: `items`, `tasks`, `lists`, `projects`, `areas`, `sessions`, `rules`, `blocks`, `events`, `settings`, `timeEntries`.
 
 ### Media (PRD CAP01, CAP02)
 

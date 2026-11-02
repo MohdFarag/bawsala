@@ -2,8 +2,10 @@ package app.bawsala.android.data
 
 import app.bawsala.core.focus.FocusSession
 import app.bawsala.core.focus.TimeEntry
+import app.bawsala.core.model.Area
 import app.bawsala.core.model.CalendarEvent
 import app.bawsala.core.model.CaptureItem
+import app.bawsala.core.model.Project
 import app.bawsala.core.model.RelativeRule
 import app.bawsala.core.model.Task
 import app.bawsala.core.model.TaskList
@@ -60,6 +62,8 @@ data class Snapshot(
     val items: List<CaptureItem> = emptyList(),
     val tasks: List<Task> = emptyList(),
     val lists: List<TaskList> = emptyList(),
+    val projects: List<Project> = emptyList(),
+    val areas: List<Area> = emptyList(),
     val sessions: List<TaskSession> = emptyList(),
     val rules: List<RuleBinding> = emptyList(),
     val blocks: List<TimeBlock> = emptyList(),
