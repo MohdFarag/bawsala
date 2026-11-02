@@ -111,14 +111,18 @@ fun TriageScreen(
                 tr(if (item == null) "triageEmptySubtitle" else "triageSubtitle"),
                 wide,
             ) {
-                if (opened) IconAction(R.drawable.ic_lucide_x, tr("close")) { vm.navigator.back() }
+                if (opened) IconAction(R.drawable.ic_lucide_x, tr("close"), { vm.navigator.back() })
                 else {
-                    IconAction(R.drawable.ic_lucide_search, tr("search")) {
-                        vm.navigator.open(Screen.Search)
-                    }
-                    IconAction(R.drawable.ic_lucide_list_filter, tr("allIdeas")) {
-                        vm.navigator.open(Screen.InboxList)
-                    }
+                    IconAction(
+                        R.drawable.ic_lucide_search,
+                        tr("search"),
+                        { vm.navigator.open(Screen.Search) },
+                    )
+                    IconAction(
+                        R.drawable.ic_lucide_list_filter,
+                        tr("allIdeas"),
+                        { vm.navigator.open(Screen.InboxList) },
+                    )
                 }
             }
             Column(
