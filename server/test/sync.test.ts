@@ -110,6 +110,17 @@ describe("sync", () => {
     expect(pulled.changes[2]?.doc).toMatchObject({ projectId: "p1" });
   });
 
+  it("syncs weekly reviews and checks their fields", async () => {
+    const { headers } = await signUp(ctx);
+    const review = (id: string, fields: object) => ({ mutationId: mid(), entity: "reviews", id, op: "upsert", baseVersion: 0, fields });
+    const r = await push(headers, [
+      review("2026-10-31", { weekStart: "2026-10-31", stepsDone: 3, outcomes: ["Ship triage"], completedAt: "2026-11-02T10:00:00Z" }),
+      review("2026-11-07", { weekStart: "2026-11-07", stepsDone: 4 }),
+      review("2026-11-14", { weekStart: "2026-11-14", outcomes: ["a", "b", "c", "d"] }),
+    ]);
+    expect(r.results.map((x) => x.status)).toEqual(["applied", "rejected", "rejected"]);
+  });
+
   it("rejects invalid fields without saving anything", async () => {
     const { headers } = await signUp(ctx);
     const r = await push(headers, [task("t1", { title: 42 }), task("t2", { "bad-name": 1 })]);

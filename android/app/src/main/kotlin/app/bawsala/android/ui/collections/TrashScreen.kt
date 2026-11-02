@@ -1,14 +1,14 @@
 package app.bawsala.android.ui.collections
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.runtime.Composable
+import app.bawsala.android.R
 import app.bawsala.android.data.Snapshot
 import app.bawsala.android.ui.components.AppButton
 import app.bawsala.android.ui.components.ButtonStyle
 import app.bawsala.android.ui.components.Empty
 import app.bawsala.android.ui.components.ScreenColumn
 import app.bawsala.android.ui.components.TopBar
+import app.bawsala.android.ui.design.lucide
 import app.bawsala.android.ui.format.shortDate
 import app.bawsala.android.ui.i18n.tr
 import app.bawsala.android.viewmodel.AppViewModel
@@ -19,7 +19,7 @@ fun TrashScreen(vm: AppViewModel, s: Snapshot) {
     val items = s.items.filter { it.state == CaptureState.TRASHED }
     ScreenColumn {
         TopBar(tr("trash"), { vm.navigator.back() })
-        if (items.isEmpty()) Empty(Icons.Outlined.DeleteOutline, tr("trashEmpty"))
+        if (items.isEmpty()) Empty(lucide(R.drawable.ic_lucide_trash), tr("trashEmpty"))
         items.forEach { i ->
             ItemCard(
                 i,

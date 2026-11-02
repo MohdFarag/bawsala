@@ -6,15 +6,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import app.bawsala.android.R
 import app.bawsala.android.ui.components.AppIconButton
 import app.bawsala.android.ui.components.card
+import app.bawsala.android.ui.design.lucide
 import app.bawsala.android.ui.format.prayerName
 import app.bawsala.android.ui.format.range
 import app.bawsala.android.ui.format.relationKey
@@ -78,7 +78,7 @@ private fun RuleRow(rule: RelativeRule, onRemove: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(text, style = AppType.small, modifier = Modifier.weight(1f))
-        AppIconButton(Icons.Outlined.Close, tr("delete"), onRemove, AppColors.secondary)
+        AppIconButton(lucide(R.drawable.ic_lucide_x), tr("delete"), onRemove, AppColors.secondary)
     }
 }
 
@@ -116,6 +116,6 @@ private fun SessionRow(
                 ),
             modifier = Modifier.weight(1f).clickable(onClick = onEdit),
         )
-        AppIconButton(Icons.Outlined.Close, tr("delete"), onDelete, AppColors.secondary)
+        AppIconButton(lucide(R.drawable.ic_lucide_x), tr("delete"), onDelete, AppColors.secondary)
     }
 }

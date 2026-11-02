@@ -19,6 +19,7 @@ object DataExport {
             .put("lists", JSONArray(snapshot.lists.map(Codec::encode)))
             .put("projects", JSONArray(snapshot.projects.map(Codec::encode)))
             .put("areas", JSONArray(snapshot.areas.map(Codec::encode)))
+            .put("reviews", JSONArray(snapshot.reviews.map(Codec::encode)))
             .put("sessions", JSONArray(snapshot.sessions.map(Codec::encode)))
             .put("rules", JSONArray(snapshot.rules.map(Codec::encode)))
             .put("blocks", JSONArray(snapshot.blocks.map(Codec::encode)))

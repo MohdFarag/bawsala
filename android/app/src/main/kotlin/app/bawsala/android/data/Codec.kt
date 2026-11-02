@@ -28,6 +28,7 @@ import app.bawsala.core.model.TimeBlock
 import app.bawsala.core.model.TimingRule
 import app.bawsala.core.model.UploadState
 import app.bawsala.core.model.WaitingFor
+import app.bawsala.core.model.WeeklyReview
 import app.bawsala.core.prayer.EndRule
 import app.bawsala.core.prayer.IqamaRule
 import app.bawsala.core.prayer.PrayerSettings
@@ -259,6 +260,23 @@ object Codec {
             createdAt = Instant.parse(o.getString("createdAt")),
             completedAt = o.inst("completedAt"),
             sourceItemId = o.str("sourceItemId"),
+        )
+
+    // Weekly reviews
+    fun encode(r: WeeklyReview): JSONObject =
+        JSONObject()
+            .put("id", r.id)
+            .put("weekStart", r.weekStart.toString())
+            .put("stepsDone", r.stepsDone)
+            .put("outcomes", JSONArray(r.outcomes))
+            .put("completedAt", r.completedAt?.toString())
+
+    fun review(o: JSONObject) =
+        WeeklyReview(
+            weekStart = LocalDate.parse(o.getString("weekStart")),
+            stepsDone = o.optInt("stepsDone").coerceIn(0, 3),
+            outcomes = o.optJSONArray("outcomes").strings(),
+            completedAt = o.inst("completedAt"),
         )
 
     fun encode(a: Area): JSONObject =

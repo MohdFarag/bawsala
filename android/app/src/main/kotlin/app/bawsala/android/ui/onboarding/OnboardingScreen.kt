@@ -20,10 +20,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Mosque
-import androidx.compose.material.icons.outlined.MoveToInbox
-import androidx.compose.material.icons.outlined.Sync
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -50,6 +46,7 @@ import app.bawsala.android.ui.account.rememberGoogleCodeRequest
 import app.bawsala.android.ui.components.AppButton
 import app.bawsala.android.ui.components.ButtonStyle
 import app.bawsala.android.ui.components.Chip
+import app.bawsala.android.ui.design.lucide
 import app.bawsala.android.ui.i18n.tr
 import app.bawsala.android.ui.settings.PrayerSettingsEdits
 import app.bawsala.android.ui.theme.AppColors
@@ -160,14 +157,14 @@ private fun ColumnScope.Welcome(vm: AppViewModel, s: Snapshot) {
 
 @Composable
 private fun ColumnScope.Capture() {
-    Symbol(Icons.Outlined.MoveToInbox)
+    Symbol(lucide(R.drawable.ic_lucide_archive_restore))
     Heading(tr("onboardCaptureTitle"), tr("onboardCaptureBody"))
 }
 
 /** Picking a city sets the prayer times the plan protects (PRY01). */
 @Composable
 private fun ColumnScope.Prayers(vm: AppViewModel, s: Snapshot) {
-    Symbol(Icons.Outlined.Mosque)
+    Symbol(lucide(R.drawable.ic_lucide_moon))
     Heading(tr("onboardPrayerTitle"), tr("onboardPrayerBody"))
     Row(
         Modifier.horizontalScroll(rememberScrollState()),
@@ -195,7 +192,7 @@ private fun ColumnScope.SignIn(vm: AppViewModel, onEmail: () -> Unit) {
             GoogleCode.Cancelled -> Unit
         }
     }
-    Symbol(Icons.Outlined.Sync)
+    Symbol(lucide(R.drawable.ic_lucide_refresh_cw))
     Heading(tr("onboardSyncTitle"), tr("onboardSyncBody"))
     if (server.isNotBlank()) {
         AppButton(

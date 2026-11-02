@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.7.0](https://github.com/MohdFarag/bawsala/compare/v0.6.0...v0.7.0) (2026-11-02)
+
+
+### Features
+
+* **android:** V3 calm focus ([#49](https://github.com/MohdFarag/bawsala/issues/49)) ([2b2adb5](https://github.com/MohdFarag/bawsala/commit/2b2adb52a5ed692d46ba4f6baa9899bb4b3acb47))
+* **android:** V3 design system ([#46](https://github.com/MohdFarag/bawsala/issues/46)) ([e8ad977](https://github.com/MohdFarag/bawsala/commit/e8ad97732e70c3b1e61bed05d6790d59541dbeca))
+* **android:** V3 navigation shell and Today screen ([#47](https://github.com/MohdFarag/bawsala/issues/47)) ([9fc6ebc](https://github.com/MohdFarag/bawsala/commit/9fc6ebcb411c05508123c1e4ce055aec1fbf228c))
+* **android:** V3 one-card triage ([#51](https://github.com/MohdFarag/bawsala/issues/51)) ([ed9465d](https://github.com/MohdFarag/bawsala/commit/ed9465d8eccf4145f8e5727293de8634e0080f4f))
+* **android:** V3 projects screen (PARA) ([#52](https://github.com/MohdFarag/bawsala/issues/52)) ([4aada9c](https://github.com/MohdFarag/bawsala/commit/4aada9c1256f41000854cafcd6191e9675ca6849))
+* **android:** V3 quick capture ([#48](https://github.com/MohdFarag/bawsala/issues/48)) ([509ecf9](https://github.com/MohdFarag/bawsala/commit/509ecf943e3c7d3985a03f3cdb93cc659413279c))
+* **android:** V3 restyle of remaining screens (part 1) ([#55](https://github.com/MohdFarag/bawsala/issues/55)) ([9219f5a](https://github.com/MohdFarag/bawsala/commit/9219f5a9e751dcd4ddd89fc66269112d639b11c5))
+* **android:** V3 restyle part 2 — Lucide icons, More, search sheet ([#56](https://github.com/MohdFarag/bawsala/issues/56)) ([d171a66](https://github.com/MohdFarag/bawsala/commit/d171a66f171a4cc8156380823b902e5dfca97bb3))
+* **android:** V3 weekly planner ([#54](https://github.com/MohdFarag/bawsala/issues/54)) ([6104f8d](https://github.com/MohdFarag/bawsala/commit/6104f8d65f934ec899409f10a899e5ff95f0a429))
+* V3 projects and areas data model ([#50](https://github.com/MohdFarag/bawsala/issues/50)) ([a37a3c8](https://github.com/MohdFarag/bawsala/commit/a37a3c81d736d330e93ea7db968f00f4e8815254))
+* V3 weekly review ([#53](https://github.com/MohdFarag/bawsala/issues/53)) ([3e25434](https://github.com/MohdFarag/bawsala/commit/3e25434f7321329f8545d91fb2aec9ecfd6f4c85))
+
 ## [0.6.0](https://github.com/MohdFarag/bawsala/compare/v0.5.0...v0.6.0) (2026-11-01)
 
 

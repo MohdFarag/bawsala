@@ -11,6 +11,7 @@ import app.bawsala.core.model.Task
 import app.bawsala.core.model.TaskList
 import app.bawsala.core.model.TaskSession
 import app.bawsala.core.model.TimeBlock
+import app.bawsala.core.model.WeeklyReview
 import app.bawsala.core.prayer.PrayerSettings
 
 /** User preferences stored on the device. */
@@ -64,6 +65,7 @@ data class Snapshot(
     val lists: List<TaskList> = emptyList(),
     val projects: List<Project> = emptyList(),
     val areas: List<Area> = emptyList(),
+    val reviews: List<WeeklyReview> = emptyList(),
     val sessions: List<TaskSession> = emptyList(),
     val rules: List<RuleBinding> = emptyList(),
     val blocks: List<TimeBlock> = emptyList(),

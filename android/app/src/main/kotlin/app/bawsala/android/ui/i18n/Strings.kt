@@ -152,6 +152,48 @@ private val S: Map<String, Pair<String, String>> =
             ("Something went wrong; your last change may not be saved" to
                 "حدث خطأ؛ ربما لم يُحفظ آخر تغيير"),
         "triage" to ("Triage" to "الفرز"),
+        // V3 triage (M04/T03): one idea at a time.
+        "triageSubtitle" to ("One idea. One step." to "فكرة واحدة. خطوة واحدة."),
+        "triageEmptySubtitle" to
+            ("A place for everything on your mind" to "مساحة لكل ما يشغل بالك"),
+        "ideasLeft" to ("%1 ideas left" to "باقي %1 أفكار"),
+        "ideaOf" to ("%1 of %2" to "%1 من %2"),
+        "quickCapture" to ("Quick capture" to "التقاط سريع"),
+        "voiceNote" to ("Voice note" to "ملاحظة صوتية"),
+        "stepNotSet" to ("Next step not set yet" to "لم تُحدّد الخطوة بعد"),
+        "swipeReference" to ("Swipe for reference" to "اسحب لمرجع"),
+        "swipeAction" to ("Swipe for action" to "اسحب لإجراء"),
+        "triageQuestion" to ("Is there a step you can take?" to "هل فيها خطوة يمكن تنفيذها؟"),
+        "nextAction" to ("Next action" to "إجراء تالي"),
+        "project" to ("Project" to "مشروع"),
+        "noProject" to ("No project" to "بدون مشروع"),
+        "reference" to ("Reference" to "مرجع"),
+        "later" to ("Later" to "لاحقًا"),
+        "deleteIdea" to ("Delete idea" to "حذف الفكرة"),
+        "pageOptions" to ("Page options" to "خيارات الصفحة"),
+        "data" to ("Your data" to "بياناتك"),
+        "searchTitle" to ("Search your space." to "ابحث في مساحتك."),
+        "noResultsTryFewer" to ("No results. Try fewer words." to "لا توجد نتائج. جرّب كلمات أقل."),
+        "moreOptionsHint" to
+            ("For ideas that need something else." to "لأفكار تحتاج قرارًا مختلفًا."),
+        "laterWithDate" to ("Later, with a review date" to "لاحقًا مع موعد مراجعة"),
+        "deleteIdeaTitle" to ("Delete this idea?" to "حذف هذه الفكرة؟"),
+        "deleteIdeaHint" to
+            ("You can undo right after deleting." to "يمكنك التراجع مباشرة بعد الحذف."),
+        "deleteIdeaConfirm" to ("Delete the idea" to "احذف الفكرة"),
+        "keepIt" to ("Keep it" to "احتفظ بها"),
+        "triageDoneTitle" to ("Everything is in its place." to "كل شيء في مكانه."),
+        "triageDoneHint" to
+            ("You sorted your ideas. Take a breath, and return to your next step." to
+                "رتّبت أفكارك. خذ نفسًا، وارجع لخطوتك التالية."),
+        "backToToday" to ("Back to today" to "ارجع لليوم"),
+        "captureNewIdea" to ("Capture a new idea" to "التقط فكرة جديدة"),
+        "allIdeas" to ("All ideas" to "كل الأفكار"),
+        "triagedAction" to ("Turned into a next action." to "اتحولت لإجراء تالي."),
+        "triagedProject" to ("A new project begins." to "بداية مشروع جديد."),
+        "triagedReference" to ("Saved as a reference." to "اتحفظت كمرجع."),
+        "triagedLater" to ("Saved for later." to "اتحفظت لوقت لاحق."),
+        "triagedDelete" to ("Idea deleted." to "اتحذفت الفكرة."),
         "focusSpace" to ("Focus space" to "مساحة تركيز"),
         "onBreakCalm" to ("On a break" to "استراحة"),
         "oneStepEnough" to ("One step is enough for now" to "خطوة واحدة تكفي الآن"),
@@ -224,9 +266,145 @@ private val S: Map<String, Pair<String, String>> =
         "stepsDoneToday" to ("steps done today" to "خطوة اكتملت اليوم"),
         "projects" to ("Projects" to "المشاريع"),
         "projectsSubtitle" to ("Everything in a place that serves it" to "كل شيء في مكان يخدمه"),
-        "projectsSoon" to
-            ("Projects, areas, resources and archive arrive in the next update. Until then, your tasks and collections are here." to
-                "المشاريع والمجالات والمراجع والأرشيف قادمة في التحديث القادم. حتى ذلك الحين، مهامك ومجموعاتك هنا."),
+        // V3 weekly planner (T04).
+        "weekPlanner" to ("Weekly planner" to "المخطط الأسبوعي"),
+        "weekPlannerSubtitle" to ("Realistic room for what matters" to "مساحة واقعية لما يهم"),
+        "plannerHeading" to ("Your steps, in their time." to "خطواتك، في وقتها."),
+        "plannerHint" to
+            ("Drag an action onto the calendar, or choose \u201cPlan\u201d." to
+                "اسحب إجراءً للتقويم، أو اختر «جدولة»."),
+        "thisWeek" to ("This week" to "هذا الأسبوع"),
+        "nextWeek" to ("Next week" to "الأسبوع القادم"),
+        "lastWeek" to ("Last week" to "الأسبوع الماضي"),
+        "weeksAway" to ("%1 weeks away" to "بعد %1 أسابيع"),
+        "previousWeek" to ("Previous week" to "الأسبوع السابق"),
+        "nextWeekAction" to ("Following week" to "الأسبوع التالي"),
+        "legendFocus" to ("Focus" to "تركيز"),
+        "legendEvent" to ("Appointment" to "موعد"),
+        "legendPrayer" to ("Prayer" to "صلاة"),
+        "readyCount" to ("%1 ready" to "%1 جاهزة"),
+        "nothingToPlan" to
+            ("Every next action has a time. Nicely done." to "كل إجراء تالٍ له وقت. أحسنت."),
+        "dragCardHint" to
+            ("Long-press a card and drag it to a good time in the week." to
+                "اضغط مطولًا على البطاقة واسحبها لوقت مناسب في الأسبوع."),
+        "leaveSpace" to
+            ("Leave room between tasks. Not every free hour needs filling." to
+                "اترك مساحة بين المهام. ليس كل وقت متاح يحتاج امتلاء."),
+        "minutesShort" to ("%1 min" to "%1 د"),
+        "dayView" to ("Day view and agenda" to "عرض اليوم والأجندة"),
+        // V3 weekly review (M06/T08); the AI note is left out (decision 2).
+        "reviewSubtitle" to ("A small pause, and a lighter week" to "وقفة صغيرة، وأسبوع أخفّ"),
+        "weekNumber" to ("Week %1" to "الأسبوع %1"),
+        "reviewHeading" to ("Room to reorient." to "مساحة لإعادة التوجيه."),
+        "reviewIntro" to
+            ("Gather what's left, review what matters, and choose next week's direction. About 15 minutes is enough to start." to
+                "اجمع ما بقي، راجع ما يهم، واختر اتجاه الأسبوع القادم. نحو ١٥ دقيقة تكفي للبداية."),
+        "startReview" to ("Start the weekly review" to "ابدأ مراجعة الأسبوع"),
+        "continueReview" to ("Continue the review" to "أكمل المراجعة"),
+        "openReview" to ("Open this week's review" to "افتح مراجعة الأسبوع"),
+        "actionsDone" to ("Actions done" to "إجراء مكتمل"),
+        "projectsAdvanced" to ("Projects advanced" to "مشاريع تقدّمت"),
+        "focusSessions" to ("Focus sessions" to "جلسات تركيز"),
+        "planYourWeek" to ("Plan your week" to "خطّط لأسبوعك"),
+        "planYourWeekHint" to ("Realistic time for your next steps" to "وقت واقعي لخطواتك التالية"),
+        "threeSteps" to ("Three simple steps" to "ثلاث وقفات بسيطة"),
+        "stepsOf" to ("%1 of 3" to "%1 من ٣"),
+        "step1" to ("Gather what's on your mind" to "اجمع ما يشغل بالك"),
+        "step1Hint" to
+            ("Review triage, notes and appointments." to "راجع الفرز والملاحظات والمواعيد."),
+        "step2" to ("Review your commitments" to "راجع التزاماتك"),
+        "step2Hint" to
+            ("Active projects and what others owe you." to "المشاريع النشطة وما ينتظر الآخرين."),
+        "step3" to ("Choose the week's direction" to "اختر اتجاه الأسبوع"),
+        "step3Hint" to
+            ("Three outcomes that matter, and room for the unexpected." to
+                "ثلاث نتائج مهمة ومساحة للطوارئ."),
+        "step1Title" to ("Start with a clear space." to "ابدأ بمساحة صافية."),
+        "step2Title" to ("Look at what you've promised." to "انظر فيما التزمت به."),
+        "step3Title" to ("Where is this week heading?" to "إلى أين يتجه أسبوعك؟"),
+        "stepOfLine" to ("%1 of 3 · %2" to "%1 من ٣ · %2"),
+        "ideasWaiting" to
+            ("You have %1 ideas in triage. Sort them before planning the week." to
+                "عندك %1 أفكار في الفرز. رتّبها قبل تخطيط الأسبوع."),
+        "triageClear" to
+            ("Triage is clear. Anything missing from your head?" to
+                "الفرز صافٍ. هل في بالك شيء لم تلتقطه؟"),
+        "commitmentsNote" to
+            ("%1 active projects, %2 waiting on others." to "%1 مشاريع نشطة، و%2 بانتظار الآخرين."),
+        "noNextAction" to ("No next action yet:" to "بلا إجراء تالٍ بعد:"),
+        "sortIdeas" to ("Sort the ideas" to "افرز الأفكار"),
+        "addMissingIdea" to ("Add a missing idea" to "أضف فكرة ناقصة"),
+        "openProjects" to ("Open projects" to "افتح المشاريع"),
+        "nextStep" to ("Next step" to "الخطوة التالية"),
+        "outcomeN" to ("Outcome %1" to "النتيجة %1"),
+        "finishReview" to ("Finish the review" to "أنهِ المراجعة"),
+        "openPlanner" to ("Go to the planner" to "انتقل للمخطط"),
+        "weekDirection" to ("This week's direction" to "اتجاه الأسبوع"),
+        "reviewDone" to
+            ("Review saved. A lighter week ahead." to "حُفظت المراجعة. أسبوع أخفّ ينتظرك."),
+        // V3 projects (M05/T07): PARA.
+        "projectsHeading" to ("Spaces that move with you." to "مساحات تتحرّك معك."),
+        "newProject" to ("New project" to "مشروع جديد"),
+        "paraTabs" to ("PARA organization" to "تنظيم PARA"),
+        "paraProjects" to ("Projects" to "مشاريع"),
+        "paraAreas" to ("Areas" to "مجالات"),
+        "paraResources" to ("Resources" to "مراجع"),
+        "paraArchive" to ("Archive" to "أرشيف"),
+        "activeProjects" to ("%1 active projects" to "%1 مشاريع نشطة"),
+        "statusActive" to ("Active" to "نشط"),
+        "statusOnHold" to ("On hold" to "متوقف مؤقتًا"),
+        "statusCompleted" to ("Completed" to "مكتمل"),
+        "statusArchived" to ("Archived" to "مؤرشف"),
+        "actionsOf" to ("%1 of %2 actions" to "%1 من %2 إجراءات"),
+        "noActionsYet" to ("No actions yet" to "لا إجراءات بعد"),
+        "percent" to ("%1%" to "%1٪"),
+        "byPriority" to ("Priority" to "الأولوية"),
+        "nextIs" to ("Next: %1" to "التالي: %1"),
+        "setNextAction" to ("Set the next action" to "تحديد الإجراء التالي"),
+        "newProjectTitle" to ("What outcome do you want?" to "ما النتيجة التي تريدها؟"),
+        "newProjectHint" to
+            ("A project is an outcome that takes more than one step." to
+                "المشروع نتيجة تحتاج أكثر من خطوة."),
+        "newProjectPlaceholder" to
+            ("e.g. Get a test version of Bawsala ready" to "مثال: تجهيز نسخة بوصلة للاختبار"),
+        "createProject" to ("Create the project" to "أنشئ المشروع"),
+        "outcomeIs" to ("Outcome: %1" to "النتيجة: %1"),
+        "nextStepNote" to ("Next step: %1" to "الخطوة التالية: %1"),
+        "addAction" to ("Add an action" to "أضف إجراءً"),
+        "noArea" to ("No area" to "بدون مجال"),
+        "area" to ("Area" to "المجال"),
+        "pauseProject" to ("Put on hold" to "إيقاف مؤقت"),
+        "resumeProject" to ("Resume" to "استئناف"),
+        "completeProject" to ("Mark complete" to "تم الإنجاز"),
+        "archiveProject" to ("Archive" to "أرشفة"),
+        "reactivateProject" to ("Make active again" to "إعادة تنشيط"),
+        "deleteProject" to ("Delete project" to "حذف المشروع"),
+        "deleteProjectConfirm" to
+            ("Tap again to delete; its actions stay" to "اضغط مرة أخرى للحذف؛ إجراءاته تبقى"),
+        "newArea" to ("New area" to "مجال جديد"),
+        "newAreaHint" to
+            ("An area is an ongoing responsibility, like health or family." to
+                "المجال مسؤولية مستمرة، مثل الصحة أو العائلة."),
+        "areaPlaceholder" to ("e.g. Health" to "مثال: الصحة"),
+        "createArea" to ("Create the area" to "أنشئ المجال"),
+        "areaMeta" to ("%1 projects · %2 open actions" to "%1 مشاريع · %2 خطوات مفتوحة"),
+        "addProjectHere" to ("Add a project here" to "أضف مشروعًا هنا"),
+        "deleteArea" to ("Delete area" to "حذف المجال"),
+        "deleteAreaConfirm" to
+            ("Tap again to delete; its projects stay" to "اضغط مرة أخرى للحذف؛ مشاريعه تبقى"),
+        "noProjectsYet" to
+            ("No projects yet. Start with an outcome you care about." to
+                "لا مشاريع بعد. ابدأ بنتيجة تهمّك."),
+        "noAreasYet" to
+            ("Areas hold what you keep up over time: work, health, family." to
+                "المجالات تجمع ما تتابعه باستمرار: العمل، الصحة، العائلة."),
+        "noResourcesYet" to
+            ("Ideas you keep as a reference appear here." to "الأفكار التي تحفظها كمرجع تظهر هنا."),
+        "noArchiveYet" to
+            ("Completed and archived projects rest here." to
+                "المشاريع المكتملة والمؤرشفة ترتاح هنا."),
+        "backToTriage" to ("Back to triage" to "أرجعها للفرز"),
         "review" to ("Review" to "المراجعة"),
         "capture" to ("Capture" to "التقاط"),
         "menu" to ("Menu" to "القائمة"),
@@ -293,9 +471,6 @@ private val S: Map<String, Pair<String, String>> =
         "prayerOf" to ("%1 prayer" to "صلاة %1"),
         "leftUnplanned" to ("%1 left for unplanned work" to "%1 متبقية للأعمال غير المخططة"),
         "dayFull" to ("Your day is fully planned" to "يومك مخطط بالكامل"),
-        "nothingNext" to ("Nothing scheduled next" to "لا شيء مجدول بعد"),
-        "nothingNextHint" to
-            ("Plan a task or capture something new." to "خطط لمهمة أو التقط فكرة جديدة."),
         "openPlan" to ("Open plan" to "افتح الخطة"),
         "setCity" to ("Set your city for accurate prayer times" to "حدد مدينتك لمواقيت صلاة دقيقة"),
         "needsReview" to ("Needs review" to "تحتاج مراجعة"),
@@ -354,12 +529,7 @@ private val S: Map<String, Pair<String, String>> =
         "openExisting" to ("Open existing" to "افتح الموجود"),
         "keepNew" to ("Keep a new copy" to "احتفظ بنسخة جديدة"),
         "sharedFrom" to ("Shared from %1" to "مُشارك من %1"),
-        "itemOf" to ("ITEM %1 OF %2" to "العنصر %1 من %2"),
-        "whatBecome" to ("What should this become?" to "ماذا يجب أن يصبح هذا؟"),
-        "createTask" to ("Create a task" to "أنشئ مهمة"),
         "doNow" to ("Do now" to "نفّذ الآن"),
-        "saveReference" to ("Save as reference" to "احفظ كمرجع"),
-        "otherDecisions" to ("Someday, waiting, split or trash" to "لاحقًا، انتظار، تقسيم أو حذف"),
         "someday" to ("Someday" to "يومًا ما"),
         "waitingFor" to ("Waiting for" to "بانتظار"),
         "split" to ("Split" to "تقسيم"),
@@ -382,11 +552,7 @@ private val S: Map<String, Pair<String, String>> =
         "splitHint" to
             ("One part per line. Each becomes its own inbox item." to
                 "جزء في كل سطر. يصبح كل جزء عنصرًا مستقلًا في الوارد."),
-        "inboxZero" to ("Inbox processed" to "تمت معالجة الوارد"),
-        "inboxZeroHint" to ("Every item has a place now." to "لكل عنصر مكانه الآن."),
-        "backToInbox" to ("Back to Inbox" to "العودة إلى الوارد"),
         "movedTo" to ("Moved to %1" to "نُقل إلى %1"),
-        "capturedAgo" to ("Captured %1 · Original kept" to "التُقط %1 · الأصل محفوظ"),
         "task" to ("Task" to "مهمة"),
         "newTask" to ("New task" to "مهمة جديدة"),
         "important" to ("Important" to "مهم"),
@@ -505,8 +671,7 @@ private val S: Map<String, Pair<String, String>> =
         "newList" to ("New list name" to "اسم القائمة الجديدة"),
         "language" to ("Language" to "اللغة"),
         "reminderBefore" to ("Remind me before a session (min)" to "ذكّرني قبل الجلسة (دقيقة)"),
-        "searchHint" to ("Search tasks and notes" to "ابحث في المهام والملاحظات"),
-        "noResults" to ("No matches." to "لا نتائج."),
+        "searchHint" to ("A task, project or idea..." to "مهمة، مشروع، أو فكرة..."),
         "justNow" to ("just now" to "الآن"),
         "minAgo" to ("%1 min ago" to "قبل %1 دقيقة"),
         "hoursAgo" to ("%1 h ago" to "قبل %1 ساعة"),

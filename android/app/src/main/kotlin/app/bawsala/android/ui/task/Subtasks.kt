@@ -5,9 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.KeyboardArrowDown
-import androidx.compose.material.icons.outlined.KeyboardArrowUp
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -17,12 +14,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import app.bawsala.android.R
 import app.bawsala.android.domain.siblingOrder
 import app.bawsala.android.navigation.Screen
 import app.bawsala.android.ui.components.AppButton
 import app.bawsala.android.ui.components.AppIconButton
 import app.bawsala.android.ui.components.Field
 import app.bawsala.android.ui.components.TaskRowView
+import app.bawsala.android.ui.design.lucide
 import app.bawsala.android.ui.i18n.tr
 import app.bawsala.android.ui.theme.AppColors
 import app.bawsala.android.ui.theme.AppType
@@ -47,14 +46,14 @@ internal fun Subtasks(vm: AppViewModel, parent: Task, all: List<Task>) {
             ) {
                 if (i > 0)
                     AppIconButton(
-                        Icons.Outlined.KeyboardArrowUp,
+                        lucide(R.drawable.ic_lucide_chevron_up),
                         tr("moveUp"),
                         { vm.tasks.moveSubtask(child, -1) },
                         AppColors.secondary,
                     )
                 if (i < children.lastIndex)
                     AppIconButton(
-                        Icons.Outlined.KeyboardArrowDown,
+                        lucide(R.drawable.ic_lucide_chevron_down),
                         tr("moveDown"),
                         { vm.tasks.moveSubtask(child, 1) },
                         AppColors.secondary,

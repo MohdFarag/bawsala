@@ -9,6 +9,10 @@ class Navigator {
     val current: Screen
         get() = stack.last()
 
+    /** The screen under the current one, e.g. what stays visible behind the search sheet. */
+    val beneath: Screen?
+        get() = stack.getOrNull(stack.lastIndex - 1)
+
     val currentTab: Tab
         get() = Tab.entries.firstOrNull { it.root == stack.first() } ?: Tab.TODAY
 

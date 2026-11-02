@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Inbox
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -23,14 +21,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import app.bawsala.android.R
 import app.bawsala.android.data.Snapshot
 import app.bawsala.android.navigation.Screen
 import app.bawsala.android.ui.components.AppButton
 import app.bawsala.android.ui.components.Chip
 import app.bawsala.android.ui.components.Corner12
 import app.bawsala.android.ui.components.Empty
-import app.bawsala.android.ui.components.PageHeading
 import app.bawsala.android.ui.components.ScreenColumn
+import app.bawsala.android.ui.components.TopBar
+import app.bawsala.android.ui.design.lucide
 import app.bawsala.android.ui.i18n.num
 import app.bawsala.android.ui.i18n.tr
 import app.bawsala.android.ui.theme.AppColors
@@ -39,6 +39,7 @@ import app.bawsala.android.viewmodel.AppViewModel
 import app.bawsala.core.inbox.Triage
 import app.bawsala.core.model.CaptureKind
 
+/** "All ideas": every idea waiting in triage, newest first, with filters and sync state. */
 @Composable
 fun InboxScreen(vm: AppViewModel, s: Snapshot) {
     var filter by rememberSaveable { mutableStateOf("all") }
@@ -56,12 +57,8 @@ fun InboxScreen(vm: AppViewModel, s: Snapshot) {
     val summary = inboxSyncSummary(items, s.outbox, signedIn)
 
     ScreenColumn {
-        PageHeading(
-            tr("triage"),
-            tr("inboxSubtitle", items.size),
-            onSearch = { vm.navigator.open(Screen.Search) },
-            onMenu = { vm.navigator.open(Screen.More) },
-        )
+        TopBar(tr("allIdeas"), { vm.navigator.back() })
+        Text(tr("inboxSubtitle", items.size), style = AppType.small)
         Row(
             Modifier.horizontalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -70,15 +67,15 @@ fun InboxScreen(vm: AppViewModel, s: Snapshot) {
                 Chip("${tr(key)} ${num(list.size)}", filter == key, { filter = key })
             }
         }
-        if (items.isNotEmpty())
-            AppButton(tr("processInbox"), { vm.navigator.open(Screen.Process()) })
+        if (items.isNotEmpty()) AppButton(tr("processInbox"), { vm.navigator.back() })
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             groups.getValue(filter).forEach {
                 InboxCard(it, s.lang, syncBadge(it, s.outbox, signedIn)) {
                     vm.navigator.open(Screen.Process(it.id))
                 }
             }
-            if (items.isEmpty()) Empty(Icons.Outlined.Inbox, tr("inboxEmpty"), tr("inboxEmptyHint"))
+            if (items.isEmpty())
+                Empty(lucide(R.drawable.ic_lucide_inbox), tr("inboxEmpty"), tr("inboxEmptyHint"))
         }
         SyncFooter(summary) { vm.navigator.open(Screen.Account) }
     }

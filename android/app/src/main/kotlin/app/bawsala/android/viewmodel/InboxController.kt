@@ -21,6 +21,29 @@ class InboxController(private val ctx: ControllerScope) {
     val canUndo: Boolean
         get() = lastUndo != null
 
+    /** The idea the Triage tab shows; null shows the oldest one waiting. */
+    var focusId by mutableStateOf<String?>(null)
+        private set
+
+    /** Ideas sorted since the app started, for the triage progress line. */
+    var sortedCount by mutableStateOf(0)
+        private set
+
+    // V3 triage (M04/T03): the four main decisions stay on the card --------------------------
+
+    /** Turns an idea into one next action and moves on to the next idea. */
+    fun toNextAction(item: CaptureItem, listId: String = WORK_LIST) =
+        decide(item, Triage.toTasks(item, listOf(item.title), listId, ctx.now()), "triagedAction")
+
+    fun toProject(item: CaptureItem) =
+        decide(item, Triage.toProject(item, ctx.now()), "triagedProject")
+
+    fun toLater(item: CaptureItem) = decide(item, Triage.toSomeday(item), "triagedLater")
+
+    fun deleteIdea(item: CaptureItem) = decide(item, Triage.trash(item, ctx.now()), "triagedDelete")
+
+    fun toReference(item: CaptureItem) = decide(item, Triage.toReference(item), "triagedReference")
+
     // Triage decisions ---------------------------------------------------------------------
 
     /** Creates one task and opens it so the user can plan it. */
@@ -37,8 +60,6 @@ class InboxController(private val ctx: ControllerScope) {
         val next = nextAfter(item)
         apply(Triage.confirmDoNow(item, ctx.now()), message = "completed") { showNext(next) }
     }
-
-    fun toReference(item: CaptureItem) = moveTo(item, Triage.toReference(item), "references")
 
     fun toSomeday(item: CaptureItem, reviewOn: LocalDate?) =
         moveTo(item, Triage.toSomeday(item, reviewOn), "someday")
@@ -102,9 +123,13 @@ class InboxController(private val ctx: ControllerScope) {
         ctx.scope.launch {
             ctx.repository.undo(undo)
             ctx.messages.dismiss()
-            val screen = ctx.navigator.current
-            if (screen is Screen.Process || screen is Screen.TaskDetail)
-                ctx.navigator.replace(Screen.Process(undo.previous.id))
+            if (sortedCount > 0) sortedCount--
+            when (ctx.navigator.current) {
+                Screen.Inbox -> focusId = undo.previous.id
+                is Screen.Process,
+                is Screen.TaskDetail -> ctx.navigator.replace(Screen.Process(undo.previous.id))
+                else -> Unit
+            }
         }
     }
 
@@ -120,10 +145,24 @@ class InboxController(private val ctx: ControllerScope) {
 
     // Internals ----------------------------------------------------------------------------
 
-    private fun moveTo(item: CaptureItem, outcome: TriageOutcome, labelKey: String) {
+    private fun moveTo(item: CaptureItem, outcome: TriageOutcome, labelKey: String) =
+        decide(item, outcome, "movedTo", labelKey)
+
+    /** Stores a decision that takes the idea out of the queue, then shows the next idea. */
+    private fun decide(
+        item: CaptureItem,
+        outcome: TriageOutcome,
+        message: String,
+        argKey: String? = null,
+    ) {
         val next = nextAfter(item)
-        apply(outcome, message = "movedTo", argKey = labelKey) {
-            if (ctx.navigator.current is Screen.Process) showNext(next)
+        apply(outcome, message = message, argKey = argKey) {
+            sortedCount++
+            when (ctx.navigator.current) {
+                Screen.Inbox -> focusId = next
+                is Screen.Process -> showNext(next)
+                else -> Unit
+            }
         }
     }
 

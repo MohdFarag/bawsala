@@ -9,11 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.CloudDone
-import androidx.compose.material.icons.outlined.CloudUpload
-import androidx.compose.material.icons.outlined.ErrorOutline
-import androidx.compose.material.icons.outlined.PhoneAndroid
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,9 +17,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import app.bawsala.android.R
 import app.bawsala.android.ui.components.Corner12
 import app.bawsala.android.ui.components.card
 import app.bawsala.android.ui.components.kindIcon
+import app.bawsala.android.ui.design.lucide
 import app.bawsala.android.ui.format.itemTitle
 import app.bawsala.android.ui.format.kindKey
 import app.bawsala.android.ui.format.relative
@@ -81,10 +78,11 @@ fun InboxCard(item: CaptureItem, lang: String, badge: SyncBadge, onClick: () -> 
 fun SyncIcon(badge: SyncBadge, modifier: Modifier = Modifier.size(18.dp)) {
     val (icon, color) =
         when (badge) {
-            SyncBadge.LOCAL_ONLY -> Icons.Outlined.PhoneAndroid to AppColors.secondary
-            SyncBadge.PENDING -> Icons.Outlined.CloudUpload to AppColors.secondary
-            SyncBadge.SYNCED -> Icons.Outlined.CloudDone to AppColors.primary
-            SyncBadge.NEEDS_ATTENTION -> Icons.Outlined.ErrorOutline to AppColors.warningText
+            SyncBadge.LOCAL_ONLY -> lucide(R.drawable.ic_lucide_smartphone) to AppColors.secondary
+            SyncBadge.PENDING -> lucide(R.drawable.ic_lucide_cloud_upload) to AppColors.secondary
+            SyncBadge.SYNCED -> lucide(R.drawable.ic_lucide_cloud) to AppColors.primary
+            SyncBadge.NEEDS_ATTENTION ->
+                lucide(R.drawable.ic_lucide_circle_alert) to AppColors.warningText
         }
     Icon(icon, tr(syncKey(badge)), tint = color, modifier = modifier)
 }

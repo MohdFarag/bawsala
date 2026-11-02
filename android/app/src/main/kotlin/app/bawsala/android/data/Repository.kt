@@ -15,6 +15,7 @@ import app.bawsala.core.model.Task
 import app.bawsala.core.model.TaskList
 import app.bawsala.core.model.TaskSession
 import app.bawsala.core.model.TimeBlock
+import app.bawsala.core.model.WeeklyReview
 import app.bawsala.core.prayer.PrayerSettings
 import java.io.File
 import kotlinx.coroutines.Dispatchers
@@ -124,6 +125,13 @@ class Repository(context: Context) : SyncStore, AttachmentStore {
             .filter { it.areaId == id }
             .forEach { putProject(it.copy(areaId = null)) }
         db.delete(Table.areas, id)
+    }
+
+    /** Changes this week's review starting from its stored value (or a new one). */
+    suspend fun updateReview(blank: WeeklyReview, change: (WeeklyReview) -> WeeklyReview) = write {
+        val stored = db.get(Table.reviews, blank.id)?.let(Codec::review) ?: blank
+        val next = change(stored)
+        putDoc(Table.reviews, next.id, Codec.encode(next))
     }
 
     suspend fun saveBlock(block: TimeBlock) = write {
@@ -364,6 +372,7 @@ class Repository(context: Context) : SyncStore, AttachmentStore {
         if (Table.projects in tables)
             s = s.copy(projects = decodeAll(Table.projects, Codec::project))
         if (Table.areas in tables) s = s.copy(areas = decodeAll(Table.areas, Codec::area))
+        if (Table.reviews in tables) s = s.copy(reviews = decodeAll(Table.reviews, Codec::review))
         if (Table.sessions in tables)
             s = s.copy(sessions = decodeAll(Table.sessions, Codec::session))
         if (Table.rules in tables) s = s.copy(rules = decodeAll(Table.rules, Codec::ruleBinding))
