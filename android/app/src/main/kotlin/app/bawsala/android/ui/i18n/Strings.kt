@@ -179,6 +179,15 @@ private val S: Map<String, Pair<String, String>> =
             ("Start simply; the rest comes step by step." to "ابدأ ببساطة، والباقي خطوة بخطوة."),
         "startWithBawsala" to ("Start with Bawsala" to "ابدأ مع بوصلة"),
         // V3 sign-in and sign-up (AM01–AM06).
+        "brandPanelTitle" to ("Your space for a clearer day." to "مساحتك ليوم أوضح."),
+        "brandPanelBody" to
+            ("Gather what's on your mind, choose your next step, and return to what matters." to
+                "اجمع ما يشغل بالك، وحدّد خطوتك التالية، وارجع لما يهمك."),
+        "brandPanelCapture" to ("Quick capture, without the fuss" to "التقاط سريع، من غير تعقيد"),
+        "brandPanelSteps" to ("Clear steps, within your energy" to "خطوات واضحة، على قدّ طاقتك"),
+        "brandPanelReview" to ("A weekly pause that reorients" to "وقفة أسبوعية تعيد الاتجاه"),
+        "brandPanelFooter" to
+            ("Bawsala · One idea, then a step." to "بوصلة · فكرة واحدة، ثم خطوة."),
         "authFooter" to ("A small step, and a calmer mind." to "خطوة صغيرة، ومساحة ذهنية أهدأ."),
         "authFooterSaved" to
             ("Take your time; your next steps are saved." to "خذ وقتك، خطواتك التالية محفوظة."),

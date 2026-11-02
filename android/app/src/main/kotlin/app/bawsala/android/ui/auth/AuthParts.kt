@@ -1,24 +1,30 @@
 package app.bawsala.android.ui.auth
 
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
@@ -32,7 +38,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
@@ -65,6 +74,29 @@ internal fun AuthPage(
     @DrawableRes symbol: Int? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
+    // Tablets (AT01–AT06): the brand panel beside the form.
+    BoxWithConstraints(Modifier.fillMaxSize().background(Palette.paper)) {
+        if (maxWidth >= 840.dp)
+            Row(Modifier.fillMaxSize()) {
+                BrandPanel(Modifier.width(440.dp).fillMaxHeight())
+                Box(Modifier.weight(1f).fillMaxHeight()) {
+                    AuthForm(title, subtitle, onBack, footer, symbol, wide = true, content)
+                }
+            }
+        else AuthForm(title, subtitle, onBack, footer, symbol, wide = false, content)
+    }
+}
+
+@Composable
+private fun AuthForm(
+    title: String,
+    subtitle: String,
+    onBack: (() -> Unit)?,
+    footer: String,
+    @DrawableRes symbol: Int?,
+    wide: Boolean,
+    content: @Composable ColumnScope.() -> Unit,
+) {
     Column(
         Modifier.fillMaxSize()
             .background(Palette.paper)
@@ -74,9 +106,10 @@ internal fun AuthPage(
             .padding(horizontal = 26.dp, vertical = 12.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Column(Modifier.widthIn(max = 460.dp).fillMaxWidth()) {
+        Column(Modifier.widthIn(max = if (wide) 420.dp else 460.dp).fillMaxWidth()) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Wordmark(fontSize = 34)
+                // On tablets the wordmark is on the brand panel.
+                if (!wide) Wordmark(fontSize = 34)
                 Spacer(Modifier.weight(1f))
                 // The boards' back button is a forward arrow at the end edge in Arabic.
                 if (onBack != null)
@@ -243,5 +276,109 @@ internal fun ErrorNotice(text: String) {
     ) {
         LucideIcon(R.drawable.ic_lucide_circle_alert, tint = Palette.danger, size = 18.dp)
         Text(text, style = TypeScale.tiny.copy(color = Palette.danger, fontSize = 12.sp))
+    }
+}
+
+/** The tablet brand panel (AT01–AT06): wordmark, compass, promise, three features, footer. */
+@Composable
+private fun BrandPanel(modifier: Modifier) {
+    Column(modifier.background(Palette.green900).padding(horizontal = 42.dp, vertical = 48.dp)) {
+        Wordmark(fontSize = 46, color = Palette.white)
+        Compass(Modifier.padding(top = 56.dp).align(Alignment.CenterHorizontally))
+        Text(
+            tr("brandPanelTitle"),
+            style = TypeScale.headingLg.copy(fontSize = 30.sp, lineHeight = 48.sp),
+            color = Palette.white,
+            modifier = Modifier.padding(top = 44.dp),
+        )
+        Text(
+            tr("brandPanelBody"),
+            style = TypeScale.small,
+            color = Color(0xD9FFFFFF),
+            modifier = Modifier.padding(top = 10.dp, bottom = 34.dp),
+        )
+        listOf(
+                R.drawable.ic_lucide_inbox to "brandPanelCapture",
+                R.drawable.ic_lucide_check_check to "brandPanelSteps",
+                R.drawable.ic_lucide_calendar_days to "brandPanelReview",
+            )
+            .forEach { (icon, key) ->
+                Row(
+                    Modifier.padding(bottom = 18.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    LucideIcon(icon, tint = Palette.sage400, size = 18.dp)
+                    Text(
+                        tr(key),
+                        style = TypeScale.tiny.copy(fontSize = 12.sp),
+                        color = Palette.white,
+                    )
+                }
+            }
+        Spacer(Modifier.weight(1f))
+        Text(
+            tr("brandPanelFooter"),
+            style = TypeScale.tiny.copy(fontSize = 11.sp),
+            color = Color(0xB3FFFFFF),
+        )
+    }
+}
+
+/** The compass of the brand panel: a dial with ticks and the two-tone needle, and a check. */
+@Composable
+private fun Compass(modifier: Modifier) {
+    Box(modifier.size(170.dp)) {
+        Canvas(Modifier.matchParentSize()) {
+            val c = center
+            val r = size.minDimension / 2
+            drawCircle(Color(0xFF0E5B50), r, c)
+            drawCircle(Color(0x66B2C18F), r * 0.8f, c, style = Stroke(1.dp.toPx()))
+            for (angle in listOf(0f, 90f, 180f, 270f)) {
+                val rad = Math.toRadians(angle.toDouble())
+                val dx = kotlin.math.cos(rad).toFloat()
+                val dy = kotlin.math.sin(rad).toFloat()
+                drawLine(
+                    Palette.sage400,
+                    Offset(c.x + dx * r * 0.72f, c.y + dy * r * 0.72f),
+                    Offset(c.x + dx * r * 0.88f, c.y + dy * r * 0.88f),
+                    1.5.dp.toPx(),
+                )
+            }
+            // The needle points north-east, as in the boards: a light half and a sage half.
+            val tip = Offset(c.x + r * 0.42f, c.y - r * 0.47f)
+            val tail = Offset(c.x - r * 0.42f, c.y + r * 0.47f)
+            val left = Offset(c.x - r * 0.2f, c.y - r * 0.12f)
+            val right = Offset(c.x + r * 0.2f, c.y + r * 0.12f)
+            drawPath(
+                Path().apply {
+                    moveTo(tip.x, tip.y)
+                    lineTo(left.x, left.y)
+                    lineTo(right.x, right.y)
+                    close()
+                },
+                Color(0xFFE3EBD2),
+            )
+            drawPath(
+                Path().apply {
+                    moveTo(tail.x, tail.y)
+                    lineTo(left.x, left.y)
+                    lineTo(right.x, right.y)
+                    close()
+                },
+                Palette.sage400,
+            )
+            drawCircle(Palette.green900, 5.dp.toPx(), c)
+        }
+        Box(
+            Modifier.align(Alignment.TopEnd)
+                .offset(x = (-12).dp, y = 14.dp)
+                .size(30.dp)
+                .clip(CircleShape)
+                .background(Palette.green900),
+            contentAlignment = Alignment.Center,
+        ) {
+            LucideIcon(R.drawable.ic_lucide_check, tint = Palette.sage400, size = 16.dp)
+        }
     }
 }
