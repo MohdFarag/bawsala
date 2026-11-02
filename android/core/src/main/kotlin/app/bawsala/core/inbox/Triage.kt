@@ -256,9 +256,9 @@ object Triage {
             )
         return TriageOutcome(
             updated,
-            created,
-            refs,
-            Undo(item, created.map { it.id }, refs.map { it.id }),
+            newTasks = created,
+            newItems = refs,
+            undo = Undo(item, created.map { it.id }, refs.map { it.id }),
         )
     }
 
