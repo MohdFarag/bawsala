@@ -33,6 +33,7 @@ fun OptionRow(
     modifier: Modifier = Modifier,
     danger: Boolean = false,
     divider: Boolean = true,
+    subtitle: String? = null,
 ) {
     val color = if (danger) Palette.danger else Palette.ink
     Column(modifier.fillMaxWidth()) {
@@ -45,7 +46,10 @@ fun OptionRow(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             LucideIcon(icon, tint = if (danger) Palette.danger else Palette.green900, size = 20.dp)
-            Text(label, style = TypeScale.button, color = color, modifier = Modifier.weight(1f))
+            Column(Modifier.weight(1f).padding(vertical = 8.dp)) {
+                Text(label, style = TypeScale.button, color = color)
+                if (subtitle != null) Text(subtitle, style = TypeScale.tiny, maxLines = 1)
+            }
             LucideIcon(R.drawable.ic_lucide_chevron_right, tint = Palette.muted, size = 18.dp)
         }
         if (divider) Spacer(Modifier.fillMaxWidth().height(1.dp).background(Palette.line))

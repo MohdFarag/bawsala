@@ -10,10 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.CalendarMonth
-import androidx.compose.material.icons.outlined.Check
-import androidx.compose.material.icons.outlined.WarningAmber
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import app.bawsala.android.R
 import app.bawsala.android.data.Snapshot
 import app.bawsala.android.ui.components.AppButton
 import app.bawsala.android.ui.components.AppSheet
@@ -37,6 +34,7 @@ import app.bawsala.android.ui.components.SheetHeader
 import app.bawsala.android.ui.components.card
 import app.bawsala.android.ui.components.pickDate
 import app.bawsala.android.ui.components.pickTime
+import app.bawsala.android.ui.design.lucide
 import app.bawsala.android.ui.format.anchorKey
 import app.bawsala.android.ui.format.blockLabel
 import app.bawsala.android.ui.format.dayLabel
@@ -139,7 +137,7 @@ internal fun DateField(date: LocalDate, minDate: LocalDate, onPick: (LocalDate) 
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Icon(Icons.Outlined.CalendarMonth, null, tint = AppColors.primary)
+        Icon(lucide(R.drawable.ic_lucide_calendar_days), null, tint = AppColors.primary)
         Text(dayLabel(date, LocalLang.current), style = AppType.label)
     }
 }
@@ -244,7 +242,8 @@ private fun Availability(check: CheckResult, s: Snapshot) {
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Icon(
-            if (check.ok) Icons.Outlined.Check else Icons.Outlined.WarningAmber,
+            if (check.ok) lucide(R.drawable.ic_lucide_check)
+            else lucide(R.drawable.ic_lucide_circle_alert),
             null,
             tint = color,
         )

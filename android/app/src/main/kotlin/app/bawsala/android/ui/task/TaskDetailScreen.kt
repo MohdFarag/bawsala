@@ -1,5 +1,7 @@
 package app.bawsala.android.ui.task
 
+import app.bawsala.android.ui.design.lucide
+import app.bawsala.android.R
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.clickable
@@ -13,9 +15,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.MoreHoriz
-import androidx.compose.material.icons.outlined.StickyNote2
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -86,7 +85,7 @@ fun TaskDetailScreen(vm: AppViewModel, s: Snapshot, id: String, fresh: Boolean) 
 private fun TaskTopBar(vm: AppViewModel, task: Task, fresh: Boolean) {
     var menuOpen by remember { mutableStateOf(false) }
     TopBar(if (fresh) tr("newTask") else tr("task"), { vm.navigator.back() }) {
-        AppIconButton(Icons.Outlined.MoreHoriz, tr("more"), { menuOpen = !menuOpen })
+        AppIconButton(lucide(R.drawable.ic_lucide_ellipsis), tr("more"), { menuOpen = !menuOpen })
     }
     if (menuOpen) {
         Column(Modifier.fillMaxWidth().card().padding(4.dp)) {
@@ -276,7 +275,7 @@ private fun KeepLink(url: String) {
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(Icons.Outlined.StickyNote2, null, tint = AppColors.primary)
+        Icon(lucide(R.drawable.ic_lucide_sticky_note)2, null, tint = AppColors.primary)
         Text(tr("openInKeep"), style = AppType.label)
     }
 }

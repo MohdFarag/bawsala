@@ -15,9 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Check
-import androidx.compose.material.icons.outlined.NightsStay
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,6 +28,8 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import app.bawsala.android.R
+import app.bawsala.android.ui.design.lucide
 import app.bawsala.android.ui.i18n.tr
 import app.bawsala.android.ui.theme.AppColors
 import app.bawsala.android.ui.theme.Palette
@@ -52,7 +51,7 @@ fun Checkbox(checked: Boolean) {
     ) {
         if (checked)
             Icon(
-                Icons.Outlined.Check,
+                lucide(R.drawable.ic_lucide_check),
                 null,
                 tint = AppColors.onPrimary,
                 modifier = Modifier.size(14.dp),
@@ -118,7 +117,7 @@ fun PrayerRow(name: String, time: String) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Icon(Icons.Outlined.NightsStay, null, tint = Palette.amber)
+        Icon(lucide(R.drawable.ic_lucide_moon), null, tint = Palette.amber)
         Column {
             Text(name, style = TypeScale.button, color = Palette.amber)
             Text("$time · ${tr("protectedTime")}", style = TypeScale.tiny)
