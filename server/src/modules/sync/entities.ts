@@ -32,6 +32,13 @@ const shapes = {
     createdAt: iso,
   },
   areas: { title: z.string().max(200), archived: z.boolean() },
+  // Weekly reviews (V3), one per week, keyed by the week's first day.
+  reviews: {
+    weekStart: z.iso.date(),
+    stepsDone: z.number().int().min(0).max(3),
+    outcomes: z.array(z.string().max(500)).max(3),
+    completedAt: iso.nullable(),
+  },
   sessions: { taskId: z.string().max(128), start: iso, end: iso, state: z.string().max(16) },
   rules: { taskId: z.string().max(128) },
   blocks: { name: z.string().max(200), start: z.string().max(8), end: z.string().max(8), policy: z.string().max(16) },

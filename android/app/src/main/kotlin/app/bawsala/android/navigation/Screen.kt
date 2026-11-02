@@ -8,6 +8,9 @@ sealed interface Screen {
 
     data object Plan : Screen
 
+    /** V3 "المراجعة" tab: the weekly review; the planner opens from it. */
+    data object Review : Screen
+
     data object More : Screen
 
     /** V3 "المشاريع" tab: projects, areas, resources and archive (PARA). */
@@ -56,7 +59,7 @@ enum class Tab(val root: Screen) {
     TODAY(Screen.Today),
     TRIAGE(Screen.Inbox),
     PROJECTS(Screen.Projects),
-    REVIEW(Screen.Plan),
+    REVIEW(Screen.Review),
 }
 
 /** Tab roots and the secondary screens that keep the bottom navigation visible. */
@@ -73,4 +76,5 @@ val Screen.showsBottomBar: Boolean
                     Screen.Trash,
                     Screen.More,
                     Screen.InboxList,
+                    Screen.Plan,
                 )

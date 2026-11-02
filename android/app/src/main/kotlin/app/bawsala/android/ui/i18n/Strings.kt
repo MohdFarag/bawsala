@@ -262,6 +262,56 @@ private val S: Map<String, Pair<String, String>> =
         "stepsDoneToday" to ("steps done today" to "خطوة اكتملت اليوم"),
         "projects" to ("Projects" to "المشاريع"),
         "projectsSubtitle" to ("Everything in a place that serves it" to "كل شيء في مكان يخدمه"),
+        // V3 weekly review (M06/T08); the AI note is left out (decision 2).
+        "reviewSubtitle" to ("A small pause, and a lighter week" to "وقفة صغيرة، وأسبوع أخفّ"),
+        "weekNumber" to ("Week %1" to "الأسبوع %1"),
+        "reviewHeading" to ("Room to reorient." to "مساحة لإعادة التوجيه."),
+        "reviewIntro" to
+            ("Gather what's left, review what matters, and choose next week's direction. About 15 minutes is enough to start." to
+                "اجمع ما بقي، راجع ما يهم، واختر اتجاه الأسبوع القادم. نحو ١٥ دقيقة تكفي للبداية."),
+        "startReview" to ("Start the weekly review" to "ابدأ مراجعة الأسبوع"),
+        "continueReview" to ("Continue the review" to "أكمل المراجعة"),
+        "openReview" to ("Open this week's review" to "افتح مراجعة الأسبوع"),
+        "actionsDone" to ("Actions done" to "إجراء مكتمل"),
+        "projectsAdvanced" to ("Projects advanced" to "مشاريع تقدّمت"),
+        "focusSessions" to ("Focus sessions" to "جلسات تركيز"),
+        "planYourWeek" to ("Plan your week" to "خطّط لأسبوعك"),
+        "planYourWeekHint" to ("Realistic time for your next steps" to "وقت واقعي لخطواتك التالية"),
+        "threeSteps" to ("Three simple steps" to "ثلاث وقفات بسيطة"),
+        "stepsOf" to ("%1 of 3" to "%1 من ٣"),
+        "step1" to ("Gather what's on your mind" to "اجمع ما يشغل بالك"),
+        "step1Hint" to
+            ("Review triage, notes and appointments." to "راجع الفرز والملاحظات والمواعيد."),
+        "step2" to ("Review your commitments" to "راجع التزاماتك"),
+        "step2Hint" to
+            ("Active projects and what others owe you." to "المشاريع النشطة وما ينتظر الآخرين."),
+        "step3" to ("Choose the week's direction" to "اختر اتجاه الأسبوع"),
+        "step3Hint" to
+            ("Three outcomes that matter, and room for the unexpected." to
+                "ثلاث نتائج مهمة ومساحة للطوارئ."),
+        "step1Title" to ("Start with a clear space." to "ابدأ بمساحة صافية."),
+        "step2Title" to ("Look at what you've promised." to "انظر فيما التزمت به."),
+        "step3Title" to ("Where is this week heading?" to "إلى أين يتجه أسبوعك؟"),
+        "stepOfLine" to ("%1 of 3 · %2" to "%1 من ٣ · %2"),
+        "ideasWaiting" to
+            ("You have %1 ideas in triage. Sort them before planning the week." to
+                "عندك %1 أفكار في الفرز. رتّبها قبل تخطيط الأسبوع."),
+        "triageClear" to
+            ("Triage is clear. Anything missing from your head?" to
+                "الفرز صافٍ. هل في بالك شيء لم تلتقطه؟"),
+        "commitmentsNote" to
+            ("%1 active projects, %2 waiting on others." to "%1 مشاريع نشطة، و%2 بانتظار الآخرين."),
+        "noNextAction" to ("No next action yet:" to "بلا إجراء تالٍ بعد:"),
+        "sortIdeas" to ("Sort the ideas" to "افرز الأفكار"),
+        "addMissingIdea" to ("Add a missing idea" to "أضف فكرة ناقصة"),
+        "openProjects" to ("Open projects" to "افتح المشاريع"),
+        "nextStep" to ("Next step" to "الخطوة التالية"),
+        "outcomeN" to ("Outcome %1" to "النتيجة %1"),
+        "finishReview" to ("Finish the review" to "أنهِ المراجعة"),
+        "openPlanner" to ("Go to the planner" to "انتقل للمخطط"),
+        "weekDirection" to ("This week's direction" to "اتجاه الأسبوع"),
+        "reviewDone" to
+            ("Review saved. A lighter week ahead." to "حُفظت المراجعة. أسبوع أخفّ ينتظرك."),
         // V3 projects (M05/T07): PARA.
         "projectsHeading" to ("Spaces that move with you." to "مساحات تتحرّك معك."),
         "newProject" to ("New project" to "مشروع جديد"),
@@ -390,9 +440,6 @@ private val S: Map<String, Pair<String, String>> =
         "prayerOf" to ("%1 prayer" to "صلاة %1"),
         "leftUnplanned" to ("%1 left for unplanned work" to "%1 متبقية للأعمال غير المخططة"),
         "dayFull" to ("Your day is fully planned" to "يومك مخطط بالكامل"),
-        "nothingNext" to ("Nothing scheduled next" to "لا شيء مجدول بعد"),
-        "nothingNextHint" to
-            ("Plan a task or capture something new." to "خطط لمهمة أو التقط فكرة جديدة."),
         "openPlan" to ("Open plan" to "افتح الخطة"),
         "setCity" to ("Set your city for accurate prayer times" to "حدد مدينتك لمواقيت صلاة دقيقة"),
         "needsReview" to ("Needs review" to "تحتاج مراجعة"),
