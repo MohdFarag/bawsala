@@ -17,6 +17,7 @@ import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.outlined.Checklist
 import androidx.compose.material.icons.outlined.FolderOpen
 import androidx.compose.material.icons.outlined.NightsStay
+import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Sync
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material.icons.outlined.ViewTimeline
@@ -31,6 +32,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import app.bawsala.android.BuildConfig
 import app.bawsala.android.data.Snapshot
 import app.bawsala.android.navigation.Screen
 import app.bawsala.android.ui.components.Corner12
@@ -108,6 +110,11 @@ fun MoreScreen(vm: AppViewModel, s: Snapshot) {
         }
         NavRow(Icons.Outlined.Tune, tr("preferences"), tr("preferencesSub")) {
             vm.navigator.open(Screen.Preferences)
+        }
+        if (BuildConfig.DEBUG) {
+            NavRow(Icons.Outlined.Palette, tr("designGallery"), "V3") {
+                vm.navigator.open(Screen.DesignGallery)
+            }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
             Text(

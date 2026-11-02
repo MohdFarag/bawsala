@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The capture button's compass star, from the Bawsala V3 design. Tinted at use. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="30dp" android:height="30dp" android:viewportWidth="30" android:viewportHeight="30">
+    <path android:pathData="M15,2.5 L18.5,11.5 27.5,15 18.5,18.5 15,27.5 11.5,18.5 2.5,15 11.5,11.5Z"
+        android:strokeColor="#FF000000" android:strokeWidth="1.45" android:strokeLineJoin="round" />
+    <path android:pathData="M15,10.7v8.6m-4.3,-4.3h8.6"
+        android:strokeColor="#FF000000" android:strokeWidth="1.45" android:strokeLineCap="round" />
+</vector>
