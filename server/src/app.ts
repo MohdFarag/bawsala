@@ -12,6 +12,8 @@ import { accountRoutes } from "./modules/account/account.routes.js";
 import { AccountService } from "./modules/account/account.service.js";
 import { authRoutes } from "./modules/auth/auth.routes.js";
 import { AuthService } from "./modules/auth/auth.service.js";
+import { EmailLinks } from "./modules/auth/email-links.js";
+import { emailRoutes } from "./modules/auth/email.routes.js";
 import { googleRoutes } from "./modules/google/google.routes.js";
 import { type GoogleDeps, GoogleService } from "./modules/google/google.service.js";
 import { mcpRoutes } from "./modules/mcp/mcp.routes.js";
@@ -24,6 +26,7 @@ import { syncRoutes } from "./modules/sync/sync.routes.js";
 import { SyncService } from "./modules/sync/sync.service.js";
 import type { Config } from "./shared/config.js";
 import type { Db } from "./shared/db.js";
+import { LogMailer, type Mailer, ResendMailer } from "./shared/mailer.js";
 import { tooManyRequests } from "./shared/errors.js";
 
 export interface AppDeps {
@@ -33,18 +36,31 @@ export interface AppDeps {
   logger?: FastifyServerOptions["logger"];
   /** Replaces Google with fakes in tests. */
   google?: GoogleDeps;
+  /** Replaces the email provider (tests capture emails instead). */
+  mailer?: Mailer;
 }
 
 /** Creates the services once; routes and jobs receive them explicitly. */
-export function createServices({ config, db, storage, google: googleDeps }: Pick<AppDeps, "config" | "db" | "storage" | "google">) {
+export function createServices({
+  config,
+  db,
+  storage,
+  google: googleDeps,
+  mailer,
+}: Pick<AppDeps, "config" | "db" | "storage" | "google" | "mailer">) {
   const auth = new AuthService(db, config);
+  const emailLinks = new EmailLinks(
+    db,
+    config,
+    mailer ?? (config.RESEND_API_KEY ? new ResendMailer(config.RESEND_API_KEY, config.MAIL_FROM) : new LogMailer(console.info)),
+  );
   const sync = new SyncService(db);
   const media = new MediaService(db, storage ?? new LocalDiskStorage(config.MEDIA_DIR), config);
   const google = new GoogleService(db, sync, auth, config, googleDeps);
   const account = new AccountService(db, auth, sync, media, google);
   const planner = new PlannerService(sync);
   const mcpTokens = new McpTokenService(db);
-  return { auth, sync, media, account, planner, mcpTokens, google };
+  return { auth, emailLinks, sync, media, account, planner, mcpTokens, google };
 }
 
 export type Services = ReturnType<typeof createServices>;
@@ -83,7 +99,8 @@ export async function buildApp(deps: AppDeps) {
   await app.register(healthRoutes(db));
   await app.register(
     async (v1) => {
-      await v1.register(authRoutes(services.auth, config.AUTH_RATE_LIMIT_PER_MINUTE));
+      await v1.register(authRoutes(services.auth, services.emailLinks, config.AUTH_RATE_LIMIT_PER_MINUTE));
+      await v1.register(emailRoutes(services.emailLinks, config.AUTH_RATE_LIMIT_PER_MINUTE));
       await v1.register(syncRoutes(services.sync));
       await v1.register(mediaRoutes(services.media));
       await v1.register(accountRoutes(services.account));

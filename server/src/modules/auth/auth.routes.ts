@@ -4,9 +4,10 @@ import { principalOf } from "../../http/authenticate.js";
 import { ErrorBody } from "../../http/errors.js";
 import { notFound } from "../../shared/errors.js";
 import type { AuthService } from "./auth.service.js";
+import type { EmailLinks } from "./email-links.js";
 import { AuthResult, DeviceSession, LoginBody, RefreshBody, RegisterBody, SessionIdParams, TokenPair, User } from "./auth.schemas.js";
 
-export function authRoutes(auth: AuthService, credentialsPerMinute: number): FastifyPluginAsyncZod {
+export function authRoutes(auth: AuthService, links: EmailLinks, credentialsPerMinute: number): FastifyPluginAsyncZod {
   // Credential endpoints get a tighter rate limit than the rest of the API.
   const credentialLimit = { rateLimit: { max: credentialsPerMinute, timeWindow: "1 minute" } };
 
@@ -17,7 +18,14 @@ export function authRoutes(auth: AuthService, credentialsPerMinute: number): Fas
         config: credentialLimit,
         schema: { tags: ["auth"], summary: "Create an account", body: RegisterBody, response: { 201: AuthResult, 409: ErrorBody } },
       },
-      async (request, reply) => reply.status(201).send(await auth.register(request.body)),
+      async (request, reply) => {
+        const result = await auth.register(request.body);
+        // The account works right away; a failed email must not undo the sign-up (it can be resent).
+        await links.sendVerification(result.user).catch((err: unknown) => {
+          request.log.error({ err }, "Confirmation email failed");
+        });
+        return reply.status(201).send(result);
+      },
     );
 
     app.post(
