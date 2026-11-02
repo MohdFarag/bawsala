@@ -21,9 +21,10 @@ android {
         targetSdk = 35
         versionCode = System.getenv("VERSION_CODE")?.toIntOrNull() ?: 1
         versionName = System.getenv("VERSION_NAME") ?: "0.1.0"
-        // Pre-filled on the sign-in screen; the user can change it. Set per build with
-        // -PserverUrl=https://... (for example in the release workflow).
-        val serverUrl = (project.findProperty("serverUrl") as String?).orEmpty()
+        // The app's server; self-hosted builds set their own with -PserverUrl=https://...
+        // (an empty value brings back the sign-in form with a server address field).
+        val serverUrl =
+            (project.findProperty("serverUrl") as String?) ?: "https://bawsala-i1jm.onrender.com"
         buildConfigField("String", "DEFAULT_SERVER_URL", "\"$serverUrl\"")
     }
 

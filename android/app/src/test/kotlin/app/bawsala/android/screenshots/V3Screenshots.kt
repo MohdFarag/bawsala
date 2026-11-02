@@ -53,6 +53,10 @@ abstract class V3Screenshots(private val device: String) {
         open(vm)
         compose.setContent { PlannerTheme { AppRoot(vm, onExit = {}) } }
         compose.waitForIdle()
+        // Background work that cannot run under Robolectric (alarms) reports a failure toast;
+        // the screenshot shows the screen itself.
+        compose.runOnIdle { vm.messages.dismiss() }
+        compose.waitForIdle()
         compose.onRoot().captureRoboImage("build/outputs/roborazzi/$device/$name.png")
         // Stop the screen's background work (reminders, sync scheduling) so it cannot fail after
         // this test, inside the next one.
