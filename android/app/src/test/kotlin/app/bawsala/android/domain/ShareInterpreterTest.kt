@@ -33,6 +33,44 @@ class ShareInterpreterTest {
     }
 
     @Test
+    fun `a YouTube share is a link under the video's title`() {
+        val input =
+            share(
+                "https://youtu.be/dQw4w9WgXcQ?si=x",
+                subject = "Watch “Small habits” on YouTube",
+                from = "com.google.android.youtube",
+            )
+        assertEquals(CaptureKind.LINK, input.kind)
+        assertEquals("Small habits", input.title)
+        assertEquals("https://youtu.be/dQw4w9WgXcQ?si=x", input.text)
+        assertEquals("youtube", input.source.service)
+        val item = CaptureFactory.create("i", input, Instant.EPOCH) { "untitled" }
+        assertEquals("Small habits", item.title)
+        assertEquals("https://youtu.be/dQw4w9WgXcQ?si=x", item.url)
+    }
+
+    @Test
+    fun `a Drive link stays a link named after the file, while a sent copy stays a file`() {
+        val link =
+            share(
+                "https://drive.google.com/file/d/abc/view?usp=sharing",
+                subject = "Budget.xlsx",
+                from = "com.google.android.apps.docs",
+            )
+        assertEquals(CaptureKind.LINK, link.kind)
+        assertEquals("Budget.xlsx", link.title)
+        assertEquals("drive", link.source.service)
+        val copy =
+            share(
+                subject = "Budget.xlsx",
+                attachments = listOf(Attachment("a", "/p/a.xlsx", "application/vnd.ms-excel", 10)),
+                from = "com.google.android.apps.docs",
+            )
+        assertEquals(CaptureKind.FILE, copy.kind)
+        assertNull(copy.title)
+    }
+
+    @Test
     fun `Keep checklists become lists`() {
         assertEquals(CaptureKind.LIST, share("☐ Milk\n☐ Eggs").kind)
         assertEquals(CaptureKind.TEXT, share("Just one thought").kind)

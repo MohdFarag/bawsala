@@ -21,9 +21,32 @@ object ShareInterpreter {
             "com.google.android.keep" to "keep",
             "com.google.android.gm" to "gmail",
             "com.google.android.youtube" to "youtube",
+            "com.google.android.apps.docs" to "drive",
         )
 
     fun toCapture(share: SharedContent): CaptureInput {
+        val service = serviceOf(share.fromPackage)
+        // YouTube: the video as a link, under its own title (not "youtu.be").
+        val video =
+            CaptureFactory.firstUrl(share.text.orEmpty())?.takeIf {
+                SourceLinks.youTubeId(it) != null
+            }
+        if (video != null)
+            return CaptureInput(
+                kind = CaptureKind.LINK,
+                text = video,
+                title = SourceLinks.youTubeTitle(share.subject),
+                source = SourceRef(service, url = video),
+            )
+        // Drive: keep the link to the file (it stays in Drive), named after the file.
+        val drive = SourceLinks.driveLink(share.text)
+        if (drive != null && share.attachments.isEmpty())
+            return CaptureInput(
+                kind = CaptureKind.LINK,
+                text = drive,
+                title = share.subject?.takeIf { it.isNotBlank() },
+                source = SourceRef(service, url = drive),
+            )
         val text =
             listOfNotNull(
                     share.subject?.takeIf { it.isNotBlank() && share.text?.startsWith(it) != true },
@@ -34,7 +57,7 @@ object ShareInterpreter {
             kind = kindOf(text, share.attachments),
             text = text,
             attachments = share.attachments,
-            source = SourceRef(serviceOf(share.fromPackage), url = CaptureFactory.firstUrl(text)),
+            source = SourceRef(service, url = CaptureFactory.firstUrl(text)),
         )
     }
 

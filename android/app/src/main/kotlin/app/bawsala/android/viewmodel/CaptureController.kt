@@ -8,6 +8,7 @@ import app.bawsala.android.domain.CaptureFactory
 import app.bawsala.android.domain.CaptureInput
 import app.bawsala.android.domain.ShareInterpreter
 import app.bawsala.android.domain.SharedContent
+import app.bawsala.android.domain.SourceLinks
 import app.bawsala.android.media.MediaFiles
 import app.bawsala.android.navigation.Screen
 import app.bawsala.android.ui.format.kindKey
@@ -59,10 +60,23 @@ class CaptureController(private val ctx: ControllerScope) {
                         )
                     }
                 }
-            val input =
+            val shared =
                 ShareInterpreter.toCapture(
                     SharedContent(payload.text, payload.subject, attachments, payload.fromPackage)
                 )
+            // A YouTube video keeps its thumbnail with the capture, fetched once now.
+            val thumbnail =
+                SourceLinks.youTubeId(shared.source.url)?.let { id ->
+                    withContext(Dispatchers.IO) {
+                        MediaFiles.download(
+                            SourceLinks.youTubeThumbnail(id),
+                            ctx.container.mediaDir,
+                            name = "YouTube",
+                        )
+                    }
+                }
+            val input =
+                thumbnail?.let { shared.copy(attachments = shared.attachments + it) } ?: shared
             val similar = ShareInterpreter.findSimilar(ctx.snapshot.items, input)
             val newId = ctx.newId()
             save(input, newId).join()
