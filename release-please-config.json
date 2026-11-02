@@ -7,9 +7,19 @@
       "package-name": "bawsala",
       "changelog-path": "CHANGELOG.md",
       "extra-files": [
-        { "type": "json", "path": "server/package.json", "jsonpath": "$.version" },
-        { "type": "json", "path": "web/package.json", "jsonpath": "$.version" }
+        {
+          "type": "json",
+          "path": "server/package.json",
+          "jsonpath": "$.version"
+        },
+        {
+          "type": "json",
+          "path": "web/package.json",
+          "jsonpath": "$.version"
+        }
       ]
     }
-  }
+  },
+  "draft": true,
+  "force-tag-creation": true
 }
