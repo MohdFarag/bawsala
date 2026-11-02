@@ -150,6 +150,12 @@ private val S: Map<String, Pair<String, String>> =
             ("Something went wrong; your last change may not be saved" to
                 "حدث خطأ؛ ربما لم يُحفظ آخر تغيير"),
         "triage" to ("Triage" to "الفرز"),
+        // The prayer module switch (#74).
+        "prayerFeatures" to ("Prayer features" to "ميزات الصلاة"),
+        "off" to ("Off" to "متوقفة"),
+        "prayerFeaturesOff" to
+            ("Off: no prayer times, protected prayers or prayer-linked sessions. Bawsala works as a general planner; turn this on any time." to
+                "متوقفة: لا مواقيت صلاة ولا أوقات محمية ولا جلسات مرتبطة بالصلاة. تعمل بوصلة كمخطِّط عام، ويمكنك تشغيلها في أي وقت."),
         // P1: home-screen widget.
         "widgetNextStop" to ("Next stop" to "المحطة القادمة"),
         "widgetPriority" to ("Priority now" to "الأولوية الآن"),
