@@ -48,7 +48,6 @@ import app.bawsala.android.ui.onboarding.OnboardingScreen
 import app.bawsala.android.ui.plan.EventSheet
 import app.bawsala.android.ui.plan.PlanScreen
 import app.bawsala.android.ui.plan.ScheduleSheet
-import app.bawsala.android.ui.process.ProcessScreen
 import app.bawsala.android.ui.projects.ProjectsScreen
 import app.bawsala.android.ui.search.SearchScreen
 import app.bawsala.android.ui.settings.BlocksScreen
@@ -58,6 +57,7 @@ import app.bawsala.android.ui.settings.PreferencesScreen
 import app.bawsala.android.ui.task.TaskDetailScreen
 import app.bawsala.android.ui.theme.AppColors
 import app.bawsala.android.ui.today.TodayScreen
+import app.bawsala.android.ui.triage.TriageScreen
 import app.bawsala.android.viewmodel.AppViewModel
 import app.bawsala.android.viewmodel.DuplicateShare
 import app.bawsala.core.model.CaptureState
@@ -98,11 +98,12 @@ fun AppRoot(vm: AppViewModel, onExit: () -> Unit) {
 private fun ScreenHost(screen: Screen, vm: AppViewModel, s: Snapshot) =
     when (screen) {
         Screen.Today -> TodayScreen(vm, s)
-        Screen.Inbox -> InboxScreen(vm, s)
+        Screen.Inbox -> TriageScreen(vm, s)
+        Screen.InboxList -> InboxScreen(vm, s)
         Screen.Plan -> PlanScreen(vm, s)
         Screen.More -> MoreScreen(vm, s)
         Screen.Projects -> ProjectsScreen(vm, s)
-        is Screen.Process -> ProcessScreen(vm, s, screen.itemId)
+        is Screen.Process -> TriageScreen(vm, s, screen.itemId, opened = true)
         is Screen.TaskDetail -> TaskDetailScreen(vm, s, screen.id, screen.fresh)
         Screen.Focus -> FocusScreen(vm, s)
         Screen.Search -> SearchScreen(vm, s)

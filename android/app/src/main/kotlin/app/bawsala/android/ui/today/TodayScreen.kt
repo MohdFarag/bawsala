@@ -113,7 +113,7 @@ fun TodayScreen(vm: AppViewModel, s: Snapshot) {
                             verticalArrangement = Arrangement.spacedBy(15.dp),
                         ) {
                             InboxCard(state.inboxCount, Modifier.weight(1f)) {
-                                vm.navigator.open(Screen.Process())
+                                vm.navigator.switchTo(Tab.TRIAGE)
                             }
                             DoneCard(state.tasksDone, state.tasksTotal, Modifier.weight(1f))
                         }

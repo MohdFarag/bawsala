@@ -16,7 +16,11 @@ sealed interface Screen {
      */
     data object Projects : Screen
 
+    /** One idea on the Triage card, opened from elsewhere (search, a task's source). */
     data class Process(val itemId: String? = null) : Screen
+
+    /** Every idea waiting, as a list with filters ("All ideas" from Triage). */
+    data object InboxList : Screen
 
     data class TaskDetail(val id: String, val fresh: Boolean = false) : Screen
 
@@ -48,8 +52,8 @@ sealed interface Screen {
 
 /**
  * The V3 tabs, in reading order (right to left in Arabic): Today and Triage before the capture
- * button, Projects and Review after it. Triage opens the inbox and Review the planner until their
- * V3 screens arrive (phases 4 and 5).
+ * button, Projects and Review after it. Review opens the planner until its V3 screen arrives (phase
+ * 5).
  */
 enum class Tab(val root: Screen) {
     TODAY(Screen.Today),
@@ -65,4 +69,11 @@ val Screen.showsBottomBar: Boolean
     get() =
         isTabRoot ||
             this in
-                setOf(Screen.Search, Screen.Tasks, Screen.Collections, Screen.Trash, Screen.More)
+                setOf(
+                    Screen.Search,
+                    Screen.Tasks,
+                    Screen.Collections,
+                    Screen.Trash,
+                    Screen.More,
+                    Screen.InboxList,
+                )
