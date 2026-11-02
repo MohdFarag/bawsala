@@ -208,6 +208,8 @@ private fun recordTitle(s: Snapshot, table: String, id: String): String =
         "items" -> s.items.firstOrNull { it.id == id }?.title
         "tasks" -> s.tasks.firstOrNull { it.id == id }?.title
         "lists" -> s.lists.firstOrNull { it.id == id }?.name
+        "projects" -> s.projects.firstOrNull { it.id == id }?.title
+        "areas" -> s.areas.firstOrNull { it.id == id }?.title
         "blocks" -> s.blocks.firstOrNull { it.id == id }?.name
         else -> null
     } ?: table

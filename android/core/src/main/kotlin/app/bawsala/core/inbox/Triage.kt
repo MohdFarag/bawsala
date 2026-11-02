@@ -4,6 +4,7 @@ import app.bawsala.core.model.CaptureItem
 import app.bawsala.core.model.CaptureKind
 import app.bawsala.core.model.CaptureState
 import app.bawsala.core.model.ListEntry
+import app.bawsala.core.model.Project
 import app.bawsala.core.model.SourceRef
 import app.bawsala.core.model.Task
 import app.bawsala.core.model.WaitingFor
@@ -16,6 +17,7 @@ data class TriageOutcome(
     val item: CaptureItem,
     val newTasks: List<Task> = emptyList(),
     val newItems: List<CaptureItem> = emptyList(),
+    val newProjects: List<Project> = emptyList(),
     val undo: Undo,
 )
 
@@ -24,6 +26,7 @@ data class Undo(
     val previous: CaptureItem,
     val createdTaskIds: List<String>,
     val createdItemIds: List<String>,
+    val createdProjectIds: List<String> = emptyList(),
 )
 
 val TRASH_RETENTION: Duration = Duration.ofDays(30)
@@ -104,6 +107,26 @@ object Triage {
             updated,
             newTasks = tasks,
             undo = Undo(item, tasks.map { it.id }, emptyList()),
+        )
+    }
+
+    /**
+     * Turns an idea into a new project named after it (V3 triage). The project id is derived from
+     * the item id, so a retried decision cannot create a duplicate.
+     */
+    fun toProject(item: CaptureItem, now: Instant): TriageOutcome {
+        val project =
+            Project(
+                id = "${item.id}:project",
+                title = item.title.trim().ifEmpty { item.body.lineSequence().first().trim() },
+                outcome = item.body.takeIf { it.trim() != item.title.trim() }.orEmpty(),
+                createdAt = now,
+                sourceItemId = item.id,
+            )
+        return TriageOutcome(
+            item.copy(state = CaptureState.PROCESSED),
+            newProjects = listOf(project),
+            undo = Undo(item, emptyList(), emptyList(), listOf(project.id)),
         )
     }
 
@@ -233,9 +256,9 @@ object Triage {
             )
         return TriageOutcome(
             updated,
-            created,
-            refs,
-            Undo(item, created.map { it.id }, refs.map { it.id }),
+            newTasks = created,
+            newItems = refs,
+            undo = Undo(item, created.map { it.id }, refs.map { it.id }),
         )
     }
 

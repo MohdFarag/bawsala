@@ -4,6 +4,7 @@ import app.bawsala.core.inbox.Triage
 import app.bawsala.core.model.CaptureItem
 import app.bawsala.core.model.CaptureKind
 import app.bawsala.core.model.CaptureState
+import app.bawsala.core.model.ProjectStatus
 import app.bawsala.core.model.SourceRef
 import app.bawsala.core.model.WaitingFor
 import java.time.Duration
@@ -75,6 +76,22 @@ class TriageTest {
         assertEquals(out.newTasks.map { it.id }, out.item.derivedTaskIds)
         assertEquals(out.newTasks.map { it.id }, out.undo.createdTaskIds)
         assertEquals(CaptureState.PROCESSED, out.item.state)
+    }
+
+    @Test
+    fun `an idea becomes a new active project that undo removes`() {
+        val idea = item(body = "A small version people can test")
+        val out = Triage.toProject(idea, now)
+        val project = out.newProjects.single()
+        assertEquals("i1:project", project.id)
+        assertEquals("Review project brief", project.title)
+        assertEquals("A small version people can test", project.outcome)
+        assertEquals(ProjectStatus.ACTIVE, project.status)
+        assertEquals("i1", project.sourceItemId)
+        assertEquals(CaptureState.PROCESSED, out.item.state)
+        assertEquals(listOf(project.id), out.undo.createdProjectIds)
+        assertEquals(idea, out.undo.previous)
+        assertEquals(project.id, Triage.toProject(idea, now).newProjects.single().id)
     }
 
     @Test

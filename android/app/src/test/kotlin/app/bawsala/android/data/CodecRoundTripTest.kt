@@ -51,6 +51,31 @@ class CodecRoundTripTest {
     }
 
     @Test
+    fun projectsAndAreas() {
+        val p =
+            Project(
+                "p1",
+                "Launch Bawsala",
+                "A small version people can test",
+                "a1",
+                ProjectStatus.ON_HOLD,
+                "rocket",
+                now,
+                now.plusSeconds(60),
+                "i1",
+            )
+        assertEquals(p, Codec.project(Codec.encode(p)))
+        val minimal = Project("p2", "Tidy", createdAt = now)
+        assertEquals(minimal, Codec.project(Codec.encode(minimal)))
+        val future = Codec.encode(minimal).put("status", "SOMETHING_NEW")
+        assertEquals(ProjectStatus.ACTIVE, Codec.project(future).status)
+        val a = Area("a1", "Health", "sun", now, archived = true)
+        assertEquals(a, Codec.area(Codec.encode(a)))
+        val t = Task("t9", "Draft", listId = "work", createdAt = now, projectId = "p1")
+        assertEquals(t, Codec.task(Codec.encode(t)))
+    }
+
+    @Test
     fun tasksSessionsRules() {
         val t =
             Task(

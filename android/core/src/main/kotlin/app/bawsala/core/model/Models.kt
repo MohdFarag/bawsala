@@ -123,9 +123,47 @@ data class Task(
     val googleUrl: String? = null,
     /** Where the task can be done, e.g. "home" or "phone" (ORG01). */
     val context: String? = null,
+    /** The project this task moves forward, if any; separate from [listId] (V3 decision 4). */
+    val projectId: String? = null,
 )
 
 data class TaskList(val id: String, val name: String)
+
+/** Where a project stands; ARCHIVED projects leave the active views but keep their history. */
+enum class ProjectStatus {
+    ACTIVE,
+    ON_HOLD,
+    COMPLETED,
+    ARCHIVED,
+}
+
+/**
+ * An outcome that takes more than one step (PARA "Projects"). Tasks join it through
+ * [Task.projectId]; lists stay a separate way to group tasks.
+ */
+data class Project(
+    val id: String,
+    val title: String,
+    /** What "done" looks like, in the user's words. */
+    val outcome: String = "",
+    val areaId: String? = null,
+    val status: ProjectStatus = ProjectStatus.ACTIVE,
+    /** A Lucide icon name, e.g. "folder". */
+    val icon: String = "folder",
+    val createdAt: Instant,
+    val completedAt: Instant? = null,
+    /** The captured idea this project came from, when made during triage. */
+    val sourceItemId: String? = null,
+)
+
+/** An ongoing responsibility with no end date (PARA "Areas"), e.g. health or family. */
+data class Area(
+    val id: String,
+    val title: String,
+    val icon: String = "layers",
+    val createdAt: Instant,
+    val archived: Boolean = false,
+)
 
 /** How a session's time is determined (REL01). */
 sealed interface TimingRule {
