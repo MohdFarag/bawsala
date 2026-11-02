@@ -452,6 +452,7 @@ object Codec {
         JSONObject()
             .put("lang", p.lang)
             .put("protectPrayers", p.protectPrayers)
+            .put("prayerFeatures", p.prayerFeatures)
             .put("prayerConfirmed", p.prayerConfirmed)
             .put("reminderMinutes", p.reminderMinutes)
             .put("windowDays", p.windowDays)
@@ -461,6 +462,7 @@ object Codec {
         Prefs(
             lang = o.optString("lang", "en"),
             protectPrayers = o.optBoolean("protectPrayers", true),
+            prayerFeatures = o.optBoolean("prayerFeatures", true),
             prayerConfirmed = o.optBoolean("prayerConfirmed"),
             reminderMinutes = o.optInt("reminderMinutes", 10),
             windowDays = o.optInt("windowDays", 30),

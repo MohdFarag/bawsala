@@ -95,7 +95,8 @@ fun MoreScreen(vm: AppViewModel, s: Snapshot) {
                         tr("prayerTimes"),
                         R.drawable.ic_lucide_moon,
                         { vm.navigator.open(Screen.PrayerSettings) },
-                        subtitle = cityLabel(s.prayer, s.lang),
+                        subtitle =
+                            if (s.prefs.prayerFeatures) cityLabel(s.prayer, s.lang) else tr("off"),
                     )
                     OptionRow(
                         tr("timeBlocks"),

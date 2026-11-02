@@ -91,7 +91,9 @@ fun ScheduleSheet(vm: AppViewModel, s: Snapshot, target: ScheduleTarget) {
             task.title + (task.estimateMin?.let { " · " + tr("minutes", it) } ?: ""),
             style = AppType.small,
         )
-        if (editing == null) ModeSwitch(draft.mode) { draft = draft.copy(mode = it) }
+        // Relative to a prayer only while prayer features are on.
+        if (editing == null && s.prefs.prayerFeatures)
+            ModeSwitch(draft.mode) { draft = draft.copy(mode = it) }
         DateField(draft.date, minDate = vm.today()) { draft = draft.copy(date = it) }
         when (draft.mode) {
             ScheduleMode.FIXED -> FixedTimeFields(draft) { draft = it }

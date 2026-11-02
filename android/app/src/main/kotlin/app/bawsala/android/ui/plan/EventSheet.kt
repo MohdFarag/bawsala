@@ -65,7 +65,7 @@ fun EventSheet(vm: AppViewModel, s: Snapshot, target: EventTarget) {
         Field(draft.title, tr("eventTitle")) { draft = draft.copy(title = it) }
         DateField(draft.date, minDate = vm.today()) { draft = draft.copy(date = it) }
         Chip(tr("allDay"), draft.allDay, { draft = draft.copy(allDay = !draft.allDay) })
-        if (!draft.allDay) Timing(draft) { draft = it }
+        if (!draft.allDay) Timing(draft, s.prefs.prayerFeatures) { draft = it }
         CalendarChoice(s, draft) { draft = draft.copy(calendarId = it) }
         BlockChoice(s, draft) { draft = draft.copy(blockId = it) }
         Field(draft.location, tr("location")) { draft = draft.copy(location = it) }
@@ -89,18 +89,19 @@ fun EventSheet(vm: AppViewModel, s: Snapshot, target: EventTarget) {
 }
 
 @Composable
-private fun Timing(draft: EventDraft, onChange: (EventDraft) -> Unit) {
+private fun Timing(draft: EventDraft, prayerFeatures: Boolean, onChange: (EventDraft) -> Unit) {
     val context = LocalContext.current
     val lang = LocalLang.current
-    Segmented(
-        listOf(
-            ScheduleMode.FIXED.name to tr("fixedTime"),
-            ScheduleMode.RELATIVE.name to tr("relativeToPrayer"),
-        ),
-        draft.mode.name,
-        { onChange(draft.copy(mode = ScheduleMode.valueOf(it))) },
-        Modifier.fillMaxWidth(),
-    )
+    if (prayerFeatures)
+        Segmented(
+            listOf(
+                ScheduleMode.FIXED.name to tr("fixedTime"),
+                ScheduleMode.RELATIVE.name to tr("relativeToPrayer"),
+            ),
+            draft.mode.name,
+            { onChange(draft.copy(mode = ScheduleMode.valueOf(it))) },
+            Modifier.fillMaxWidth(),
+        )
     if (draft.mode == ScheduleMode.RELATIVE) {
         Row(
             Modifier.horizontalScroll(rememberScrollState()),

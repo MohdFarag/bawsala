@@ -90,7 +90,8 @@ fun TodayScreen(vm: AppViewModel, s: Snapshot) {
     val context = LocalContext.current
     LaunchedEffect(Unit) {
         if (
-            s.prefs.prayerConfirmed &&
+            s.prefs.prayerFeatures &&
+                s.prefs.prayerConfirmed &&
                 DeviceLocation.granted(context) &&
                 vm.settings.shouldCheckTravel()
         )
@@ -115,7 +116,7 @@ fun TodayScreen(vm: AppViewModel, s: Snapshot) {
                 verticalArrangement = Arrangement.spacedBy(if (wide) 24.dp else 20.dp),
             ) {
                 Intro(state, s, today, now, wide) { vm.navigator.open(Screen.Collections) }
-                if (!s.prefs.prayerConfirmed) {
+                if (s.prefs.prayerFeatures && !s.prefs.prayerConfirmed) {
                     SetCityCard(cityLabel(s.prayer, s.lang)) {
                         vm.navigator.open(Screen.PrayerSettings)
                     }
