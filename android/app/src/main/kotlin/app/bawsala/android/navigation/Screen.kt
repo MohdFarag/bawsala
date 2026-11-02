@@ -10,10 +10,7 @@ sealed interface Screen {
 
     data object More : Screen
 
-    /**
-     * V3 "المشاريع" tab. Until the PARA projects screen (phase 4) it links to tasks and
-     * collections.
-     */
+    /** V3 "المشاريع" tab: projects, areas, resources and archive (PARA). */
     data object Projects : Screen
 
     /** One idea on the Triage card, opened from elsewhere (search, a task's source). */

@@ -262,9 +262,68 @@ private val S: Map<String, Pair<String, String>> =
         "stepsDoneToday" to ("steps done today" to "خطوة اكتملت اليوم"),
         "projects" to ("Projects" to "المشاريع"),
         "projectsSubtitle" to ("Everything in a place that serves it" to "كل شيء في مكان يخدمه"),
-        "projectsSoon" to
-            ("Projects, areas, resources and archive arrive in the next update. Until then, your tasks and collections are here." to
-                "المشاريع والمجالات والمراجع والأرشيف قادمة في التحديث القادم. حتى ذلك الحين، مهامك ومجموعاتك هنا."),
+        // V3 projects (M05/T07): PARA.
+        "projectsHeading" to ("Spaces that move with you." to "مساحات تتحرّك معك."),
+        "newProject" to ("New project" to "مشروع جديد"),
+        "paraTabs" to ("PARA organization" to "تنظيم PARA"),
+        "paraProjects" to ("Projects" to "مشاريع"),
+        "paraAreas" to ("Areas" to "مجالات"),
+        "paraResources" to ("Resources" to "مراجع"),
+        "paraArchive" to ("Archive" to "أرشيف"),
+        "activeProjects" to ("%1 active projects" to "%1 مشاريع نشطة"),
+        "statusActive" to ("Active" to "نشط"),
+        "statusOnHold" to ("On hold" to "متوقف مؤقتًا"),
+        "statusCompleted" to ("Completed" to "مكتمل"),
+        "statusArchived" to ("Archived" to "مؤرشف"),
+        "actionsOf" to ("%1 of %2 actions" to "%1 من %2 إجراءات"),
+        "noActionsYet" to ("No actions yet" to "لا إجراءات بعد"),
+        "percent" to ("%1%" to "%1٪"),
+        "byPriority" to ("Priority" to "الأولوية"),
+        "nextIs" to ("Next: %1" to "التالي: %1"),
+        "setNextAction" to ("Set the next action" to "تحديد الإجراء التالي"),
+        "newProjectTitle" to ("What outcome do you want?" to "ما النتيجة التي تريدها؟"),
+        "newProjectHint" to
+            ("A project is an outcome that takes more than one step." to
+                "المشروع نتيجة تحتاج أكثر من خطوة."),
+        "newProjectPlaceholder" to
+            ("e.g. Get a test version of Bawsala ready" to "مثال: تجهيز نسخة بوصلة للاختبار"),
+        "createProject" to ("Create the project" to "أنشئ المشروع"),
+        "outcomeIs" to ("Outcome: %1" to "النتيجة: %1"),
+        "nextStepNote" to ("Next step: %1" to "الخطوة التالية: %1"),
+        "addAction" to ("Add an action" to "أضف إجراءً"),
+        "noArea" to ("No area" to "بدون مجال"),
+        "area" to ("Area" to "المجال"),
+        "pauseProject" to ("Put on hold" to "إيقاف مؤقت"),
+        "resumeProject" to ("Resume" to "استئناف"),
+        "completeProject" to ("Mark complete" to "تم الإنجاز"),
+        "archiveProject" to ("Archive" to "أرشفة"),
+        "reactivateProject" to ("Make active again" to "إعادة تنشيط"),
+        "deleteProject" to ("Delete project" to "حذف المشروع"),
+        "deleteProjectConfirm" to
+            ("Tap again to delete; its actions stay" to "اضغط مرة أخرى للحذف؛ إجراءاته تبقى"),
+        "newArea" to ("New area" to "مجال جديد"),
+        "newAreaHint" to
+            ("An area is an ongoing responsibility, like health or family." to
+                "المجال مسؤولية مستمرة، مثل الصحة أو العائلة."),
+        "areaPlaceholder" to ("e.g. Health" to "مثال: الصحة"),
+        "createArea" to ("Create the area" to "أنشئ المجال"),
+        "areaMeta" to ("%1 projects · %2 open actions" to "%1 مشاريع · %2 خطوات مفتوحة"),
+        "addProjectHere" to ("Add a project here" to "أضف مشروعًا هنا"),
+        "deleteArea" to ("Delete area" to "حذف المجال"),
+        "deleteAreaConfirm" to
+            ("Tap again to delete; its projects stay" to "اضغط مرة أخرى للحذف؛ مشاريعه تبقى"),
+        "noProjectsYet" to
+            ("No projects yet. Start with an outcome you care about." to
+                "لا مشاريع بعد. ابدأ بنتيجة تهمّك."),
+        "noAreasYet" to
+            ("Areas hold what you keep up over time: work, health, family." to
+                "المجالات تجمع ما تتابعه باستمرار: العمل، الصحة، العائلة."),
+        "noResourcesYet" to
+            ("Ideas you keep as a reference appear here." to "الأفكار التي تحفظها كمرجع تظهر هنا."),
+        "noArchiveYet" to
+            ("Completed and archived projects rest here." to
+                "المشاريع المكتملة والمؤرشفة ترتاح هنا."),
+        "backToTriage" to ("Back to triage" to "أرجعها للفرز"),
         "review" to ("Review" to "المراجعة"),
         "capture" to ("Capture" to "التقاط"),
         "menu" to ("Menu" to "القائمة"),
