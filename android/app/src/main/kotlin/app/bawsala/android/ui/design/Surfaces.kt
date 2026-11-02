@@ -87,7 +87,8 @@ fun SectionTitle(
                 )
         }
         if (action != null && onAction != null)
-            TextAction(action, onAction, icon = R.drawable.ic_lucide_chevron_left)
+            // "Forward": drawn left to right, mirrored in Arabic as in the design.
+            TextAction(action, onAction, icon = R.drawable.ic_lucide_chevron_right)
     }
 }
 

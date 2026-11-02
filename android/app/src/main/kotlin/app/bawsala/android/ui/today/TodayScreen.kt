@@ -59,7 +59,12 @@ fun TodayScreen(vm: AppViewModel, s: Snapshot) {
     val state = buildTodayState(s, vm.dayPlanner, today, vm.now())
 
     ScreenColumn {
-        PageHeading(tr("today"), dayLabel(today, s.lang)) { vm.navigator.open(Screen.Search) }
+        PageHeading(
+            tr("today"),
+            dayLabel(today, s.lang),
+            onSearch = { vm.navigator.open(Screen.Search) },
+            onMenu = { vm.navigator.open(Screen.More) },
+        )
         if (!s.prefs.prayerConfirmed)
             SetCityBanner(cityLabel(s.prayer, s.lang)) { vm.navigator.open(Screen.PrayerSettings) }
         ProgressCard(state.tasksDone, state.tasksTotal)
@@ -77,7 +82,7 @@ fun TodayScreen(vm: AppViewModel, s: Snapshot) {
                 },
             )
         } else {
-            NothingNextCard { vm.navigator.switchTo(Tab.PLAN) }
+            NothingNextCard { vm.navigator.switchTo(Tab.REVIEW) }
         }
 
         if (state.followUpsDue > 0)
@@ -197,7 +202,7 @@ private fun YourDay(rows: List<DayRow>, s: Snapshot, vm: AppViewModel) {
     val zone = s.prayer.zone
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(
-            Modifier.fillMaxWidth().height(48.dp).clickable { vm.navigator.switchTo(Tab.PLAN) },
+            Modifier.fillMaxWidth().height(48.dp).clickable { vm.navigator.switchTo(Tab.REVIEW) },
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {

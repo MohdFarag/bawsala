@@ -61,7 +61,7 @@ fun DesignGallery(onBack: () -> Unit) {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    IconAction(R.drawable.ic_lucide_arrow_right, "رجوع", onBack, soft = true)
+                    IconAction(R.drawable.ic_lucide_arrow_left, "رجوع", onBack, soft = true)
                     Wordmark()
                 }
                 Text("من فكرة عابرة، لخطوة واضحة.", style = TypeScale.headingLg)
@@ -128,7 +128,7 @@ fun DesignGallery(onBack: () -> Unit) {
                         ActionButton("غير متاح", {}, enabled = false)
                         IconAction(R.drawable.ic_lucide_mic, "تسجيل", {}, soft = true)
                         IconAction(R.drawable.ic_lucide_search, "بحث", {})
-                        TextAction("عرض الكل", {}, icon = R.drawable.ic_lucide_chevron_left)
+                        TextAction("عرض الكل", {}, icon = R.drawable.ic_lucide_chevron_right)
                     }
                 }
 

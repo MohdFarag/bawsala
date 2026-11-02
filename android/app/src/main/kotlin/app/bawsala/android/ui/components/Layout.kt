@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.MoreHoriz
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,15 +40,22 @@ fun ScreenColumn(
 }
 
 @Composable
-fun PageHeading(title: String, subtitle: String, onSearch: (() -> Unit)?) {
+fun PageHeading(
+    title: String,
+    subtitle: String,
+    onSearch: (() -> Unit)?,
+    onMenu: (() -> Unit)? = null,
+) {
     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
         Row(
             Modifier.fillMaxWidth().height(48.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Text(title, style = AppType.h1)
+            Text(title, style = AppType.h1, modifier = Modifier.weight(1f))
             if (onSearch != null) AppIconButton(Icons.Outlined.Search, tr("search"), onSearch)
+            // V3: settings and the rest of "More" sit behind the header's menu button.
+            if (onMenu != null) AppIconButton(Icons.Outlined.MoreHoriz, tr("menu"), onMenu)
         }
         Text(subtitle, style = AppType.small)
     }

@@ -54,7 +54,7 @@ class MainActivity : ComponentActivity() {
         // (CAP05).
         intent.toSharePayload(referrer?.host)?.let { payload ->
             vm.capture.receiveShare(payload)
-            vm.navigator.switchTo(Tab.INBOX)
+            vm.navigator.switchTo(Tab.TRIAGE)
         }
     }
 

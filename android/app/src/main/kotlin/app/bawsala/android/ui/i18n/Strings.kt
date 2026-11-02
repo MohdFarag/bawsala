@@ -151,6 +151,16 @@ private val S: Map<String, Pair<String, String>> =
         "actionFailed" to
             ("Something went wrong; your last change may not be saved" to
                 "حدث خطأ؛ ربما لم يُحفظ آخر تغيير"),
+        "triage" to ("Triage" to "الفرز"),
+        "projects" to ("Projects" to "المشاريع"),
+        "projectsSubtitle" to ("Everything in a place that serves it" to "كل شيء في مكان يخدمه"),
+        "projectsSoon" to
+            ("Projects, areas, resources and archive arrive in the next update. Until then, your tasks and collections are here." to
+                "المشاريع والمجالات والمراجع والأرشيف قادمة في التحديث القادم. حتى ذلك الحين، مهامك ومجموعاتك هنا."),
+        "review" to ("Review" to "المراجعة"),
+        "capture" to ("Capture" to "التقاط"),
+        "menu" to ("Menu" to "القائمة"),
+        "help" to ("Help" to "مساعدة"),
         "designGallery" to ("Design gallery" to "معرض التصميم"),
         "appName" to ("Bawsala" to "بوصلة"),
         "skip" to ("Skip" to "تخطٍّ"),

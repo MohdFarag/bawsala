@@ -53,11 +53,11 @@ fun ProcessScreen(vm: AppViewModel, s: Snapshot, itemId: String?) {
 
     ScreenColumn(gap = 20.dp, bottomPadding = 32.dp) {
         TopBar(tr("inbox"), { vm.navigator.back() }) {
-            AppIconButton(Icons.Outlined.Close, tr("close"), { vm.navigator.switchTo(Tab.INBOX) })
+            AppIconButton(Icons.Outlined.Close, tr("close"), { vm.navigator.switchTo(Tab.TRIAGE) })
         }
         if (item == null) {
             Empty(Icons.Outlined.DoneAll, tr("inboxZero"), tr("inboxZeroHint"))
-            AppButton(tr("backToInbox"), { vm.navigator.switchTo(Tab.INBOX) })
+            AppButton(tr("backToInbox"), { vm.navigator.switchTo(Tab.TRIAGE) })
             return@ScreenColumn
         }
         Row(
