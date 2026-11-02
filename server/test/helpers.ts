@@ -17,7 +17,10 @@ export interface TestContext {
 }
 
 /** Registers hooks giving the test file its own schema, media folder and app instance. */
-export function useTestApp(overrides: Partial<Record<keyof Config, string>> = {}, deps: Pick<AppDeps, "google"> = {}): TestContext {
+export function useTestApp(
+  overrides: Partial<Record<keyof Config, string>> = {},
+  deps: Pick<AppDeps, "google" | "mailer"> = {},
+): TestContext {
   const ctx = {} as TestContext;
   const schema = `test_${randomBytes(6).toString("hex")}`;
   let admin: Db;

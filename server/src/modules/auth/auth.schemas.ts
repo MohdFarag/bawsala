@@ -1,8 +1,8 @@
 import { z } from "zod";
 
-const Email = z.email().max(254);
+export const Email = z.email().max(254);
 // NIST SP 800-63B: length matters more than composition rules.
-const NewPassword = z.string().min(10).max(256);
+export const NewPassword = z.string().min(10).max(256);
 const DeviceName = z.string().trim().min(1).max(100).optional();
 
 export const RegisterBody = z.object({
@@ -28,6 +28,8 @@ export const User = z.object({
   id: z.uuid(),
   email: z.string(),
   displayName: z.string().nullable(),
+  /** Whether the email address has been confirmed (V3 AM05). */
+  emailVerified: z.boolean(),
   locale: z.string(),
   createdAt: z.string(),
 });

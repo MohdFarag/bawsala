@@ -24,6 +24,7 @@ export interface PublicUser {
   id: string;
   email: string;
   displayName: string | null;
+  emailVerified: boolean;
   locale: string;
   createdAt: string;
 }
@@ -42,6 +43,7 @@ const toPublicUser = (u: UserRow): PublicUser => ({
   id: u.id,
   email: u.email,
   displayName: u.displayName,
+  emailVerified: u.emailVerifiedAt !== null,
   locale: u.locale,
   createdAt: u.createdAt.toISOString(),
 });
@@ -106,6 +108,11 @@ export class AuthService {
               displayName: identity.name?.slice(0, 100) ?? null,
               locale,
             }));
+        }
+        // Google has verified this email (only verified emails are accepted).
+        if (!user.emailVerifiedAt) {
+          await users.markEmailVerified(tx, user.id);
+          user = { ...user, emailVerifiedAt: new Date() };
         }
         const tokens = await this.startSession(tx, user.id, deviceName);
         return { user: toPublicUser(user), tokens };
