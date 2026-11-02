@@ -1,0 +1,104 @@
+name: Repository CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited, ready_for_review]
+  push:
+    branches: [main]
+  schedule:
+    - cron: "30 3 * * *"
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      ref:
+        type: string
+        required: true
+      force_full:
+        type: boolean
+        default: true
+      device_suite:
+        type: string
+        default: smoke
+
+permissions:
+  contents: read
+
+concurrency:
+  group: repository-ci-${{ github.event_name }}-${{ inputs.ref || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  changes:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      android: ${{ steps.select.outputs.android }}
+      server: ${{ steps.select.outputs.server }}
+      web: ${{ steps.select.outputs.web }}
+      devices: ${{ steps.select.outputs.devices }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - run: python3 -m unittest discover -s .github/scripts -p 'test_*.py'
+      - id: select
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          FORCE_FULL: ${{ inputs.force_full || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+        run: python3 .github/scripts/quality.py select
+
+  android:
+    needs: changes
+    if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.android == 'true') }}
+    uses: ./.github/workflows/android.yml
+    permissions:
+      contents: write # optional trusted-PR screenshot publication; build jobs override to read
+      checks: write
+    with:
+      ref: ${{ inputs.ref || github.sha }}
+
+  server:
+    needs: changes
+    if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.server == 'true') }}
+    uses: ./.github/workflows/server.yml
+    with:
+      ref: ${{ inputs.ref || github.sha }}
+
+  web:
+    needs: changes
+    if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.web == 'true') }}
+    uses: ./.github/workflows/web.yml
+    with:
+      ref: ${{ inputs.ref || github.sha }}
+
+  security:
+    uses: ./.github/workflows/security.yml
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+    with:
+      ref: ${{ inputs.ref || github.sha }}
+
+  hygiene:
+    uses: ./.github/workflows/pr-hygiene.yml
+    permissions:
+      contents: read
+      pull-requests: write
+
+  gate:
+    name: Repository quality gate
+    if: always()
+    needs: [changes, android, server, web, security, hygiene]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.sha }}
+          persist-credentials: false
+      - env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
+        run: python3 .github/scripts/quality.py gate
