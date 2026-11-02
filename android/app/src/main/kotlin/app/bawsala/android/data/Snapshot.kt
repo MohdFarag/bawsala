@@ -13,7 +13,8 @@ import app.bawsala.core.prayer.PrayerSettings
 
 /** User preferences stored on the device. */
 data class Prefs(
-    val lang: String = "en",
+    /** Arabic first (V3 design); English keeps the same layout, left to right. */
+    val lang: String = "ar",
     val protectPrayers: Boolean = true,
     val prayerConfirmed: Boolean = false,
     val reminderMinutes: Int = 10,

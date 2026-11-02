@@ -45,6 +45,7 @@ import app.bawsala.android.ui.collections.CollectionsScreen
 import app.bawsala.android.ui.collections.TasksScreen
 import app.bawsala.android.ui.collections.TrashScreen
 import app.bawsala.android.ui.components.BottomNav
+import app.bawsala.android.ui.design.DesignGallery
 import app.bawsala.android.ui.focus.FocusScreen
 import app.bawsala.android.ui.i18n.LocalLang
 import app.bawsala.android.ui.i18n.tr
@@ -134,6 +135,7 @@ private fun ScreenHost(screen: Screen, vm: AppViewModel, s: Snapshot) =
         Screen.Preferences -> PreferencesScreen(vm, s)
         Screen.Account -> AccountScreen(vm, s)
         Screen.Calendars -> CalendarsScreen(vm, s)
+        Screen.DesignGallery -> DesignGallery(onBack = { vm.navigator.back() })
     }
 
 @Composable

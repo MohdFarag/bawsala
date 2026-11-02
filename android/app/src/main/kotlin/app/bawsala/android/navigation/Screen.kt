@@ -35,6 +35,9 @@ sealed interface Screen {
     data object Account : Screen
 
     data object Calendars : Screen
+
+    /** Every V3 design token and component (debug builds only). */
+    data object DesignGallery : Screen
 }
 
 enum class Tab(val root: Screen) {

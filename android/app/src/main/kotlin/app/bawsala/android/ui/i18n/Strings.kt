@@ -3,7 +3,7 @@ package app.bawsala.android.ui.i18n
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.compositionLocalOf
 
-val LocalLang = compositionLocalOf { "en" }
+val LocalLang = compositionLocalOf { "ar" }
 
 private val S: Map<String, Pair<String, String>> =
     mapOf(
@@ -151,6 +151,7 @@ private val S: Map<String, Pair<String, String>> =
         "actionFailed" to
             ("Something went wrong; your last change may not be saved" to
                 "حدث خطأ؛ ربما لم يُحفظ آخر تغيير"),
+        "designGallery" to ("Design gallery" to "معرض التصميم"),
         "appName" to ("Bawsala" to "بوصلة"),
         "skip" to ("Skip" to "تخطٍّ"),
         "next" to ("Next" to "التالي"),
