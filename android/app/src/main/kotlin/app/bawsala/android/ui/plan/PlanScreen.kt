@@ -72,7 +72,12 @@ fun PlanScreen(vm: AppViewModel, s: Snapshot) {
             date.month.getDisplayName(TextStyle.FULL_STANDALONE, locale(s.lang)) +
                 " " +
                 localizeDigits("${date.year}", s.lang)
-        PageHeading(tr("plan"), month) { vm.navigator.open(Screen.Search) }
+        PageHeading(
+            tr("plan"),
+            month,
+            onSearch = { vm.navigator.open(Screen.Search) },
+            onMenu = { vm.navigator.open(Screen.More) },
+        )
         WeekStrip(s, weekOf(date), selected = date, today = today) { selected = it.toString() }
         ViewSwitcher(mode) { view = it.name }
         AppButton(

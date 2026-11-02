@@ -3,6 +3,8 @@ package app.bawsala.android.ui.today
 import app.bawsala.android.data.Snapshot
 import app.bawsala.android.domain.DayPlanner
 import app.bawsala.core.inbox.Triage
+import app.bawsala.core.model.CalendarEvent
+import app.bawsala.core.model.CaptureState
 import app.bawsala.core.model.SessionState
 import app.bawsala.core.model.Task
 import app.bawsala.core.model.TaskSession
@@ -36,6 +38,26 @@ sealed interface DayRow {
     }
 }
 
+/** "المحطة القادمة": the next appointment, planned session or prayer today. */
+sealed interface NextStop {
+    val start: Instant
+
+    data class Event(val event: CalendarEvent) : NextStop {
+        override val start: Instant
+            get() = event.start
+    }
+
+    data class Session(val item: ScheduledTask) : NextStop {
+        override val start: Instant
+            get() = item.session.start
+    }
+
+    data class Prayer(val anchor: PrayerAnchor) : NextStop {
+        override val start: Instant
+            get() = anchor.adhan
+    }
+}
+
 data class TodayState(
     val tasksDone: Int,
     val tasksTotal: Int,
@@ -43,7 +65,28 @@ data class TodayState(
     val rows: List<DayRow>,
     val followUpsDue: Int,
     val freeTime: Duration,
+    /**
+     * The priority card's task (V3): the session in progress or next, else [priorityOrder] first.
+     */
+    val priority: Task? = null,
+    /** Up to three more open tasks, in [priorityOrder]. */
+    val nextActions: List<Task> = emptyList(),
+    val nextStop: NextStop? = null,
+    /** Whether the priority task's estimate fits before the next stop. */
+    val priorityFits: Boolean = false,
+    /** Unprocessed inbox items, for the tablet's "calmer mind" card. */
+    val inboxCount: Int = 0,
 )
+
+/**
+ * The order tasks are suggested in, without any AI: important first, then the nearest deadline,
+ * then the nearest own target date, then the oldest.
+ */
+val priorityOrder: Comparator<Task> =
+    compareByDescending<Task> { it.important }
+        .thenBy(nullsLast()) { it.deadline }
+        .thenBy(nullsLast()) { it.targetDate }
+        .thenBy { it.createdAt }
 
 /** Everything the Today screen shows, computed from stored data — no UI code here. */
 fun buildTodayState(
@@ -73,7 +116,23 @@ fun buildTodayState(
         it.task.status != TaskStatus.COMPLETED && it.session.end.isAfter(now)
     }
 
+    val open =
+        snapshot.tasks
+            .filter { it.status != TaskStatus.COMPLETED && it.parentId == null }
+            .sortedWith(priorityOrder)
+    val priority = upNext?.task ?: open.firstOrNull()
+    val nextStop = nextStop(snapshot, dayPlanner, today, now, scheduled)
+    val untilNextStop = nextStop?.let { Duration.between(now, it.start) }
+
     return TodayState(
+        priority = priority,
+        nextActions = open.filter { it.id != priority?.id }.take(3),
+        nextStop = nextStop,
+        priorityFits =
+            priority?.estimateMin != null &&
+                untilNextStop != null &&
+                untilNextStop >= Duration.ofMinutes(priority.estimateMin!!.toLong()),
+        inboxCount = snapshot.items.count { it.state == CaptureState.INBOX },
         tasksDone = todaysTasks.count { it.status == TaskStatus.COMPLETED },
         tasksTotal = todaysTasks.size,
         upNext = upNext,
@@ -102,6 +161,31 @@ private fun dayRows(
     val upcoming = anchors.filter { it.end.isAfter(now) }
     val prayers = upcoming.filter { it.adhan.isBefore(lastEnd) }.ifEmpty { upcoming.take(1) }
     return (prayers.map(DayRow::Prayer) + sessions.map(DayRow::Session)).sortedBy { it.at }
+}
+
+/** The earliest event, session or prayer still to start today. */
+private fun nextStop(
+    snapshot: Snapshot,
+    dayPlanner: DayPlanner,
+    today: LocalDate,
+    now: Instant,
+    scheduled: List<ScheduledTask>,
+): NextStop? {
+    val dayEnd = today.plusDays(1).atStartOfDay(snapshot.prayer.zone).toInstant()
+    val candidates =
+        snapshot.events
+            .filter { !it.allDay && it.start.isAfter(now) && it.start.isBefore(dayEnd) }
+            .map(NextStop::Event) +
+            scheduled
+                .filter {
+                    it.task.status != TaskStatus.COMPLETED && it.session.start.isAfter(now)
+                }
+                .map(NextStop::Session) +
+            dayPlanner
+                .anchors(snapshot, today)
+                .filter { it.adhan.isAfter(now) }
+                .map(NextStop::Prayer)
+    return candidates.minByOrNull { it.start }
 }
 
 private fun freeTime(

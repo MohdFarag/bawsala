@@ -56,9 +56,12 @@ fun InboxScreen(vm: AppViewModel, s: Snapshot) {
     val summary = inboxSyncSummary(items, s.outbox, signedIn)
 
     ScreenColumn {
-        PageHeading(tr("inbox"), tr("inboxSubtitle", items.size)) {
-            vm.navigator.open(Screen.Search)
-        }
+        PageHeading(
+            tr("triage"),
+            tr("inboxSubtitle", items.size),
+            onSearch = { vm.navigator.open(Screen.Search) },
+            onMenu = { vm.navigator.open(Screen.More) },
+        )
         Row(
             Modifier.horizontalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.spacedBy(8.dp),

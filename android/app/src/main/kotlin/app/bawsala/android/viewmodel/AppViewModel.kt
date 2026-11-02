@@ -50,6 +50,15 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
 
     // Sheets shown over the current screen.
     var captureOpen by mutableStateOf(false)
+
+    /** Set when capture was opened by holding the capture button: start in voice and record. */
+    var captureVoice by mutableStateOf(false)
+
+    fun openCapture(voice: Boolean = false) {
+        captureVoice = voice
+        captureOpen = true
+    }
+
     var scheduling by mutableStateOf<ScheduleTarget?>(null)
     var editingEvent by mutableStateOf<EventTarget?>(null)
 

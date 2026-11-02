@@ -80,11 +80,14 @@ fun CaptureSheet(vm: AppViewModel) {
         vm.captureOpen = false
     }
 
+    // Opened by holding the capture button: go straight to voice.
+    LaunchedEffect(Unit) { if (vm.captureVoice) state.mode = CaptureMode.VOICE }
+
     AppSheet(onDismiss = ::close) {
         SheetHeader(tr("captureSomething"), onClose = ::close)
         Text(tr("captureSubtitle"), style = AppType.small)
         ModePicker(state.mode) { state.mode = it }
-        ModeAction(state)
+        ModeAction(state, autoRecord = vm.captureVoice) { vm.captureVoice = false }
         Status(state, vm.lang)
         TextArea(state)
         Row(
@@ -131,7 +134,11 @@ private fun ModePicker(selected: CaptureMode, onSelect: (CaptureMode) -> Unit) {
 
 /** The button for the selected media mode: record, take a photo or video, or pick files. */
 @Composable
-private fun ModeAction(state: CaptureSheetState) {
+private fun ModeAction(
+    state: CaptureSheetState,
+    autoRecord: Boolean = false,
+    onAutoRecordStarted: () -> Unit = {},
+) {
     val context = LocalContext.current
     val takePhoto =
         rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
@@ -150,6 +157,13 @@ private fun ModeAction(state: CaptureSheetState) {
         rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
             if (granted) state.startRecording() else state.onMicPermissionDenied()
         }
+    // Holding the capture button starts recording at once (asking for the microphone if needed).
+    LaunchedEffect(autoRecord) {
+        if (!autoRecord) return@LaunchedEffect
+        onAutoRecordStarted()
+        if (hasPermission(context, Manifest.permission.RECORD_AUDIO)) state.startRecording()
+        else askMic.launch(Manifest.permission.RECORD_AUDIO)
+    }
     LaunchedEffect(state.recording) {
         while (state.recording) {
             state.refreshRecordingTime()
