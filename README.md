@@ -102,6 +102,10 @@ Security reports: see [SECURITY.md](SECURITY.md).
 
 ## Contributing
 
+Working with an AI agent or picking the project up? Start with [`AGENTS.md`](AGENTS.md), then
+[`docs/status.md`](docs/status.md) and [`docs/decisions.md`](docs/decisions.md).
+
+
 Issues and pull requests are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow, checks and conventions.
 
 ## License
