@@ -152,6 +152,18 @@ private val S: Map<String, Pair<String, String>> =
             ("Something went wrong; your last change may not be saved" to
                 "حدث خطأ؛ ربما لم يُحفظ آخر تغيير"),
         "triage" to ("Triage" to "الفرز"),
+        "focusSpace" to ("Focus space" to "مساحة تركيز"),
+        "onBreakCalm" to ("On a break" to "استراحة"),
+        "oneStepEnough" to ("One step is enough for now" to "خطوة واحدة تكفي الآن"),
+        "focusOptions" to ("Focus options" to "خيارات التركيز"),
+        "pomodoro" to ("Pomodoro" to "بومودورو"),
+        "openTimer" to ("Open" to "مفتوح"),
+        "pomodoroCaption" to ("One session · %1 min" to "جلسة واحدة · %1 دقيقة"),
+        "openCaption" to ("Time passes gently" to "الوقت يمضي على مهل"),
+        "strayThought" to ("A stray thought? Leave it here." to "فكرة طارئة؟ اتركها هنا."),
+        "strayThoughtNote" to
+            ("Capturing it saves it and keeps you in your focus." to
+                "التقاط الفكرة يحفظها، ويتركك في تركيزك."),
         "captureTitle" to ("An idea now, its place later." to "فكرة الآن، مكانها بعدين."),
         "captureDesc" to
             ("Write as you think. Bawsala notices the details with you." to
