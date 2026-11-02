@@ -169,7 +169,7 @@ private val S: Map<String, Pair<String, String>> =
         "reference" to ("Reference" to "مرجع"),
         "later" to ("Later" to "لاحقًا"),
         "deleteIdea" to ("Delete idea" to "حذف الفكرة"),
-        "moreOptions" to ("More options" to "خيارات أخرى"),
+        "pageOptions" to ("Page options" to "خيارات الصفحة"),
         "moreOptionsHint" to
             ("For ideas that need something else." to "لأفكار تحتاج قرارًا مختلفًا."),
         "laterWithDate" to ("Later, with a review date" to "لاحقًا مع موعد مراجعة"),

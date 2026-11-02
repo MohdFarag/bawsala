@@ -112,18 +112,12 @@ fun TriageScreen(
                 wide,
             ) {
                 if (opened) IconAction(R.drawable.ic_lucide_x, tr("close"), { vm.navigator.back() })
-                else {
-                    IconAction(
-                        R.drawable.ic_lucide_search,
-                        tr("search"),
-                        { vm.navigator.open(Screen.Search) },
-                    )
-                    IconAction(
-                        R.drawable.ic_lucide_list_filter,
-                        tr("allIdeas"),
-                        { vm.navigator.open(Screen.InboxList) },
-                    )
-                }
+                IconAction(
+                    R.drawable.ic_lucide_search,
+                    tr("search"),
+                    { vm.navigator.open(Screen.Search) },
+                )
+                IconAction(R.drawable.ic_lucide_ellipsis, tr("pageOptions"), { sheet = Sheet.MORE })
             }
             Column(
                 Modifier.fillMaxSize()
@@ -141,7 +135,7 @@ fun TriageScreen(
                 else Sorting(vm, s, state, item, wide) { sheet = it }
             }
         }
-        if (item != null) Sheets(vm, item, sheet, wide) { sheet = it }
+        Sheets(vm, item, sheet, wide) { sheet = it }
     }
 }
 
@@ -187,12 +181,12 @@ private fun Sorting(
         horizontalArrangement = Arrangement.spacedBy(20.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if (vm.inbox.canUndo)
-            TextAction(tr("undo"), { vm.inbox.undoLast() }, icon = R.drawable.ic_lucide_rotate_ccw)
+        // Always shown, as in M04; it does nothing until there is a decision to undo.
         TextAction(
-            tr("moreOptions"),
-            { openSheet(Sheet.MORE) },
-            icon = R.drawable.ic_lucide_ellipsis,
+            tr("undo"),
+            { vm.inbox.undoLast() },
+            icon = R.drawable.ic_lucide_rotate_ccw,
+            color = if (vm.inbox.canUndo) Palette.green900 else Palette.muted,
         )
         TextAction(tr("deleteIdea"), { openSheet(Sheet.DELETE) }, color = Palette.muted)
     }
@@ -462,7 +456,7 @@ private fun AllSorted(vm: AppViewModel) {
 @Composable
 private fun androidx.compose.foundation.layout.BoxScope.Sheets(
     vm: AppViewModel,
-    item: CaptureItem,
+    item: CaptureItem?,
     sheet: Sheet,
     wide: Boolean,
     open: (Sheet) -> Unit,
@@ -476,13 +470,20 @@ private fun androidx.compose.foundation.layout.BoxScope.Sheets(
         Sheet.NONE -> Unit
         Sheet.MORE ->
             PanelSheet(
-                tr("moreOptions"),
+                tr("pageOptions"),
                 close,
                 tr("close"),
-                description = tr("moreOptionsHint"),
+                description = item?.let { tr("moreOptionsHint") },
                 centered = wide,
             ) {
                 ActionList(Modifier.border(1.dp, Palette.line, RoundedCornerShape(16.dp))) {
+                    OptionRow(
+                        tr("allIdeas"),
+                        R.drawable.ic_lucide_list_filter,
+                        then { vm.navigator.open(Screen.InboxList) },
+                        divider = item != null,
+                    )
+                    if (item == null) return@ActionList
                     if (item.state == CaptureState.INBOX)
                         OptionRow(
                             tr("doNow"),
@@ -514,34 +515,38 @@ private fun androidx.compose.foundation.layout.BoxScope.Sheets(
                 }
             }
         Sheet.WAITING ->
-            PanelSheet(tr("waitingFor"), close, tr("close"), centered = wide) {
-                WaitingPanel(vm) { waiting -> then { vm.inbox.toWaiting(item, waiting) }() }
-            }
-        Sheet.LATER_WITH_DATE ->
-            PanelSheet(tr("laterWithDate"), close, tr("close"), centered = wide) {
-                SomedayPanel(vm) { reviewOn -> then { vm.inbox.toSomeday(item, reviewOn) }() }
-            }
-        Sheet.SPLIT ->
-            PanelSheet(tr("split"), close, tr("close"), centered = wide) {
-                SplitPanel(item) { parts -> then { vm.inbox.split(item, parts) }() }
-            }
-        Sheet.DELETE ->
-            PanelSheet(
-                tr("deleteIdeaTitle"),
-                close,
-                tr("keepIt"),
-                description = tr("deleteIdeaHint"),
-                centered = wide,
-            ) {
-                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    ActionButton(
-                        tr("deleteIdeaConfirm"),
-                        then { vm.inbox.deleteIdea(item) },
-                        style = ActionStyle.Danger,
-                        icon = R.drawable.ic_lucide_x,
-                    )
-                    ActionButton(tr("keepIt"), close, style = ActionStyle.Secondary)
+            if (item != null)
+                PanelSheet(tr("waitingFor"), close, tr("close"), centered = wide) {
+                    WaitingPanel(vm) { waiting -> then { vm.inbox.toWaiting(item, waiting) }() }
                 }
-            }
+        Sheet.LATER_WITH_DATE ->
+            if (item != null)
+                PanelSheet(tr("laterWithDate"), close, tr("close"), centered = wide) {
+                    SomedayPanel(vm) { reviewOn -> then { vm.inbox.toSomeday(item, reviewOn) }() }
+                }
+        Sheet.SPLIT ->
+            if (item != null)
+                PanelSheet(tr("split"), close, tr("close"), centered = wide) {
+                    SplitPanel(item) { parts -> then { vm.inbox.split(item, parts) }() }
+                }
+        Sheet.DELETE ->
+            if (item != null)
+                PanelSheet(
+                    tr("deleteIdeaTitle"),
+                    close,
+                    tr("keepIt"),
+                    description = tr("deleteIdeaHint"),
+                    centered = wide,
+                ) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        ActionButton(
+                            tr("deleteIdeaConfirm"),
+                            then { vm.inbox.deleteIdea(item) },
+                            style = ActionStyle.Danger,
+                            icon = R.drawable.ic_lucide_x,
+                        )
+                        ActionButton(tr("keepIt"), close, style = ActionStyle.Secondary)
+                    }
+                }
     }
 }
