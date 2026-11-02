@@ -46,7 +46,7 @@ fun Modifier.v3Card(shape: RoundedCornerShape = Radius.md, padded: Boolean = tru
 
 /** The بوصلة wordmark in Aref Ruqaa (91 × 41 in the phone header). */
 @Composable
-fun Wordmark(modifier: Modifier = Modifier, fontSize: Int = 34) {
+fun Wordmark(modifier: Modifier = Modifier, fontSize: Int = 34, color: Color = Palette.green900) {
     Text(
         "بوصلة",
         modifier,
@@ -56,7 +56,7 @@ fun Wordmark(modifier: Modifier = Modifier, fontSize: Int = 34) {
                 fontSize = fontSize.sp,
                 lineHeight = (fontSize * 1.2).sp,
             ),
-        color = Palette.green900,
+        color = color,
     )
 }
 
