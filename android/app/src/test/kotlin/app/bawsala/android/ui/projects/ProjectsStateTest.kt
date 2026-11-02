@@ -107,7 +107,7 @@ class ProjectsStateTest {
     }
 
     @Test
-    fun `areas list their active projects; resources and archive have their own tabs`() {
+    fun `areas list their active projects, while resources and archive have their own tabs`() {
         val state = buildProjectsState(snapshot)
         assertEquals(listOf("health"), state.areas.map { it.area.id })
         assertEquals(listOf("old"), state.areas.single().projects.map { it.project.id })
