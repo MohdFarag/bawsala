@@ -58,6 +58,44 @@ object MediaFiles {
         )
     }
 
+    /**
+     * Downloads a small image (e.g. a video thumbnail) into [dir]; null on any failure, so a
+     * capture never waits on or fails because of it. Call off the main thread.
+     */
+    fun download(url: String, dir: File, name: String, maxBytes: Long = 2_000_000): Attachment? {
+        val target = File(dir, "${UUID.randomUUID()}.jpg")
+        val ok = runCatching {
+            val connection =
+                (java.net.URL(url).openConnection() as java.net.HttpURLConnection).apply {
+                    connectTimeout = 5_000
+                    readTimeout = 5_000
+                }
+            try {
+                if (connection.responseCode != 200) return@runCatching false
+                connection.inputStream.use { input ->
+                    target.outputStream().use { out ->
+                        val copied = input.copyTo(out)
+                        copied in 1..maxBytes
+                    }
+                }
+            } finally {
+                connection.disconnect()
+            }
+        }
+            .getOrDefault(false)
+        if (!ok) {
+            target.delete()
+            return null
+        }
+        return Attachment(
+            target.nameWithoutExtension,
+            target.absolutePath,
+            "image/jpeg",
+            target.length(),
+            name = name,
+        )
+    }
+
     fun fromFile(file: File, mime: String) =
         Attachment(
             UUID.randomUUID().toString(),
