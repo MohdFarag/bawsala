@@ -15,6 +15,8 @@ data class CaptureInput(
     val attachments: List<Attachment> = emptyList(),
     val source: SourceRef = SourceRef("app"),
     val tags: List<String> = emptyList(),
+    /** A title known from the source (a YouTube video, a Drive file), used instead of the text. */
+    val title: String? = null,
 )
 
 /**
@@ -48,6 +50,7 @@ object CaptureFactory {
 
         val title =
             when {
+                !input.title.isNullOrBlank() -> input.title.trim().take(TITLE_MAX)
                 kind == CaptureKind.LINK -> hostOf(url!!) ?: url
                 kind == CaptureKind.LIST ->
                     entries.firstOrNull()?.let { "${it.text}…" } ?: firstLine

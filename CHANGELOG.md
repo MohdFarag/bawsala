@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.9.0](https://github.com/MohdFarag/bawsala/compare/v0.8.0...v0.9.0) (2026-11-02)
+
+
+### Features
+
+* **android:** home-screen widget ([#63](https://github.com/MohdFarag/bawsala/issues/63)) ([cd4c57b](https://github.com/MohdFarag/bawsala/commit/cd4c57b7f8a6870bd05f0a9db153ab13055a3e74))
+* **android:** prayer times from the phone's location ([#62](https://github.com/MohdFarag/bawsala/issues/62)) ([bc59a2a](https://github.com/MohdFarag/bawsala/commit/bc59a2a2d8d24f5aeab5faf77ab58c6f6d05a370))
+* **android:** YouTube and Drive shares keep their title and link ([#65](https://github.com/MohdFarag/bawsala/issues/65)) ([19c624c](https://github.com/MohdFarag/bawsala/commit/19c624c1d5816c4d5181a1e0794761d99c0a15f4))
+
 ## [0.8.0](https://github.com/MohdFarag/bawsala/compare/v0.7.0...v0.8.0) (2026-11-02)
 
 
