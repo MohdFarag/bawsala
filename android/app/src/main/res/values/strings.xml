@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Bawsala</string>
+    <string name="widget_label">Bawsala · next stop</string>
+    <string name="widget_description">Your next prayer or appointment, today\'s priority, and quick capture.</string>
 </resources>

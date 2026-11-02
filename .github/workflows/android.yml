@@ -157,7 +157,7 @@ jobs:
   screenshots:
     name: Publish V3 screenshots
     needs: app
-    if: ${{ !cancelled() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && needs.app.result != 'skipped' }}
+    if: ${{ !cancelled() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && needs.app.result == 'success' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
