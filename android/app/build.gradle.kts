@@ -94,6 +94,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.work.runtime)
+    implementation(libs.glance.appwidget)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.play.services.auth)
 

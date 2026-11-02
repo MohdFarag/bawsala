@@ -17,6 +17,7 @@ play-services-auth = "21.3.0"
 ktfmt-plugin = "0.27.0"
 
 [libraries]
+glance-appwidget = { module = "androidx.glance:glance-appwidget", version = "1.1.1" }
 # Screenshot tests (V3 phase 7): Compose rendered by Robolectric, captured by Roborazzi.
 roborazzi = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = "roborazzi" }
 roborazzi-compose = { module = "io.github.takahirom.roborazzi:roborazzi-compose", version.ref = "roborazzi" }

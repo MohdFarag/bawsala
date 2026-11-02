@@ -11,6 +11,7 @@ import app.bawsala.android.PlannerApp
 import app.bawsala.android.data.Snapshot
 import app.bawsala.android.domain.DayPlanner
 import app.bawsala.android.navigation.Navigator
+import app.bawsala.android.widget.BawsalaWidget
 import app.bawsala.android.work.Reminders
 import app.bawsala.core.inbox.Triage
 import app.bawsala.core.model.TaskSession
@@ -20,7 +21,9 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
@@ -38,6 +41,7 @@ data class ScheduleTarget(
  * Screen-level state shared by the whole app, and the feature controllers screens call into.
  * Business rules live in core and `domain/`; this class only wires them to the UI.
  */
+@OptIn(FlowPreview::class) // debounce
 class AppViewModel(app: Application) : AndroidViewModel(app) {
     private val container = (app as PlannerApp).container
     private val clock: Clock = Clock.systemDefaultZone()
@@ -106,6 +110,22 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                 }
                 .collect { Reminders.sync(getApplication(), it) }
         }
+        // Redraw the home-screen widget when what it shows changes (a moment later, so a burst
+        // of edits or a sync redraws it once).
+        viewModelScope.launch(failures) {
+            state
+                .filter { it.loaded }
+                .distinctUntilChanged { a, b ->
+                    a.tasks === b.tasks &&
+                        a.sessions === b.sessions &&
+                        a.events === b.events &&
+                        a.items === b.items &&
+                        a.prayer == b.prayer &&
+                        a.prefs.lang == b.prefs.lang
+                }
+                .debounce(WIDGET_REFRESH_MS)
+                .collect { BawsalaWidget.refresh(getApplication()) }
+        }
     }
 
     /** The UI language ("en" or "ar"). */
@@ -118,5 +138,6 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
 
     private companion object {
         const val TAG = "AppViewModel"
+        const val WIDGET_REFRESH_MS = 2_000L
     }
 }

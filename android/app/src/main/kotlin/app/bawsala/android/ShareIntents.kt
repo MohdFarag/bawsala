@@ -29,4 +29,7 @@ fun Intent.toSharePayload(fromPackage: String?): SharePayload? {
 object LaunchExtras {
     const val OPEN_TASK = "openTask"
     const val OPEN_WAITING = "openWaiting"
+
+    /** The widget's capture button: open quick capture. */
+    const val ACTION_CAPTURE = "app.bawsala.action.CAPTURE"
 }

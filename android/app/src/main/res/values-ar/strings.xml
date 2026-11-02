@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">بوصلة</string>
+    <string name="widget_label">بوصلة · المحطة القادمة</string>
+    <string name="widget_description">الصلاة أو الموعد القادم، وأولوية اليوم، والتقاط سريع.</string>
 </resources>

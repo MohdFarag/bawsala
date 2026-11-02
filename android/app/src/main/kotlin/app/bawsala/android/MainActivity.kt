@@ -50,6 +50,7 @@ class MainActivity : ComponentActivity() {
             vm.navigator.open(Screen.TaskDetail(it))
         }
         if (intent.hasExtra(LaunchExtras.OPEN_WAITING)) vm.navigator.open(Screen.Collections)
+        if (intent.action == LaunchExtras.ACTION_CAPTURE) vm.openCapture()
         // Shared items enter the inbox unprocessed; sharing alone never marks anything done
         // (CAP05).
         intent.toSharePayload(referrer?.host)?.let { payload ->
