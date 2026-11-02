@@ -2,6 +2,8 @@ package app.bawsala.android.ui.task
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,9 +11,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -23,29 +27,36 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import app.bawsala.android.R
 import app.bawsala.android.data.Snapshot
 import app.bawsala.android.navigation.Screen
 import app.bawsala.android.ui.components.AppButton
 import app.bawsala.android.ui.components.AppIconButton
-import app.bawsala.android.ui.components.Badge
 import app.bawsala.android.ui.components.ButtonStyle
-import app.bawsala.android.ui.components.DetailRow
-import app.bawsala.android.ui.components.MenuRow
 import app.bawsala.android.ui.components.ScreenColumn
 import app.bawsala.android.ui.components.TopBar
 import app.bawsala.android.ui.components.card
 import app.bawsala.android.ui.components.kindIcon
 import app.bawsala.android.ui.components.pickDate
 import app.bawsala.android.ui.components.rememberDraft
+import app.bawsala.android.ui.design.ActionList
+import app.bawsala.android.ui.design.MetaLine
+import app.bawsala.android.ui.design.OptionRow
+import app.bawsala.android.ui.design.Pill
+import app.bawsala.android.ui.design.PillStyle
+import app.bawsala.android.ui.design.RoundCheck
 import app.bawsala.android.ui.design.lucide
 import app.bawsala.android.ui.format.listName
 import app.bawsala.android.ui.format.shortDate
 import app.bawsala.android.ui.i18n.tr
 import app.bawsala.android.ui.theme.AppColors
 import app.bawsala.android.ui.theme.AppType
+import app.bawsala.android.ui.theme.Palette
+import app.bawsala.android.ui.theme.TypeScale
 import app.bawsala.android.viewmodel.AppViewModel
 import app.bawsala.android.viewmodel.ScheduleTarget
 import app.bawsala.core.model.CaptureItem
@@ -65,7 +76,16 @@ fun TaskDetailScreen(vm: AppViewModel, s: Snapshot, id: String, fresh: Boolean) 
     Column(Modifier.fillMaxSize()) {
         ScreenColumn(Modifier.weight(1f), bottomPadding = 16.dp) {
             TaskTopBar(vm, task, fresh)
-            TitleAndNotes(task) { change -> vm.tasks.edit(task.id, change) }
+            TitleAndNotes(
+                task,
+                listOfNotNull(
+                    s.projects.firstOrNull { it.id == task.projectId }?.title,
+                    listName(s, task.listId),
+                ),
+                onToggle = { vm.tasks.toggleDone(task) },
+            ) { change ->
+                vm.tasks.edit(task.id, change)
+            }
             StatusBadges(task, save)
             DetailsCard(task, s, vm, save)
             s.items
@@ -88,64 +108,109 @@ private fun TaskTopBar(vm: AppViewModel, task: Task, fresh: Boolean) {
         AppIconButton(lucide(R.drawable.ic_lucide_ellipsis), tr("more"), { menuOpen = !menuOpen })
     }
     if (menuOpen) {
-        Column(Modifier.fillMaxWidth().card().padding(4.dp)) {
-            MenuRow(if (task.status == TaskStatus.COMPLETED) tr("reopen") else tr("complete")) {
-                vm.tasks.toggleDone(task)
-                menuOpen = false
-            }
-            MenuRow(tr("deleteTask"), danger = true) { vm.tasks.delete(task) }
-        }
-    }
-}
-
-@Composable
-private fun TitleAndNotes(task: Task, edit: ((Task) -> Task) -> Unit) {
-    // Each field saves only itself, onto the stored task, so the two never overwrite each other.
-    var title by rememberDraft("${task.id}:title", task.title) { t -> edit { it.copy(title = t) } }
-    var notes by rememberDraft("${task.id}:notes", task.notes) { n -> edit { it.copy(notes = n) } }
-    Column {
-        BasicTextField(
-            title,
-            { title = it },
-            textStyle = AppType.h1,
-            modifier = Modifier.fillMaxWidth(),
-        )
-        Box {
-            if (notes.isEmpty()) Text(tr("notesHint"), style = AppType.small)
-            BasicTextField(
-                notes,
-                { notes = it },
-                textStyle = AppType.small,
-                modifier = Modifier.fillMaxWidth(),
+        ActionList(Modifier.border(1.dp, Palette.line, RoundedCornerShape(16.dp))) {
+            OptionRow(
+                tr(if (task.status == TaskStatus.COMPLETED) "reopen" else "complete"),
+                R.drawable.ic_lucide_check,
+                {
+                    vm.tasks.toggleDone(task)
+                    menuOpen = false
+                },
+            )
+            OptionRow(
+                tr("deleteTask"),
+                R.drawable.ic_lucide_trash,
+                { vm.tasks.delete(task) },
+                danger = true,
+                divider = false,
             )
         }
     }
 }
 
-/** Tappable badges toggling importance and "in progress". */
+@Composable
+private fun TitleAndNotes(
+    task: Task,
+    meta: List<String>,
+    onToggle: () -> Unit,
+    edit: ((Task) -> Task) -> Unit,
+) {
+    // Each field saves only itself, onto the stored task, so the two never overwrite each other.
+    var title by rememberDraft("${task.id}:title", task.title) { t -> edit { it.copy(title = t) } }
+    var notes by rememberDraft("${task.id}:notes", task.notes) { n -> edit { it.copy(notes = n) } }
+    // A white card like a task row: the check, then the title and notes, edited in place.
+    Row(
+        Modifier.fillMaxWidth()
+            .clip(RoundedCornerShape(20.dp))
+            .background(Palette.white)
+            .border(1.dp, Palette.line, RoundedCornerShape(20.dp))
+            .padding(start = 8.dp, end = 18.dp, top = 12.dp, bottom = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        RoundCheck(task.status == TaskStatus.COMPLETED, onToggle, task.title)
+        Column(
+            Modifier.weight(1f).padding(top = 10.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            BasicTextField(
+                title,
+                { title = it },
+                textStyle =
+                    TypeScale.heading.copy(
+                        fontSize = 21.sp,
+                        lineHeight = 34.sp,
+                        color = Palette.ink,
+                    ),
+                modifier = Modifier.fillMaxWidth(),
+            )
+            if (meta.isNotEmpty()) MetaLine(meta)
+            Box {
+                if (notes.isEmpty())
+                    Text(tr("notesHint"), style = TypeScale.small.copy(color = Palette.muted))
+                BasicTextField(
+                    notes,
+                    { notes = it },
+                    textStyle = TypeScale.small.copy(color = Palette.ink),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+        }
+    }
+}
+
+/** Tappable pills toggling importance and "in progress". */
 @Composable
 private fun StatusBadges(task: Task, save: (Task) -> Unit) {
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        if (task.important) {
-            Badge("★ " + tr("important"), AppColors.warning, AppColors.warningText) {
-                save(task.copy(important = false))
-            }
-        } else {
-            Badge(tr("markImportant"), AppColors.subtle, AppColors.secondary) {
-                save(task.copy(important = true))
-            }
+        TogglePill(
+            tr(if (task.important) "important" else "markImportant"),
+            if (task.important) PillStyle.Amber else PillStyle.Outline,
+            R.drawable.ic_lucide_flag,
+        ) {
+            save(task.copy(important = !task.important))
         }
         when (task.status) {
+            TaskStatus.COMPLETED -> Pill(tr("completed"), icon = R.drawable.ic_lucide_check_check)
             TaskStatus.IN_PROGRESS ->
-                Badge(tr("inProgress"), AppColors.tint, AppColors.primary) {
+                TogglePill(tr("inProgress"), PillStyle.Default, R.drawable.ic_lucide_play) {
                     save(task.copy(status = TaskStatus.NEEDS_ACTION))
                 }
-            TaskStatus.COMPLETED -> Badge(tr("completed"), AppColors.tint, AppColors.primary)
             TaskStatus.NEEDS_ACTION ->
-                Badge(tr("inProgress") + "?", AppColors.subtle, AppColors.secondary) {
+                TogglePill(tr("inProgress") + "?", PillStyle.Outline, R.drawable.ic_lucide_play) {
                     save(task.copy(status = TaskStatus.IN_PROGRESS))
                 }
         }
+    }
+}
+
+/** A pill that toggles something, with a 48dp touch target. */
+@Composable
+private fun TogglePill(label: String, style: PillStyle, icon: Int, onClick: () -> Unit) {
+    Box(
+        Modifier.heightIn(min = 48.dp).clip(RoundedCornerShape(30.dp)).clickable(onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        Pill(label, style = style, icon = icon)
     }
 }
 
@@ -153,33 +218,53 @@ private fun StatusBadges(task: Task, save: (Task) -> Unit) {
 private fun DetailsCard(task: Task, s: Snapshot, vm: AppViewModel, save: (Task) -> Unit) {
     val context = LocalContext.current
     val lang = s.lang
-    Column(Modifier.fillMaxWidth().card().padding(horizontal = 16.dp, vertical = 8.dp)) {
-        DetailRow(tr("listLabel"), listName(s, task.listId) ?: "—") {
-            save(TaskEdits.nextList(task, s.lists))
-        }
-        DetailRow(
+    // Each row shows its value under the label; tapping cycles it or opens a date picker.
+    ActionList(Modifier.border(1.dp, Palette.line, RoundedCornerShape(16.dp))) {
+        OptionRow(
             tr("project"),
-            s.projects.firstOrNull { it.id == task.projectId }?.title ?: tr("noProject"),
-        ) {
-            save(TaskEdits.nextProject(task, s.projects))
-        }
-        DetailRow(tr("context"), task.context?.let { tr("context_$it") } ?: tr("anywhere")) {
-            save(TaskEdits.nextContext(task))
-        }
-        DetailRow(tr("estimate"), task.estimateMin?.let { tr("minutes", it) } ?: tr("notSet")) {
-            save(TaskEdits.nextEstimate(task))
-        }
-        DetailRow(tr("deadline"), task.deadline?.let { shortDate(it, lang) } ?: tr("notSet")) {
-            pickDate(context, task.deadline ?: vm.today()) {
-                save(TaskEdits.withDeadline(task, it))
-            }
-        }
-        DetailRow(tr("target"), task.targetDate?.let { shortDate(it, lang) } ?: tr("notSet")) {
-            pickDate(context, task.targetDate ?: vm.today()) { date ->
-                TaskEdits.withTarget(task, date)?.let(save)
-            }
-        }
-        TagsField(task, save)
+            R.drawable.ic_lucide_folder,
+            { save(TaskEdits.nextProject(task, s.projects)) },
+            subtitle = s.projects.firstOrNull { it.id == task.projectId }?.title ?: tr("noProject"),
+        )
+        OptionRow(
+            tr("listLabel"),
+            R.drawable.ic_lucide_list,
+            { save(TaskEdits.nextList(task, s.lists)) },
+            subtitle = listName(s, task.listId) ?: "—",
+        )
+        OptionRow(
+            tr("context"),
+            R.drawable.ic_lucide_house,
+            { save(TaskEdits.nextContext(task)) },
+            subtitle = task.context?.let { tr("context_$it") } ?: tr("anywhere"),
+        )
+        OptionRow(
+            tr("estimate"),
+            R.drawable.ic_lucide_clock_3,
+            { save(TaskEdits.nextEstimate(task)) },
+            subtitle = task.estimateMin?.let { tr("minutes", it) } ?: tr("notSet"),
+        )
+        OptionRow(
+            tr("deadline"),
+            R.drawable.ic_lucide_flag,
+            {
+                pickDate(context, task.deadline ?: vm.today()) {
+                    save(TaskEdits.withDeadline(task, it))
+                }
+            },
+            subtitle = task.deadline?.let { shortDate(it, lang) } ?: tr("notSet"),
+        )
+        OptionRow(
+            tr("target"),
+            R.drawable.ic_lucide_calendar_days,
+            {
+                pickDate(context, task.targetDate ?: vm.today()) { date ->
+                    TaskEdits.withTarget(task, date)?.let(save)
+                }
+            },
+            subtitle = task.targetDate?.let { shortDate(it, lang) } ?: tr("notSet"),
+        )
+        Column(Modifier.padding(horizontal = 14.dp)) { TagsField(task, save) }
     }
 }
 

@@ -31,15 +31,39 @@ class AccountController(private val ctx: ControllerScope) {
     var newAssistantToken by mutableStateOf<String?>(null)
         private set
 
-    fun signIn(server: String, email: String, password: String, create: Boolean) = act {
+    /**
+     * Signs in, or creates an account with [name]. A new account works right away; [onCreated] gets
+     * the email so the confirmation screen (V3 AM05) can show it.
+     */
+    fun signIn(
+        server: String,
+        email: String,
+        password: String,
+        create: Boolean,
+        name: String? = null,
+        onCreated: (String) -> Unit = {},
+    ) = act {
         if (create && password.length < MIN_PASSWORD) {
             action.fail(AccountError("passwordTooShort"))
             return@act
         }
-        service.signIn(server, email, password, create, ctx.snapshot.lang)
+        service.signIn(server, email, password, create, ctx.snapshot.lang, name)
         SyncWorker.schedulePeriodic(ctx.container.appContext)
-        ctx.messages.show("signedIn")
+        if (create) onCreated(email.trim()) else ctx.messages.show("signedIn")
         ctx.container.syncRunner.run()
+    }
+
+    /** "Forgot password" (V3 AM03); [onSent] shows the "check your email" screen (AM04). */
+    fun forgotPassword(server: String, email: String, onSent: () -> Unit) = act {
+        service.requestPasswordReset(server, email)
+        onSent()
+    }
+
+    /** Sends the confirmation or reset link again (AM04/AM05). */
+    fun resend(server: String, email: String, reset: Boolean) = act {
+        if (reset) service.requestPasswordReset(server, email)
+        else service.resendVerification(server, email)
+        ctx.messages.show("linkResent")
     }
 
     /**
