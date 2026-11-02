@@ -9,6 +9,7 @@ import app.bawsala.android.ui.plan.unplannedTasks
 import app.bawsala.android.ui.plan.weekOf
 import app.bawsala.android.ui.task.taskSchedule
 import app.bawsala.android.ui.today.DayRow
+import app.bawsala.android.ui.today.NextStop
 import app.bawsala.android.ui.today.buildTodayState
 import app.bawsala.core.model.CaptureItem
 import app.bawsala.core.model.CaptureKind
@@ -198,6 +199,54 @@ class StateBuildersTest {
         assertEquals(
             "inCalendar",
             app.bawsala.android.ui.task.calendarNoteKey(s.copy(googleEventId = "ev"), true),
+        )
+    }
+
+    @Test
+    fun `today - priority is the session task, next actions follow the priority order`() {
+        val state = buildTodayState(snapshot, planner, today, at("09:41"))
+        assertEquals("next", state.priority?.id)
+        assertEquals(listOf("later", "dropped", "loose"), state.nextActions.map { it.id })
+    }
+
+    @Test
+    fun `today - without a session the priority is important first, then the nearest deadline`() {
+        val tasks =
+            listOf(
+                task("plain"),
+                task("soon").copy(deadline = today.plusDays(1)),
+                task("vital").copy(important = true, deadline = today.plusDays(9)),
+                task("sub").copy(important = true, parentId = "plain"),
+            )
+        val state =
+            buildTodayState(
+                snapshot.copy(tasks = tasks, sessions = emptyList()),
+                planner,
+                today,
+                at("09:41"),
+            )
+        assertEquals("vital", state.priority?.id)
+        // Subtasks are not offered on Today.
+        assertEquals(listOf("soon", "plain"), state.nextActions.map { it.id })
+    }
+
+    @Test
+    fun `today - next stop is the earliest session, event or prayer still ahead`() {
+        fun stopAt(hhmm: String) = buildTodayState(snapshot, planner, today, at(hhmm)).nextStop
+        assertEquals("s2", (stopAt("09:41") as NextStop.Session).item.session.id)
+        assertEquals("s3", (stopAt("13:00") as NextStop.Session).item.session.id)
+        assertEquals(PrayerName.ASR, (stopAt("14:00") as NextStop.Prayer).anchor.prayer)
+        assertTrue(stopAt("23:59") == null)
+    }
+
+    @Test
+    fun `today - the priority fits when its estimate ends before the next stop`() {
+        val tasks = snapshot.tasks.map { if (it.id == "next") it.copy(estimateMin = 15) else it }
+        assertTrue(
+            buildTodayState(snapshot.copy(tasks = tasks), planner, today, at("09:41")).priorityFits
+        )
+        assertTrue(
+            !buildTodayState(snapshot.copy(tasks = tasks), planner, today, at("09:50")).priorityFits
         )
     }
 }

@@ -152,6 +152,36 @@ private val S: Map<String, Pair<String, String>> =
             ("Something went wrong; your last change may not be saved" to
                 "حدث خطأ؛ ربما لم يُحفظ آخر تغيير"),
         "triage" to ("Triage" to "الفرز"),
+        "greetingMorning" to ("Good morning" to "صباح الخير"),
+        "greetingEvening" to ("Good evening" to "مساء الخير"),
+        "todayHeading" to ("Your day, in a clearer direction." to "يومك، باتجاه أوضح."),
+        "freeMinutes" to ("%1 min free" to "%1 دقيقة متاحة"),
+        "priorityNow" to ("Priority now" to "الأولوية الآن"),
+        "fitsBeforeNext" to
+            ("Fits the time you have before your next stop" to
+                "تناسب الوقت المتاح قبل موعدك التالي"),
+        "noPriority" to ("Nothing waiting right now" to "لا توجد خطوة تنتظرك الآن"),
+        "noPriorityHint" to
+            ("Capture an idea, or plan a session for later." to
+                "التقط فكرة، أو خطّط جلسة لوقت لاحق."),
+        "captureIdea" to ("Capture an idea" to "التقط فكرة"),
+        "nextActions" to ("Next actions" to "الإجراءات التالية"),
+        "noNextActions" to ("No other open tasks." to "لا مهام مفتوحة أخرى."),
+        "showAll" to ("Show all" to "عرض الكل"),
+        "minShort" to ("%1 min" to "%1 د"),
+        "nextStop" to ("Next stop" to "المحطة القادمة"),
+        "calendarLink" to ("Calendar" to "التقويم"),
+        "nothingNext" to ("Nothing else today" to "لا شيء آخر اليوم"),
+        "nothingNextHint" to ("The rest of the day is yours." to "بقية اليوم لك."),
+        "prayerProtected" to ("Kept free in your plan" to "محفوظ خاليًا في خطتك"),
+        "calmerMind" to ("A calmer mind" to "مساحة ذهنية أهدأ"),
+        "inboxWaiting" to
+            ("%1 ideas in triage are waiting for a small step." to
+                "في الفرز %1 أفكار تنتظر خطوة صغيرة."),
+        "inboxClear" to ("Triage is clear." to "الفرز فارغ."),
+        "triageOne" to ("Triage one idea" to "افرز فكرة واحدة"),
+        "ofTotal" to ("of %1" to "من %1"),
+        "stepsDoneToday" to ("steps done today" to "خطوة اكتملت اليوم"),
         "projects" to ("Projects" to "المشاريع"),
         "projectsSubtitle" to ("Everything in a place that serves it" to "كل شيء في مكان يخدمه"),
         "projectsSoon" to
