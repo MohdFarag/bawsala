@@ -113,3 +113,27 @@ fun itemTitle(item: CaptureItem, lang: String): String =
     item.attachments
         .firstOrNull { java.io.File(it.localPath).name == item.title }
         ?.let { attachmentLabel(it, lang) } ?: item.title
+
+/** A calculation method's usual name (V3: in Arabic first). */
+fun methodName(method: com.batoulapps.adhan2.CalculationMethod, lang: String): String {
+    val (en, ar) =
+        when (method) {
+            com.batoulapps.adhan2.CalculationMethod.EGYPTIAN ->
+                "Egyptian authority" to "الهيئة المصرية"
+            com.batoulapps.adhan2.CalculationMethod.UMM_AL_QURA -> "Umm al-Qura" to "أم القرى"
+            com.batoulapps.adhan2.CalculationMethod.MUSLIM_WORLD_LEAGUE ->
+                "Muslim World League" to "رابطة العالم الإسلامي"
+            com.batoulapps.adhan2.CalculationMethod.KARACHI -> "Karachi" to "كراتشي"
+            com.batoulapps.adhan2.CalculationMethod.DUBAI -> "Dubai" to "دبي"
+            com.batoulapps.adhan2.CalculationMethod.QATAR -> "Qatar" to "قطر"
+            com.batoulapps.adhan2.CalculationMethod.KUWAIT -> "Kuwait" to "الكويت"
+            com.batoulapps.adhan2.CalculationMethod.MOON_SIGHTING_COMMITTEE ->
+                "Moonsighting Committee" to "لجنة رؤية الهلال"
+            com.batoulapps.adhan2.CalculationMethod.SINGAPORE -> "Singapore" to "سنغافورة"
+            com.batoulapps.adhan2.CalculationMethod.NORTH_AMERICA ->
+                "North America (ISNA)" to "أمريكا الشمالية"
+            com.batoulapps.adhan2.CalculationMethod.TURKEY -> "Turkey (Diyanet)" to "تركيا"
+            else -> method.name to method.name
+        }
+    return if (lang == "ar") ar else en
+}

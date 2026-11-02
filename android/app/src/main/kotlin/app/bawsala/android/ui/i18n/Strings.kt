@@ -150,6 +150,26 @@ private val S: Map<String, Pair<String, String>> =
             ("Something went wrong; your last change may not be saved" to
                 "حدث خطأ؛ ربما لم يُحفظ آخر تغيير"),
         "triage" to ("Triage" to "الفرز"),
+        // P1: prayer times from the phone's location.
+        "useMyLocation" to ("Use my location" to "استخدم موقعي"),
+        "locationUnavailable" to
+            ("Couldn't get your location. Check that location is on, or pick a city." to
+                "تعذّر تحديد موقعك. تأكد من تشغيل الموقع، أو اختر مدينة."),
+        "prayerPlaceUpdated" to
+            ("Prayer times updated for your location." to "تم تحديث مواقيت الصلاة حسب موقعك."),
+        "methodSuggestion" to
+            ("The usual calculation method here is %1. Use it?" to
+                "طريقة الحساب المعتادة هنا هي %1. نستخدمها؟"),
+        "useIt" to ("Use it" to "استخدمها"),
+        "keepMine" to ("Keep mine" to "أبقِ طريقتي"),
+        "travelPrompt" to
+            ("You're in %1. Update prayer times for here?" to
+                "أنت في %1. نحدّث مواقيت الصلاة لهذا المكان؟"),
+        "travelPromptUnnamed" to
+            ("You're far from your saved city. Update prayer times for here?" to
+                "أنت بعيد عن مدينتك المحفوظة. نحدّث مواقيت الصلاة لهذا المكان؟"),
+        "updatePrayerTimes" to ("Update prayer times" to "حدّث المواقيت"),
+        "notNow" to ("Not now" to "ليس الآن"),
         // V3 onboarding (OM01–OM03).
         "onboard1Eyebrow" to ("A clearer direction" to "اتجاه أوضح"),
         "onboard1Title" to

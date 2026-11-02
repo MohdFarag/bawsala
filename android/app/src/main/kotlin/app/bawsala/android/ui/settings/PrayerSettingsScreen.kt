@@ -33,6 +33,7 @@ import app.bawsala.android.ui.components.ScreenColumn
 import app.bawsala.android.ui.components.SectionLabel
 import app.bawsala.android.ui.components.TopBar
 import app.bawsala.android.ui.components.card
+import app.bawsala.android.ui.format.methodName
 import app.bawsala.android.ui.format.prayerName
 import app.bawsala.android.ui.format.range
 import app.bawsala.android.ui.i18n.LocalLang
@@ -55,6 +56,8 @@ fun PrayerSettingsScreen(vm: AppViewModel, s: Snapshot) {
 
     ScreenColumn {
         TopBar(tr("prayerTimes"), { vm.navigator.back() })
+        UseMyLocation(vm)
+        vm.settings.methodSuggestion?.let { MethodSuggestionCard(vm, it) }
         CityPicker(settings) { save(PrayerSettingsEdits.withCity(settings, it)) }
         CustomLocation(settings, save)
         MethodPicker(settings.method) { save(settings.copy(method = it)) }
@@ -132,9 +135,7 @@ private fun MethodPicker(selected: CalculationMethod, onPick: (CalculationMethod
         CalculationMethod.entries
             .filter { it != CalculationMethod.OTHER }
             .forEach { method ->
-                val name =
-                    method.name.lowercase().replace('_', ' ').replaceFirstChar { it.uppercase() }
-                Chip(name, selected == method, { onPick(method) })
+                Chip(methodName(method, LocalLang.current), selected == method, { onPick(method) })
             }
     }
 }
