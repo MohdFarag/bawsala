@@ -1,8 +1,17 @@
 # Bawsala V3 redesign: implementation plan
 
-Goal: the Android app matches the **Bawsala V3** design, apart from the parts left out in section 5, (Figma file *"بوصلة · V3 — GTD Mobile + Tablet"* and the `Bawsala-V3-Prototype.html` prototype) screen for screen, on phones (390 × 844) and tablets (1280 × 900).
+Goal: the Android app matches the **Bawsala V3** design (Penpot file *Bawsala* and the `Bawsala-V3-Prototype.html` prototype) screen for screen, on phones (390 × 844) and tablets (1280 × 900), apart from the parts left out in section 5.
 
-**Sources.** This plan was built from the HTML prototype: its design atlas, all 16 screens, its CSS tokens and its sample data. The Figma file could not be read while writing it, because the Figma plan's MCP call limit was reached. Phase 0 includes checking the Figma file node by node against this plan.
+**Sources.** The **Penpot file "Bawsala"** is the source of truth. Its pages are *00 · Foundations*, *01 · Mobile* (M01–M08, 390 × 844) and *02 · Tablet* (T01–T08, 1280 × 900). The HTML prototype `Bawsala-V3-Prototype.html` shows the same screens with working interactions. The Figma file of the same name could not be read (its plan's MCP call limit was reached); Penpot and the prototype cover the same screens.
+
+**Penpot check (2 Nov 2026):**
+- **Colors and spacing:** the library colors and the *Bawsala V3* token set (16 colors, spacing 4–48) match section 2 exactly.
+- **Screens:** M01 and T04 were exported and compared with the prototype; they match.
+- **Type:** every text uses Noto Sans Arabic, at weights 400 / 500 / 600 / 700 (the prototype's CSS 650 is 700 in Penpot; **Penpot wins**). Sizes used: 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 20, 21, 22, 24, 26, 28, 29, 32 and 39.
+- **Extra colors not in the library:** `#EDF0E8`, the weekly grid's hour lines and column borders (add it as the `gridLine` token). Plus a handful of one-off tints in illustrations and the waveform.
+- **Navigation:** on tablet, the weekly planner (T04) is reached from the **المراجعة** (Review) item, which uses a calendar icon. It is not a separate tab.
+- **Clean-up in Penpot:** T03 exists **three times** on the tablet page. Two of them are empty boards stacked on the real one; they can be deleted.
+- **Text clipping in Penpot:** short weekly-grid events cut their titles ("جتماع الفريق"). In the app, titles end with an ellipsis instead.
 
 ---
 
@@ -25,7 +34,7 @@ Goal: the Android app matches the **Bawsala V3** design, apart from the parts le
 
 ## 2. Design system (Phase 1)
 
-Copy the tokens exactly from the prototype into `ui/theme`, replacing today's `AppColors` and `AppType`.
+Copy the tokens exactly from the Penpot *Bawsala V3* token set into `ui/theme`, replacing today's `AppColors` and `AppType`.
 
 **Colors**
 
@@ -37,6 +46,7 @@ Copy the tokens exactly from the prototype into `ui/theme`, replacing today's `A
 | `sage400` | `#B2C18F` | accent: "Start focus" button on the dark card, progress |
 | `sage100` | `#F1F4E9` | soft buttons, pills |
 | `paper` | `#F7F8F3` | background |
+| `gridLine` | `#EDF0E8` | weekly grid hour lines and column borders (used in Penpot, not in its library) |
 | `white` | `#FFFFFF` | surface, cards |
 | `ink` | `#213B35` | text |
 | `muted` | `#68776E` | secondary text |
@@ -55,10 +65,10 @@ Copy the tokens exactly from the prototype into `ui/theme`, replacing today's `A
 | small | 13 / 1.8 |
 | body | 15 / 1.9 |
 | overline | 12 / 600 |
-| section title | 17 / 650 |
-| page title | 19 / 650 |
-| heading | 25 / 650 |
-| heading-lg | 28–29 / 650 |
+| section title | 17 / 700 |
+| page title | 19 / 700 |
+| heading | 24 / 700 |
+| heading-lg | 28–29 / 700 |
 | priority title | 21 / 600 |
 
 Bundle `NotoSansArabic` (variable) and `ArefRuqaa-Bold` as `res/font` (both under the OFL).
@@ -108,7 +118,7 @@ Mobile screen codes (M01–M08) and tablet codes (T01–T08) are the prototype's
 
 | Phase | Work | Result you can check |
 | --- | --- | --- |
-| **0. Lock the design** | Read the Figma file node by node (once the Figma limit allows). Record any difference from the prototype in this plan. Export the Lucide icon list and fonts. | This plan updated; no open visual questions |
+| **0. Lock the design** | Done against Penpot (see Sources). Remaining: export each Penpot board as a PNG reference for the screenshot tests in phase 7, and export the Lucide icon list and fonts. | Reference images for all 15 screens |
 | **1. Design system** | Tokens, fonts, icons, and every component in section 2. Arabic becomes the default language. A **component gallery** screen in debug builds. | Gallery screenshot matches the prototype's "Foundations" board |
 | **2. Shell and navigation** | 5-slot bottom navigation with the raised capture button and badges. Tablet navigation rail at width ≥ 840 dp. New routes: Triage, Projects, Review. | Navigation works on phone and tablet |
 | **3. Today, capture, focus** | M01, M02, M03, M07, M08, T01, T02, T06 | Daily flow end to end |
