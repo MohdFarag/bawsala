@@ -1,6 +1,6 @@
 # Bawsala V3 redesign: implementation plan
 
-Goal: the Android app matches the **Bawsala V3** design (Figma file *"بوصلة · V3 — GTD Mobile + Tablet"* and the `Bawsala-V3-Prototype.html` prototype) screen for screen, on phones (390 × 844) and tablets (1280 × 900).
+Goal: the Android app matches the **Bawsala V3** design, apart from the parts left out in section 5, (Figma file *"بوصلة · V3 — GTD Mobile + Tablet"* and the `Bawsala-V3-Prototype.html` prototype) screen for screen, on phones (390 × 844) and tablets (1280 × 900).
 
 **Sources.** This plan was built from the HTML prototype: its design atlas, all 16 screens, its CSS tokens and its sample data. The Figma file could not be read while writing it, because the Figma plan's MCP call limit was reached. Phase 0 includes checking the Figma file node by node against this plan.
 
@@ -14,11 +14,11 @@ Goal: the Android app matches the **Bawsala V3** design (Figma file *"بوصلة
 | English first, Arabic optional | **Arabic first, right to left.** English stays as a second language. |
 | System font | **Noto Sans Arabic** for the interface, **Aref Ruqaa** for the wordmark |
 | Inbox list, then a process screen | **One card at a time** triage, with swipe and a progress bar ("١ من ٧") |
-| Plan tab: day timeline, week, agenda | **Weekly planner** (tablet: drag tasks onto a 7-day grid) and an **AI rescheduling suggestion** |
-| Lists and contexts | **PARA:** Projects · Areas · Resources · Archive (مشاريع · مجالات · مراجع · أرشيف), each project with progress and its next action |
-| No weekly review | **Weekly review**: three simple steps, stats, and an AI summary |
+| Plan tab: day timeline, week, agenda | **Weekly planner** (tablet: drag tasks onto a 7-day grid), with prayer times shown as blocks |
+| Lists and contexts | Lists stay as they are. **New, separate PARA layer:** Projects · Areas · Resources · Archive (مشاريع · مجالات · مراجع · أرشيف), each project with progress and its next action |
+| No weekly review | **Weekly review**: three simple steps and stats |
 | Focus screen | **Calm focus**: Pomodoro/open toggle, ring timer, checklist, and capturing a stray thought without leaving focus |
-| — | **Energy and context filters** (منخفضة · متوسطة · مرتفعة / في المنزل · على الكمبيوتر · …) on the next actions |
+| — | **Context filters** (في المنزل · على الكمبيوتر · …) on the next actions |
 | Phone layout only | **Tablet layout**: right-side navigation rail, two-pane screens |
 
 ---
@@ -42,7 +42,7 @@ Copy the tokens exactly from the prototype into `ui/theme`, replacing today's `A
 | `muted` | `#68776E` | secondary text |
 | `line` | `#E1E8DC` | borders, dividers |
 | `amber` / `amberTint` | `#A56A2A` / `#FBF1E3` | greeting sun, "waiting" and family blocks |
-| `lilac` / `lilacInk` | `#EAE6F4` / `#6D6089` | AI suggestions, meetings |
+| `lilac` / `lilacInk` | `#EAE6F4` / `#6D6089` | meetings, secondary blocks |
 | `danger` / `dangerTint` | `#A94E43` / `#FAECE8` | errors, delete |
 
 **Shape and spacing:** radius 12 / 18 / 26 dp, buttons 15 dp, chips 14 dp, the priority card 24 dp, and the capture button 22 dp. Spacing is 4, 8, 12, 16, 20, 24, 32, 40 and 48. The minimum touch target is 48 dp.
@@ -90,16 +90,15 @@ Mobile screen codes (M01–M08) and tablet codes (T01–T08) are the prototype's
 
 | # | Screen | Built from | New behavior |
 | --- | --- | --- | --- |
-| M01 / T01 | **Today**: greeting and date, "يومك، باتجاه أوضح.", energy and free-minutes pills, the priority card with **Start focus**, next actions, next stop (the next appointment). Tablet: plus a "calmer mind" inbox card and daily progress. | `TodayScreen` | Today's "priority" task, energy level, free minutes until the next appointment |
-| M02 / T02 | **Quick capture (writing)**: "فكرة الآن، مكانها بعدين." sheet, smart detected tags (tomorrow, 6:00, outside the home) that can be removed, voice button, "Save to triage". | `CaptureSheet` | **Smart tags** detected from the text (date, time, place, context) |
+| M01 / T01 | **Today**: greeting and date, "يومك، باتجاه أوضح.", the free-minutes pill, the priority card with **Start focus**, next actions, next stop (the next appointment **or prayer**). Tablet: plus a "calmer mind" inbox card and daily progress. | `TodayScreen` | Today's priority task (the most important task due soonest; no suggestion label), free minutes until the next appointment or prayer |
+| M02 / T02 | **Quick capture (writing)**: "فكرة الآن، مكانها بعدين." sheet, detected tags (tomorrow, 6:00, outside the home) that can be removed, voice button, "Save to triage". | `CaptureSheet` | Tags found by **simple text rules** (date and time words, places), as in the prototype; no AI |
 | M03 | **Quick capture (voice)**: live waveform, transcript, timer, stop. Holding the capture button starts voice capture directly. | `CaptureSheet` + `AudioRecorder` | **Speech-to-text transcript** (Android `SpeechRecognizer`, on device) |
-| M04 / T03 | **Triage (one item)**: progress "١ من ٧", the item card with source and tags, "Is there an action?" → Next action / Project / Reference / Later; delete; undo. Swipe left or right. | `ProcessScreen` + `DecisionPanels` | Swipe gestures, progress, "Bawsala suggests…" hint on tablet |
+| M04 / T03 | **Triage (one item)**: progress "١ من ٧", the item card with source and tags, "Is there an action?" → Next action / Project / Reference / Later; delete; undo. Swipe left or right. | `ProcessScreen` + `DecisionPanels` | Swipe gestures, progress (the tablet "Bawsala suggests" hint is left out) |
 | M05 / T07 | **Projects (PARA)**: tabs Projects · Areas · Resources · Archive, priority filter, project cards (icon, status pill, area, progress "٨ من ١٢", next action). | `TasksScreen` / lists | **New entities:** Project (status, area, next action), Area, Resource |
-| M06 / T08 | **Weekly review**: "مساحة لإعادة التوجيه." card with Start, stats (actions done, projects advanced, focus sessions), "three simple steps", plan your week; tablet: AI note. | new | **New flow:** guided steps that write a review record |
+| M06 / T08 | **Weekly review**: "مساحة لإعادة التوجيه." card with Start, stats (actions done, projects advanced, focus sessions), "three simple steps", plan your week (the tablet AI note is left out). | new | **New flow:** guided steps that write a review record |
 | M07 / T06 | **Calm focus**: Pomodoro / open toggle, ring timer, task, checklist, pause, stop; "a stray thought? leave it here." | `FocusScreen` | Ring timer, per-session checklist |
 | M08 | **Capture during focus**: "اترك الفكرة، وكمّل تركيزك." sheet; the timer keeps running. | `FocusScreen` + `CaptureSheet` | Capture without ending focus |
-| T04 | **Weekly planner (tablet)**: 7-day grid with time rows, colored blocks (default / lilac / amber), the next-actions panel with energy and context filters, drag a card into the week, "Schedule my day". | `PlanScreen` / `DayTimeline` | Week grid with drag and drop |
-| T05 | **AI reschedule suggestion**: "مساحة أهدأ ليومك." two proposed moves with the reason; Accept / Keep as is. | new | **Suggestion engine** (see the decisions in section 5) |
+| T04 | **Weekly planner (tablet)**: 7-day grid with time rows, colored blocks (default / lilac / amber), **prayer times as blocks**, the next-actions panel with context filters, drag a card into the week. | `PlanScreen` / `DayTimeline` | Week grid with drag and drop; prayers shown in the grid |
 
 **Kept but restyled to V3**, since the design doesn't show them: Settings, Account and sync, Google sign-in, Prayer times, Time blocks, Lists, Trash, Search, and Onboarding. They get the V3 components and tokens, but no new layout.
 
@@ -114,26 +113,24 @@ Mobile screen codes (M01–M08) and tablet codes (T01–T08) are the prototype's
 | **2. Shell and navigation** | 5-slot bottom navigation with the raised capture button and badges. Tablet navigation rail at width ≥ 840 dp. New routes: Triage, Projects, Review. | Navigation works on phone and tablet |
 | **3. Today, capture, focus** | M01, M02, M03, M07, M08, T01, T02, T06 | Daily flow end to end |
 | **4. Triage and projects** | M04, M05, T03, T07, plus the Project / Area / Resource model in `core`, Android storage, server sync and Google Tasks mapping | Inbox to project flow end to end |
-| **5. Planning and review** | T04 (week grid with drag), T05 (suggestions), M06 / T08 (weekly review) | Weekly loop end to end |
+| **5. Planning and review** | T04 (week grid with drag, prayers as blocks), M06 / T08 (weekly review) | Weekly loop end to end |
 | **6. Restyle the rest** | Settings, account, prayer times, blocks, lists, trash, search, onboarding in V3 style | No screen left in the old style |
-| **7. Match check and release** | Screenshot tests (Roborazzi) for each screen on phone and tablet, compared side by side with the prototype's renders. Fix differences above a small threshold. Release. | A comparison sheet for all 16 screens |
+| **7. Match check and release** | Screenshot tests (Roborazzi) for each screen on phone and tablet, compared side by side with the prototype's renders. Fix differences above a small threshold. Release. | A comparison sheet for the 15 screens in scope |
 
 Each phase is one or more PRs. Every PR shows before/after screenshots.
 
 ---
 
-## 5. Decisions needed before Phase 4
+## 5. Decisions (agreed)
 
-1. **Prayer-aware planning.** V3 never shows prayer times, yet they're Bawsala's core feature. Proposal: prayer times appear as blocks in the Today "next stop" and the weekly grid, in the design's block style.
-2. **AI features.** V3 shows "Bawsala suggests" (priority, triage hint), smart tags, the reschedule suggestion and the review summary.
-   - **Proposal:** smart tags and the triage hint use on-device rules. The reschedule suggestion and the review summary use the server, calling Claude.
-   - **Needs:** an API key and a privacy notice, per PRD SEC04 (optional assistant, explains what data is sent).
-3. **English.** V3 is Arabic only. Proposal: Arabic is the default and English stays as a translation of the same layout, left to right.
-4. **Projects vs. lists.** PARA projects and areas replace today's lists. Existing lists become **Areas**, and their tasks stay attached.
-5. **Energy level.** A new task field (low / medium / high). Google Tasks has no such field, so it is stored in the app only.
+1. **Prayer times stay central.** Prayers appear as blocks in Today's "next stop" and in the weekly grid, in the design's block style. The prayer settings screen is restyled in phase 6.
+2. **No AI features for now.** Everything AI in the design is left out: the "Bawsala suggests" label on the priority card, the triage hint, the AI reschedule screen (T05) and the review summary. Detected capture tags come from simple text rules, as in the prototype.
+3. **Arabic first, English kept.** Arabic is the default. English uses the same layout mirrored left to right.
+4. **Lists stay separate.** Today's lists (and their Google Tasks sync) are unchanged. Projects, Areas, Resources and Archive are a new, separate layer: a task can belong to a list and, optionally, to a project; a project can belong to an area.
+5. **No energy level.** The energy pills and filters are left out; the context filters stay.
 
 ## 6. Risks
 
 - **Matching exactly:** Compose on Android renders text slightly differently from a browser, mainly Arabic line heights. Phase 7 accepts small font-rendering differences, but layout, spacing, colors and sizes must match.
-- **Scope:** Projects/PARA, weekly review and AI suggestions are new features (much of P1), not only a reskin. Phases 4–5 are the largest.
-- **Sync and server:** new entities (projects, areas, resources, reviews, energy) need server tables, sync and MCP tools, so the server changes alongside.
+- **Scope:** Projects/PARA and the weekly review are new features (part of P1), not only a reskin. Phases 4–5 are the largest.
+- **Sync and server:** new entities (projects, areas, resources, reviews) need server tables, sync and MCP tools, so the server changes alongside.
