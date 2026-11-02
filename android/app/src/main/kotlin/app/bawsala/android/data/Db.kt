@@ -35,6 +35,8 @@ class Db(context: Context) : SQLiteOpenHelper(context, "planner.db", null, 3) {
         // PARA projects and areas (V3); tasks point at a project with projectId.
         projects("CREATE TABLE projects (id TEXT PRIMARY KEY, doc TEXT NOT NULL)"),
         areas("CREATE TABLE areas (id TEXT PRIMARY KEY, doc TEXT NOT NULL)"),
+        // Weekly reviews (V3), keyed by the week's first day.
+        reviews("CREATE TABLE reviews (id TEXT PRIMARY KEY, doc TEXT NOT NULL)"),
     }
 
     override fun onConfigure(db: SQLiteDatabase) {
@@ -53,6 +55,7 @@ class Db(context: Context) : SQLiteOpenHelper(context, "planner.db", null, 3) {
         if (oldVersion < 3) {
             db.execSQL(Table.projects.sql)
             db.execSQL(Table.areas.sql)
+            db.execSQL(Table.reviews.sql)
         }
         if (oldVersion < 2) {
             createSyncTables(db)

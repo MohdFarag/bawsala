@@ -76,6 +76,15 @@ class CodecRoundTripTest {
     }
 
     @Test
+    fun weeklyReviews() {
+        val r = WeeklyReview(d, 3, listOf("Ship triage", "Rest"), now)
+        assertEquals(r, Codec.review(Codec.encode(r)))
+        assertEquals("2026-10-28", Codec.encode(r).getString("id"))
+        val blank = WeeklyReview(d)
+        assertEquals(blank, Codec.review(Codec.encode(blank)))
+    }
+
+    @Test
     fun tasksSessionsRules() {
         val t =
             Task(

@@ -79,6 +79,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     val capture = CaptureController(ctx)
     val inbox = InboxController(ctx)
     val projects = ProjectController(ctx)
+    val review = ReviewController(ctx)
     val focus = FocusController(ctx)
     val tasks = TaskController(ctx, focus)
     val settings = SettingsController(ctx)

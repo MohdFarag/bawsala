@@ -156,6 +156,22 @@ data class Project(
     val sourceItemId: String? = null,
 )
 
+/**
+ * One week's review (V3 M06): how far the three steps got and the outcomes chosen for the week. The
+ * id is the week's first day, so each week has a single review on every device.
+ */
+data class WeeklyReview(
+    val weekStart: LocalDate,
+    /** Steps finished, 0 to 3: collect, review commitments, choose the week's direction. */
+    val stepsDone: Int = 0,
+    /** Up to three outcomes that matter this week. */
+    val outcomes: List<String> = emptyList(),
+    val completedAt: Instant? = null,
+) {
+    val id: String
+        get() = weekStart.toString()
+}
+
 /** An ongoing responsibility with no end date (PARA "Areas"), e.g. health or family. */
 data class Area(
     val id: String,
