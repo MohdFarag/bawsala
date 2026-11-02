@@ -1,7 +1,5 @@
 package app.bawsala.android.ui.task
 
-import app.bawsala.android.ui.design.lucide
-import app.bawsala.android.R
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.clickable
@@ -27,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import app.bawsala.android.R
 import app.bawsala.android.data.Snapshot
 import app.bawsala.android.navigation.Screen
 import app.bawsala.android.ui.components.AppButton
@@ -41,6 +40,7 @@ import app.bawsala.android.ui.components.card
 import app.bawsala.android.ui.components.kindIcon
 import app.bawsala.android.ui.components.pickDate
 import app.bawsala.android.ui.components.rememberDraft
+import app.bawsala.android.ui.design.lucide
 import app.bawsala.android.ui.format.listName
 import app.bawsala.android.ui.format.shortDate
 import app.bawsala.android.ui.i18n.tr
@@ -275,7 +275,7 @@ private fun KeepLink(url: String) {
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(lucide(R.drawable.ic_lucide_sticky_note)2, null, tint = AppColors.primary)
+        Icon(lucide(R.drawable.ic_lucide_sticky_note), null, tint = AppColors.primary)
         Text(tr("openInKeep"), style = AppType.label)
     }
 }
