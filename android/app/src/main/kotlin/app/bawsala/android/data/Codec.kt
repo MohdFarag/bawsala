@@ -107,6 +107,7 @@ object Codec {
             )
             .put("parentId", i.parentId)
             .put("derivedTaskIds", JSONArray(i.derivedTaskIds))
+            .put("tags", JSONArray(i.tags))
             .put(
                 "waiting",
                 i.waiting?.let {
@@ -160,6 +161,7 @@ object Codec {
                 },
             parentId = o.str("parentId"),
             derivedTaskIds = o.optJSONArray("derivedTaskIds").strings(),
+            tags = o.optJSONArray("tags").strings(),
             waiting =
                 o.optJSONObject("waiting")?.let {
                     WaitingFor(

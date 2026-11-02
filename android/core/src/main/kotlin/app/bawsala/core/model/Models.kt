@@ -90,6 +90,8 @@ data class CaptureItem(
     val trashedAt: Instant? = null,
     val purgeAt: Instant? = null,
     val stateBeforeTrash: CaptureState? = null,
+    /** Details noticed at capture (e.g. "tomorrow", "6:00", "@home"), shown during triage. */
+    val tags: List<String> = emptyList(),
 )
 
 enum class TaskStatus {
