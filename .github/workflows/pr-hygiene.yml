@@ -3,15 +3,10 @@ name: PR hygiene
 # Squash merging uses the PR title as the commit on main, so the title must follow Conventional
 # Commits; release-please reads those commits to pick the next version and write the changelog.
 on:
-  pull_request:
-    types: [opened, edited, synchronize, reopened, ready_for_review]
+  workflow_call:
 
 permissions:
   contents: read
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
 
 jobs:
   conventions:
@@ -19,7 +14,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 2
     steps:
-      - name: Check PR title (Conventional Commits)
+      - if: github.event_name == 'pull_request'
+        name: Check PR title (Conventional Commits)
         env:
           TITLE: ${{ github.event.pull_request.title }}
         run: |
@@ -28,7 +24,8 @@ jobs:
             echo "::error::PR title must look like 'feat(android): add sign-in' (type(scope): summary). Got: $TITLE"
             exit 1
           fi
-      - name: Check branch name
+      - if: github.event_name == 'pull_request'
+        name: Check branch name
         env:
           BRANCH: ${{ github.head_ref }}
         run: |
@@ -43,7 +40,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 2
     # Dependabot PRs get a read-only token, so they keep the labels Dependabot sets.
-    if: github.actor != 'dependabot[bot]'
+    if: github.event_name == 'pull_request' && github.actor != 'dependabot[bot]' && github.event.pull_request.head.repo.full_name == github.repository
+    continue-on-error: true
     permissions:
       contents: read
       pull-requests: write

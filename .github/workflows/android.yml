@@ -1,20 +1,14 @@
 name: Android
 
-# No path filters on the trigger: "Core tests" and "App build, lint and tests" are required checks,
-# so they must always report. The changes job skips them (skipped counts as passing) when nothing
-# Android-related changed.
 on:
-  push:
-    branches: [main]
-  pull_request:
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      ref:
+        type: string
+        required: true
 
 permissions:
   contents: read
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
 
 defaults:
   run:
@@ -22,42 +16,8 @@ defaults:
     shell: bash
 
 jobs:
-  changes:
-    name: Detect Android changes
-    runs-on: ubuntu-24.04
-    timeout-minutes: 5
-    outputs:
-      android: ${{ steps.diff.outputs.android }}
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - id: diff
-        working-directory: .
-        env:
-          EVENT: ${{ github.event_name }}
-          PR_BASE: ${{ github.event.pull_request.base.sha }}
-          PUSH_BEFORE: ${{ github.event.before }}
-        run: |
-          base="${PR_BASE:-$PUSH_BEFORE}"
-          android_paths='^(android/|\.github/(workflows/android\.yml|scripts/|problem-matchers/))'
-          if [[ "$EVENT" == "workflow_dispatch" || -z "$base" || "$base" =~ ^0+$ ]] || ! git cat-file -e "$base^{commit}" 2>/dev/null; then
-            changed=true
-          else
-            # --no-renames lists both sides of a move, so moving a file out of android/ still counts.
-            # The diff is captured first: piping into `grep -q` can fail the pipeline under pipefail.
-            files="$(git diff --name-only --no-renames "$base" HEAD)"
-            if grep -qE "$android_paths" <<< "$files"; then changed=true; else changed=false; fi
-          fi
-          echo "android=$changed" >> "$GITHUB_OUTPUT"
-          echo "Android-related changes: $changed"
-
   core:
     name: Core tests
-    needs: changes
-    # Fail closed: if change detection itself failed, run the suites rather than skip them.
-    if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.android == 'true') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     permissions:
@@ -66,6 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          ref: ${{ github.sha }}
           persist-credentials: false
       - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
@@ -81,7 +42,7 @@ jobs:
         if: failure()
         run: ../.github/scripts/gradle-failure-annotations.sh "$RUNNER_TEMP/gradle.log"
       - name: Test report
-        if: always()
+        if: ${{ always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
         uses: mikepenz/action-junit-report@6ef3fdcfcd5f0b5d14df3e659ef19b8c6820f93d # v6.6.1
         with:
           report_paths: android/core/build/test-results/test/*.xml
@@ -89,9 +50,6 @@ jobs:
 
   app:
     name: App build, lint and tests
-    needs: changes
-    # Fail closed: if change detection itself failed, run the suites rather than skip them.
-    if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.android == 'true') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     permissions:
@@ -100,6 +58,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          ref: ${{ github.sha }}
           persist-credentials: false
       - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
@@ -121,7 +80,7 @@ jobs:
         if: always()
         run: python3 ../.github/scripts/lint-warning-summary.py app/build/reports/lint-results-debug.xml
       - name: Test report
-        if: always()
+        if: ${{ always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
         uses: mikepenz/action-junit-report@6ef3fdcfcd5f0b5d14df3e659ef19b8c6820f93d # v6.6.1
         with:
           report_paths: android/app/build/test-results/**/*.xml
@@ -156,6 +115,7 @@ jobs:
   # repository; the build job above stays read-only.
   screenshots:
     name: Publish V3 screenshots
+    continue-on-error: true
     needs: app
     if: ${{ !cancelled() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && needs.app.result == 'success' }}
     runs-on: ubuntu-24.04
