@@ -10,18 +10,23 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import app.bawsala.android.ui.format.LocalAppClock
 import app.bawsala.android.R
 import app.bawsala.android.data.Snapshot
 import app.bawsala.android.navigation.Screen
@@ -41,6 +46,7 @@ import app.bawsala.android.ui.design.SideRail
 import app.bawsala.android.ui.design.Toast
 import app.bawsala.android.ui.design.isTabletWidth
 import app.bawsala.android.ui.focus.FocusScreen
+import app.bawsala.android.ui.format.LocalAppClock
 import app.bawsala.android.ui.i18n.LocalLang
 import app.bawsala.android.ui.i18n.tr
 import app.bawsala.android.ui.inbox.InboxScreen
@@ -59,6 +65,7 @@ import app.bawsala.android.ui.settings.PrayerSettingsScreen
 import app.bawsala.android.ui.settings.PreferencesScreen
 import app.bawsala.android.ui.task.TaskDetailScreen
 import app.bawsala.android.ui.theme.AppColors
+import app.bawsala.android.ui.theme.Palette
 import app.bawsala.android.ui.today.TodayScreen
 import app.bawsala.android.ui.triage.TriageScreen
 import app.bawsala.android.viewmodel.AppViewModel
@@ -96,6 +103,41 @@ fun AppRoot(vm: AppViewModel, onExit: () -> Unit) {
             vm.editingEvent?.let { EventSheet(vm, s, it) }
             vm.capture.duplicate?.let { DuplicateShareDialog(it, vm) }
         }
+    }
+}
+
+/** The screens where pulling down refreshes (#67): the tabs and the week planner. */
+private val REFRESHABLE =
+    setOf(Screen.Today, Screen.Inbox, Screen.Projects, Screen.Review, Screen.Plan)
+
+/**
+ * Pull down at the top of a main screen to refresh (#67): the screen is rebuilt, so time-based
+ * content such as the next stop is recomputed, and a sync runs. The indicator only shows while
+ * pulling or refreshing, so screens at rest look exactly as before.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun RefreshableScreen(screen: Screen, vm: AppViewModel, s: Snapshot) {
+    if (screen !in REFRESHABLE) {
+        ScreenHost(screen, vm, s)
+        return
+    }
+    val state = rememberPullToRefreshState()
+    PullToRefreshBox(
+        isRefreshing = vm.refreshing,
+        onRefresh = vm::refresh,
+        state = state,
+        indicator = {
+            PullToRefreshDefaults.Indicator(
+                state = state,
+                isRefreshing = vm.refreshing,
+                modifier = Modifier.align(Alignment.TopCenter),
+                containerColor = Palette.white,
+                color = Palette.green900,
+            )
+        },
+    ) {
+        key(vm.refreshTick) { ScreenHost(screen, vm, s) }
     }
 }
 
@@ -178,14 +220,14 @@ private fun Shell(vm: AppViewModel, s: Snapshot, current: Screen) {
                         },
                     )
                 Box(Modifier.weight(1f).fillMaxSize()) {
-                    ScreenHost(screen, vm, s)
+                    RefreshableScreen(screen, vm, s)
                     Messages(vm, bottomInset = 24.dp)
                 }
             }
         } else {
             Column(Modifier.fillMaxSize()) {
                 Box(Modifier.weight(1f)) {
-                    ScreenHost(screen, vm, s)
+                    RefreshableScreen(screen, vm, s)
                     Messages(vm, bottomInset = 17.dp)
                 }
                 if (screen.showsBottomBar)

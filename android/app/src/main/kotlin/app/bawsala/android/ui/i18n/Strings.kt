@@ -119,6 +119,9 @@ private val S: Map<String, Pair<String, String>> =
             ("Your session ended. Sign in again." to "انتهت جلستك. سجّل الدخول مجددًا."),
         "pendingSync" to ("Waiting to sync" to "بانتظار المزامنة"),
         "allSynced" to ("All synced" to "كل شيء متزامن"),
+        // Pull down to refresh (#67).
+        "upToDate" to ("Up to date" to "كل شيء محدَّث"),
+        "refreshedOnDevice" to ("Refreshed on this device" to "تم التحديث على هذا الجهاز"),
         "needsAttention" to ("Needs your attention" to "يحتاج إلى انتباهك"),
         "waitingToSync" to ("%1 waiting to sync" to "%1 بانتظار المزامنة"),
         "discardChange" to ("Discard" to "تجاهل"),

@@ -3,6 +3,7 @@ package app.bawsala.android.viewmodel
 import android.app.Application
 import android.util.Log
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
@@ -125,6 +126,33 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                 }
                 .debounce(WIDGET_REFRESH_MS)
                 .collect { BawsalaWidget.refresh(getApplication()) }
+        }
+    }
+
+    /** True while a pull-to-refresh is running (#67). */
+    var refreshing by mutableStateOf(false)
+        private set
+
+    /** Bumped by each refresh so screens recompute time-based content (next stop, prayers). */
+    var refreshTick by mutableIntStateOf(0)
+        private set
+
+    /**
+     * Pull down to refresh: recompute the screen now, sync with the server when signed in (and
+     * Google when connected), then say how it went.
+     */
+    fun refresh() {
+        if (refreshing) return
+        refreshing = true
+        refreshTick++
+        viewModelScope.launch(failures) {
+            try {
+                val result = container.syncRunner.run()
+                if (state.value.calendars != null) google.syncNow()
+                messages.show(RefreshRules.messageKey(result))
+            } finally {
+                refreshing = false
+            }
         }
     }
 
