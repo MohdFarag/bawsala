@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.core.content.ContextCompat
@@ -38,7 +39,7 @@ class PlatformNightlyTest : DeviceUiFixture() {
     @Test fun microphoneDeniedShowsRecovery() {
         start()
         compose.runOnIdle { vm().openCapture() }
-        compose.onNodeWithText(text("voiceInstead")).performClick()
+        compose.onNodeWithContentDescription(text("voiceInstead")).performClick()
         permissionButton(false)
         compose.onNodeWithText(text("micDenied")).assertIsDisplayed()
     }
@@ -46,7 +47,7 @@ class PlatformNightlyTest : DeviceUiFixture() {
     @Test fun microphoneCanBeGranted() {
         start()
         compose.runOnIdle { vm().openCapture() }
-        compose.onNodeWithText(text("voiceInstead")).performClick()
+        compose.onNodeWithContentDescription(text("voiceInstead")).performClick()
         permissionButton(true)
         waitFor { ContextCompat.checkSelfPermission(app, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED }
         assertTrue(vm().captureOpen)
