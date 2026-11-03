@@ -3,11 +3,11 @@ package app.bawsala.android.device
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.view.accessibility.AccessibilityNodeInfo
 import androidx.activity.compose.setContent
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.ui.test.assertIsDisplayed
-import android.view.accessibility.AccessibilityNodeInfo
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
@@ -23,10 +23,10 @@ import app.bawsala.android.MainActivity
 import app.bawsala.android.location.rememberPlaceRequest
 import app.bawsala.android.navigation.Tab
 import app.bawsala.core.model.CaptureState
+import java.util.regex.Pattern
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.util.regex.Pattern
 
 @RunWith(AndroidJUnit4::class)
 class PlatformNightlyTest : DeviceUiFixture() {
@@ -37,7 +37,8 @@ class PlatformNightlyTest : DeviceUiFixture() {
         assertNotNull("Expected a runtime permission dialog", button)
         device.waitForIdle()
         val automation = InstrumentationRegistry.getInstrumentation().uiAutomation
-        val nodes = automation.rootInActiveWindow.findAccessibilityNodeInfosByViewId(button.resourceName)
+        val nodes =
+            automation.rootInActiveWindow.findAccessibilityNodeInfosByViewId(button.resourceName)
         assertEquals("Expected one permission action", 1, nodes.size)
         assertTrue(nodes.single().performAction(AccessibilityNodeInfo.ACTION_CLICK))
         device.waitForIdle()
@@ -105,9 +106,7 @@ class PlatformNightlyTest : DeviceUiFixture() {
         capture("Try every main triage decision")
         compose.runOnIdle { vm().navigator.switchTo(Tab.TRIAGE) }
         for (key in listOf("nextAction", "project", "reference", "later")) {
-            waitFor {
-                compose.onAllNodesWithText(text(key)).fetchSemanticsNodes().isNotEmpty()
-            }
+            waitFor { compose.onAllNodesWithText(text(key)).fetchSemanticsNodes().isNotEmpty() }
             compose.onNodeWithText(text(key)).performClick()
             waitFor { app.container.repository.state.value.items.single().state != CaptureState.INBOX }
             compose.runOnIdle { vm().inbox.undoLast() }
