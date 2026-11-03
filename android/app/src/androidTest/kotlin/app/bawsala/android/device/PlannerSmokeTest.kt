@@ -106,6 +106,7 @@ class PlannerSmokeTest : DeviceUiFixture() {
         waitFor { compose.onAllNodesWithText(text("nextAction")).fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText(text("nextAction")).performClick()
         waitFor { app.container.repository.state.value.tasks.isNotEmpty() }
+        waitFor { vm().inbox.canUndo }
         compose.runOnIdle { vm().inbox.undoLast() }
         waitFor { app.container.repository.state.value.tasks.isEmpty() }
         waitFor { compose.onAllNodesWithText(text("nextAction")).fetchSemanticsNodes().isNotEmpty() }
