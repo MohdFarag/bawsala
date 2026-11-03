@@ -30,6 +30,8 @@ def validate(needs):
     for job, result in needs.items():
         if job == "changes":
             continue
+        if job in outputs and outputs[job] not in ("true", "false"):
+            raise ValueError(f"{job}: invalid project selection")
         required = job not in outputs or outputs[job] == "true"
         expected = "success" if required else "skipped"
         if result["result"] != expected:
