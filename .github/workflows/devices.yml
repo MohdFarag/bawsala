@@ -97,6 +97,7 @@ jobs:
             android/app/build/reports/androidTests/
             android/app/build/outputs/androidTest-results/
             android/app/build/outputs/managed_device_android_test_additional_output/
+            android/app/build/intermediates/managed_device_android_test_additional_output/
             ${{ runner.temp }}/device-server.log
           if-no-files-found: warn
           retention-days: 14
