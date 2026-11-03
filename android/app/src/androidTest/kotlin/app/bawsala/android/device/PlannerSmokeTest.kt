@@ -79,9 +79,9 @@ abstract class DeviceUiFixture {
         compose.onNodeWithText(text("skip")).performClick()
         compose.onNodeWithText(text("useWithoutAccount")).performScrollTo().performClick()
         waitFor { app.container.repository.state.value.prefs.onboarded }
+        waitFor { compose.onAllNodesWithContentDescription(text("capture")).fetchSemanticsNodes().isNotEmpty() }
     }
     protected fun capture(title: String) {
-        waitFor { compose.onAllNodesWithContentDescription(text("capture")).fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithContentDescription(text("capture")).performClick()
         compose.onAllNodes(hasSetTextAction()).onFirst().performTextInput(title)
         Espresso.closeSoftKeyboard()
