@@ -91,7 +91,8 @@ android {
                 create<com.android.build.api.dsl.ManagedVirtualDevice>("phoneApi28") {
                     device = "Pixel 2"
                     apiLevel = 28
-                    systemImageSource = "aosp"
+                    systemImageSource = "google"
+                    require64Bit = true
                 }
             }
         }
