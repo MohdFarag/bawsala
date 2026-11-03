@@ -1,0 +1,23 @@
+name: Device test acceptance
+
+# Changes to the test harness itself must demonstrate the full compatibility suite.
+# Ordinary application PRs continue to use the required fast smoke suite.
+on:
+  pull_request:
+    paths:
+      - "android/app/src/androidTest/**"
+      - ".github/workflows/devices.yml"
+      - ".github/workflows/device-acceptance.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: device-acceptance-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  extended:
+    uses: ./.github/workflows/devices.yml
+    with:
+      suite: extended
