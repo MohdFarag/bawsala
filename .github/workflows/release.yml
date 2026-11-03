@@ -60,9 +60,11 @@ jobs:
           git merge-base --is-ancestor "$sha" origin/main
           [[ "$(git show "$tag:version.txt")" == "${tag#v}" ]]
           draft=$(gh release view "$tag" --json isDraft --jq .isDraft 2>/dev/null || echo missing)
-          echo "tag=$tag" >> "$GITHUB_OUTPUT"
-          echo "sha=$sha" >> "$GITHUB_OUTPUT"
-          echo "published=$([[ "$draft" == false ]] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          {
+            echo "tag=$tag"
+            echo "sha=$sha"
+            echo "published=$([[ "$draft" == false ]] && echo true || echo false)"
+          } >> "$GITHUB_OUTPUT"
 
   validation:
     name: Release validation
