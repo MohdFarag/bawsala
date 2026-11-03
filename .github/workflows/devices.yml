@@ -44,8 +44,13 @@ jobs:
       - name: Accept SDK licenses for managed device images
         run: |
           python3 - <<'PYTHON'
-          import subprocess
-          subprocess.run(["sdkmanager", "--licenses"], input="y\n" * 100, text=True, check=True)
+          import os, subprocess
+          from pathlib import Path
+          tools = Path(os.environ["ANDROID_HOME"]) / "cmdline-tools"
+          manager = tools / "latest/bin/sdkmanager"
+          if not manager.exists():
+              manager = sorted(tools.glob("*/bin/sdkmanager"))[-1]
+          subprocess.run([str(manager), "--licenses"], input="y\n" * 100, text=True, check=True)
           PYTHON
       - name: Enable KVM
         run: |
