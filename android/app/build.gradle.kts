@@ -30,6 +30,9 @@ android {
 
     defaultConfig {
         applicationId = "app.bawsala"
+        testInstrumentationRunner = "app.bawsala.android.device.DeviceTestRunner"
+        testInstrumentationRunnerArguments["clearPackageData"] = "true"
+        testInstrumentationRunnerArguments["useTestStorageService"] = "true"
         minSdk = 26 // java.time without desugaring; open PRD decision (§1.1)
         targetSdk = 35
         versionCode = System.getenv("VERSION_CODE")?.toIntOrNull() ?: 1
@@ -77,6 +80,22 @@ android {
         buildConfig = true
     }
     testOptions {
+        execution = "ANDROIDX_TEST_ORCHESTRATOR"
+        managedDevices {
+            devices {
+                create<com.android.build.api.dsl.ManagedVirtualDevice>("phoneApi35") {
+                    device = "Pixel 2"
+                    apiLevel = 35
+                    systemImageSource = "aosp"
+                }
+                create<com.android.build.api.dsl.ManagedVirtualDevice>("phoneApi28") {
+                    device = "Pixel 2"
+                    apiLevel = 28
+                    systemImageSource = "google"
+                    require64Bit = true
+                }
+            }
+        }
         unitTests.all { it.useJUnitPlatform() }
         // Screenshot tests render real resources (fonts, icons) under Robolectric.
         unitTests.isIncludeAndroidResources = true
@@ -112,6 +131,17 @@ dependencies {
     implementation(libs.glance.appwidget)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.play.services.auth)
+
+    androidTestImplementation(platform(libs.compose.bom))
+    androidTestImplementation(libs.compose.ui.test.junit4)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation("androidx.test:runner:1.6.2")
+    androidTestImplementation("androidx.test:rules:1.6.1")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+    androidTestImplementation("androidx.test.uiautomator:uiautomator:2.3.0")
+    androidTestUtil("androidx.test:orchestrator:1.5.1")
+    androidTestUtil("androidx.test.services:test-services:1.5.0")
+    androidTestImplementation("androidx.test.services:storage:1.5.0")
 
     testImplementation(libs.kotlin.test)
     testImplementation(libs.org.json) // android.jar's org.json is a stub in local unit tests

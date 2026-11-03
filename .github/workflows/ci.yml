@@ -8,6 +8,12 @@ on:
   schedule:
     - cron: "30 3 * * *"
   workflow_dispatch:
+    inputs:
+      device_suite:
+        type: choice
+        options: [smoke, extended]
+        default: smoke
+        description: Device test coverage
   workflow_call:
     inputs:
       ref:
@@ -78,6 +84,13 @@ jobs:
     with:
       ref: ${{ inputs.ref || github.sha }}
 
+  devices:
+    needs: changes
+    if: ${{ !cancelled() && (needs.changes.result != 'success' || needs.changes.outputs.devices == 'true') }}
+    uses: ./.github/workflows/devices.yml
+    with:
+      suite: ${{ github.event_name == 'schedule' && 'extended' || inputs.device_suite || 'smoke' }}
+
   security:
     uses: ./.github/workflows/security.yml
     permissions:
@@ -96,7 +109,7 @@ jobs:
   gate:
     name: Repository quality gate
     if: always()
-    needs: [changes, android, server, web, security, hygiene]
+    needs: [changes, android, server, web, devices, security, hygiene]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:

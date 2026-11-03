@@ -1,0 +1,112 @@
+package app.bawsala.android.device
+
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.view.accessibility.AccessibilityNodeInfo
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.core.content.ContextCompat
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.uiautomator.By
+import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.Until
+import app.bawsala.android.LaunchExtras
+import app.bawsala.android.MainActivity
+import app.bawsala.android.navigation.Screen
+import app.bawsala.android.navigation.Tab
+import app.bawsala.core.model.CaptureState
+import java.util.regex.Pattern
+import org.junit.Assert.*
+import org.junit.Test
+import org.junit.runner.RunWith
+
+@RunWith(AndroidJUnit4::class)
+class PlatformNightlyTest : DeviceUiFixture() {
+    private fun permissionButton(allow: Boolean) {
+        val id = if (allow) ".*:id/permission_allow(_foreground_only)?_button" else ".*:id/permission_deny_button"
+        val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+        val button = device.wait(Until.findObject(By.res(Pattern.compile(id))), 10_000)
+        assertNotNull("Expected a runtime permission dialog", button)
+        device.waitForIdle()
+        val automation = InstrumentationRegistry.getInstrumentation().uiAutomation
+        val nodes =
+            automation.rootInActiveWindow.findAccessibilityNodeInfosByViewId(button.resourceName)
+        assertEquals("Expected one permission action", 1, nodes.size)
+        assertTrue(nodes.single().performAction(AccessibilityNodeInfo.ACTION_CLICK))
+        device.waitForIdle()
+    }
+
+    @Test fun microphoneDeniedShowsRecovery() {
+        start()
+        compose.runOnIdle { vm().openCapture() }
+        compose.onNodeWithContentDescription(text("voiceInstead")).performClick()
+        permissionButton(false)
+        compose.onNodeWithText(text("micDenied")).assertIsDisplayed()
+    }
+
+    @Test fun microphoneCanBeGranted() {
+        start()
+        compose.runOnIdle { vm().openCapture() }
+        compose.onNodeWithContentDescription(text("voiceInstead")).performClick()
+        permissionButton(true)
+        waitFor { app.packageManager.checkPermission(Manifest.permission.RECORD_AUDIO, app.packageName) == PackageManager.PERMISSION_GRANTED }
+        assertTrue(vm().captureOpen)
+    }
+
+    private fun requestLocationFromSettings() {
+        start()
+        compose.runOnIdle {
+            vm().settings.savePrefs(app.container.repository.state.value.prefs.copy(prayerFeatures = true))
+            vm().navigator.open(Screen.PrayerSettings)
+        }
+        waitFor { compose.onAllNodesWithText(text("useMyLocation")).fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithText(text("useMyLocation")).performClick()
+    }
+
+    @Test fun locationDenialReturnsToCaller() {
+        requestLocationFromSettings()
+        permissionButton(false)
+        compose.onNodeWithText(text("locationUnavailable")).assertIsDisplayed()
+        assertEquals(PackageManager.PERMISSION_DENIED, ContextCompat.checkSelfPermission(app, Manifest.permission.ACCESS_COARSE_LOCATION))
+    }
+
+    @Test fun locationCanBeGranted() {
+        requestLocationFromSettings()
+        permissionButton(true)
+        waitFor { ContextCompat.checkSelfPermission(app, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED }
+        compose.onNodeWithText(text("useMyLocation")).assertIsDisplayed()
+    }
+
+    @Test fun shareAndWidgetCaptureEntryPoints() {
+        start()
+        compose.activityRule.scenario.onActivity { activity ->
+            activity.startActivity(Intent(activity, MainActivity::class.java).setAction(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, "Shared from another app"))
+        }
+        waitFor { app.container.repository.state.value.items.any { it.title == "Shared from another app" } }
+        compose.activityRule.scenario.onActivity { activity ->
+            activity.startActivity(Intent(activity, MainActivity::class.java).setAction(LaunchExtras.ACTION_CAPTURE))
+        }
+        compose.onNodeWithText(text("saveToTriage")).assertIsDisplayed()
+    }
+
+    @Test fun mainTriageDecisionsAreUndoableOnDevice() {
+        start()
+        capture("Try every main triage decision")
+        compose.runOnIdle { vm().navigator.switchTo(Tab.TRIAGE) }
+        for (key in listOf("nextAction", "project", "reference", "later")) {
+            waitFor { compose.onAllNodesWithText(text(key)).fetchSemanticsNodes().isNotEmpty() }
+            compose.onNodeWithText(text(key)).performClick()
+            waitFor { app.container.repository.state.value.items.single().state != CaptureState.INBOX }
+            waitFor { vm().inbox.canUndo }
+            compose.runOnIdle { vm().inbox.undoLast() }
+            waitFor { app.container.repository.state.value.items.single().state == CaptureState.INBOX }
+            assertTrue(app.container.repository.state.value.tasks.isEmpty())
+            assertTrue(app.container.repository.state.value.projects.isEmpty())
+        }
+    }
+}
