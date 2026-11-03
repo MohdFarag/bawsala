@@ -1,10 +1,14 @@
 package app.bawsala.android.ui.design
 
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -15,10 +19,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -66,8 +73,14 @@ fun ActionButton(
     enabled: Boolean = true,
 ) {
     val alpha = if (enabled) 1f else 0.45f
+    // Pressed buttons dim slightly (#64); at rest nothing changes.
+    val source = remember { MutableInteractionSource() }
+    val pressed by source.collectIsPressedAsState()
+    val pressAlpha by
+        animateFloatAsState(if (pressed) 0.85f else 1f, motionSpec(Motion.QUICK), label = "press")
     Row(
         modifier
+            .graphicsLayer { this.alpha = pressAlpha }
             .heightIn(min = 50.dp)
             .clip(Radius.button)
             .background(style.background.copy(alpha = style.background.alpha * alpha))
@@ -75,7 +88,13 @@ fun ActionButton(
                 style.border?.let { Modifier.border(BorderStroke(1.dp, it), Radius.button) }
                     ?: Modifier
             )
-            .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
+            .clickable(
+                interactionSource = source,
+                indication = LocalIndication.current,
+                enabled = enabled,
+                role = Role.Button,
+                onClick = onClick,
+            )
             .padding(horizontal = 20.dp, vertical = 10.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
         verticalAlignment = Alignment.CenterVertically,

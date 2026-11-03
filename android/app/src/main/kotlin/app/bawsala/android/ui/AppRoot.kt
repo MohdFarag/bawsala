@@ -1,6 +1,17 @@
 package app.bawsala.android.ui
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -21,14 +32,19 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.bawsala.android.R
 import app.bawsala.android.data.Snapshot
+import app.bawsala.android.navigation.NavMove
 import app.bawsala.android.navigation.Screen
 import app.bawsala.android.navigation.Tab
 import app.bawsala.android.navigation.showsBottomBar
@@ -41,10 +57,13 @@ import app.bawsala.android.ui.collections.TrashScreen
 import app.bawsala.android.ui.design.Avatar
 import app.bawsala.android.ui.design.BottomBar
 import app.bawsala.android.ui.design.DesignGallery
+import app.bawsala.android.ui.design.Motion
 import app.bawsala.android.ui.design.NavDestination
 import app.bawsala.android.ui.design.SideRail
 import app.bawsala.android.ui.design.Toast
 import app.bawsala.android.ui.design.isTabletWidth
+import app.bawsala.android.ui.design.motionSpec
+import app.bawsala.android.ui.design.rememberReduceMotion
 import app.bawsala.android.ui.focus.FocusScreen
 import app.bawsala.android.ui.format.LocalAppClock
 import app.bawsala.android.ui.i18n.LocalLang
@@ -103,6 +122,37 @@ fun AppRoot(vm: AppViewModel, onExit: () -> Unit) {
             vm.editingEvent?.let { EventSheet(vm, s, it) }
             vm.capture.duplicate?.let { DuplicateShareDialog(it, vm) }
         }
+    }
+}
+
+/**
+ * Screen transitions (#64): a screen opened on top comes in from the end side (left in Arabic,
+ * right in English) and fades in; going back reverses it; tab switches cross-fade. Off when the
+ * user removed animations.
+ */
+@Composable
+private fun AnimatedScreen(screen: Screen, vm: AppViewModel, s: Snapshot) {
+    val reduce = rememberReduceMotion()
+    val toEnd = if (LocalLayoutDirection.current == LayoutDirection.Rtl) -1 else 1
+    AnimatedContent(
+        targetState = screen,
+        transitionSpec = {
+            val time = tween<IntOffset>(Motion.SCREEN)
+            val fade = tween<Float>(Motion.SCREEN)
+            when {
+                reduce -> EnterTransition.None togetherWith ExitTransition.None
+                vm.navigator.lastMove == NavMove.FORWARD ->
+                    (slideInHorizontally(time) { toEnd * it / 5 } + fadeIn(fade)) togetherWith
+                        fadeOut(tween(Motion.QUICK))
+                vm.navigator.lastMove == NavMove.BACK ->
+                    fadeIn(fade) togetherWith
+                        (slideOutHorizontally(time) { toEnd * it / 5 } + fadeOut(fade))
+                else -> fadeIn(fade) togetherWith fadeOut(tween(Motion.QUICK))
+            }
+        },
+        label = "screen",
+    ) { target ->
+        RefreshableScreen(target, vm, s)
     }
 }
 
@@ -220,14 +270,14 @@ private fun Shell(vm: AppViewModel, s: Snapshot, current: Screen) {
                         },
                     )
                 Box(Modifier.weight(1f).fillMaxSize()) {
-                    RefreshableScreen(screen, vm, s)
+                    AnimatedScreen(screen, vm, s)
                     Messages(vm, bottomInset = 24.dp)
                 }
             }
         } else {
             Column(Modifier.fillMaxSize()) {
                 Box(Modifier.weight(1f)) {
-                    RefreshableScreen(screen, vm, s)
+                    AnimatedScreen(screen, vm, s)
                     Messages(vm, bottomInset = 17.dp)
                 }
                 if (screen.showsBottomBar)
@@ -248,18 +298,33 @@ private fun Shell(vm: AppViewModel, s: Snapshot, current: Screen) {
 /** The current message as a V3 toast, dismissed after a few seconds; Undo when offered. */
 @Composable
 private fun BoxScope.Messages(vm: AppViewModel, bottomInset: androidx.compose.ui.unit.Dp) {
-    val message = vm.messages.current ?: return
-    LaunchedEffect(message.id) {
-        delay(MESSAGE_MILLIS)
-        vm.messages.dismiss(message)
+    val message = vm.messages.current
+    // Keeps the last message while it fades out (#64).
+    var shown by remember { mutableStateOf(message) }
+    if (message != null)
+        LaunchedEffect(message.id) {
+            shown = message
+            delay(MESSAGE_MILLIS)
+            vm.messages.dismiss(message)
+        }
+    AnimatedVisibility(
+        visible = message != null,
+        modifier = Modifier.matchParentSize(),
+        enter =
+            slideInVertically(motionSpec(Motion.STANDARD)) { it / 8 } +
+                fadeIn(motionSpec(Motion.STANDARD)),
+        exit = fadeOut(motionSpec(Motion.QUICK)),
+    ) {
+        val m = message ?: shown ?: return@AnimatedVisibility
+        Box(Modifier.fillMaxSize()) {
+            Toast(
+                if (m.argKey != null) tr(m.key, tr(m.argKey)) else tr(m.key),
+                actionLabel = m.undo?.let { tr("undo") },
+                onAction = m.undo,
+                bottomInset = bottomInset,
+            )
+        }
     }
-    val text = if (message.argKey != null) tr(message.key, tr(message.argKey)) else tr(message.key)
-    Toast(
-        text,
-        actionLabel = message.undo?.let { tr("undo") },
-        onAction = message.undo,
-        bottomInset = bottomInset,
-    )
 }
 
 @Composable
