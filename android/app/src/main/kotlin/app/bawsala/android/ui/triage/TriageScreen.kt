@@ -1,6 +1,8 @@
 package app.bawsala.android.ui.triage
 
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.Orientation
@@ -24,6 +26,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,6 +55,7 @@ import app.bawsala.android.ui.design.ActionList
 import app.bawsala.android.ui.design.ActionStyle
 import app.bawsala.android.ui.design.IconAction
 import app.bawsala.android.ui.design.LucideIcon
+import app.bawsala.android.ui.design.Motion
 import app.bawsala.android.ui.design.OptionRow
 import app.bawsala.android.ui.design.PageHeader
 import app.bawsala.android.ui.design.PanelSheet
@@ -59,6 +63,7 @@ import app.bawsala.android.ui.design.Pill
 import app.bawsala.android.ui.design.PillStyle
 import app.bawsala.android.ui.design.ProgressLine
 import app.bawsala.android.ui.design.TextAction
+import app.bawsala.android.ui.design.rememberReduceMotion
 import app.bawsala.android.ui.format.itemTitle
 import app.bawsala.android.ui.format.relativeTime
 import app.bawsala.android.ui.format.sourceLabel
@@ -225,6 +230,11 @@ private fun SwipeCard(
     content: @Composable () -> Unit,
 ) {
     val offset = remember(key) { Animatable(0f) }
+    // Each new idea rises from the stack into place (#64); reduced motion shows it at once.
+    val reduce = rememberReduceMotion()
+    val settle = remember(key) { Animatable(if (reduce) 1f else 0f) }
+    LaunchedEffect(key) { settle.animateTo(1f, tween(Motion.SCREEN, easing = FastOutSlowInEasing)) }
+    val rise = with(LocalDensity.current) { 14.dp.toPx() }
     val scope = rememberCoroutineScope()
     val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
     val threshold = with(LocalDensity.current) { 110.dp.toPx() }
@@ -242,8 +252,13 @@ private fun SwipeCard(
         Box(
             Modifier.padding(bottom = 18.dp)
                 .graphicsLayer {
+                    val p = settle.value
                     translationX = offset.value
+                    translationY = (1f - p) * rise
                     rotationZ = offset.value / 45f
+                    scaleX = 0.97f + 0.03f * p
+                    scaleY = 0.97f + 0.03f * p
+                    alpha = 0.4f + 0.6f * p
                 }
                 .draggable(
                     rememberDraggableState { delta ->
