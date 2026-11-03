@@ -14,6 +14,7 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import androidx.lifecycle.ViewModelProvider
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.services.storage.TestStorage
@@ -81,6 +82,7 @@ abstract class DeviceUiFixture {
     protected fun capture(title: String) {
         compose.onNodeWithContentDescription(text("capture")).performClick()
         compose.onAllNodes(hasSetTextAction()).onFirst().performTextInput(title)
+        Espresso.closeSoftKeyboard()
         compose.onNodeWithText(text("saveToTriage")).performClick()
         waitFor { app.container.repository.state.value.items.any { it.title == title } }
     }
