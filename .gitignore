@@ -13,3 +13,6 @@ local.properties
 # Python tooling
 __pycache__/
 *.pyc
+
+# Android lint text report
+/android/app/stdout

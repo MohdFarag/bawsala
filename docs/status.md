@@ -3,7 +3,7 @@
 Where Bawsala stands, for whoever continues the work. Keep this short and current: update it in
 the same PR as the change. The live backlog is the [GitHub issues](https://github.com/MohdFarag/bawsala/issues).
 
-_Last updated: version 0.9.0, November 2026._
+_Last updated: published version 0.10.0, 3 November 2026. Repository hardening is in review._
 
 ## Done
 
@@ -18,11 +18,14 @@ _Last updated: version 0.9.0, November 2026._
   onboarding and sign-in/sign-up from the Penpot boards, task detail, screenshot tests.
 - **Server:** email confirmation and password reset through Resend.
 - **P1:** prayer times from the phone's location (#62), home-screen widget (#63), YouTube and
-  Drive shares with titles and links (#65).
+  Drive shares with titles and links (#65), and the prayer features switch (#78).
 
 ## In progress
 
-- **Prayer module:** part 1, the "Prayer features" switch (#78, open). Part 2: move prayer code
+- **Repository hardening:** CI/release safeguards, deterministic visual verification, device-test
+  infrastructure, security reporting and documentation are in review. See `repository-hardening.md`
+  for PR dependencies and remaining GitHub/device/release acceptance checks.
+- **Prayer module:** the switch is merged. Part 2: move prayer code
   (engine, settings, rules, location) into its own Gradle module with a narrow interface; no
   visible change (decision 7 in `docs/decisions.md`, issue #74).
 

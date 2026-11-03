@@ -27,20 +27,22 @@ phone works offline and syncs to a self-hostable server. AGPL-3.0.
 - **Ask the owner at each meaningful step** (scope, UX choices, anything outward-facing) and
   **open a pull request for every change**. Small, focused PRs; one feature per PR.
 - The owner **squash-merges**. A PR stacked on another branch then conflicts with `main`; fix by
-  merging `origin/main` into each remaining branch in order (prefer the branch side, `-X ours`;
-  the classic leftover is `ui/process/ProcessScreen.kt`, which stays deleted). Never force-push.
-- **Android may not build in a sandbox** (Google's Maven can be blocked). Then CI is the compiler:
+  merging the updated base into each remaining branch in order. Inspect every conflict and preserve
+  the intended changes from both branches; do not use a blanket conflict strategy. Review the diff
+  and rerun relevant checks. Never force-push.
+- **Android may not build in a sandbox** (Google's Maven can be blocked). Then CI can validate the build:
   push, read the failure annotations with `gh api .../check-runs/<id>/annotations`, fix, repeat.
   Format Kotlin with ktfmt (Kotlin style) before pushing; `ktfmtCheck` runs in CI.
 - **CI runs on pull requests**, not on plain branch pushes. Waiting for a run on a branch with no
-  PR waits forever.
+  PR waits forever. Repository CI also runs on `main` and nightly; its quality gate is mandatory.
 - **Server tests** need PostgreSQL (`TEST_DATABASE_URL`, default `postgres://postgres@127.0.0.1:5433/planner_test`).
 - **Screenshots:** `V3Screenshots` (Roborazzi + Robolectric) renders the main screens on a phone
   and a tablet with the Penpot boards' sample data. CI publishes them to the `v3-screenshots`
-  branch under `pr-<number>/`; compare them with `docs/design/reference/`. Artifacts may not be
-  downloadable from a sandbox; read the branch instead.
+  branch under `pr-<number>/` when available. Normal CI verifies committed Arabic/English baselines;
+  recording is explicit. Compare changes with `docs/design/reference/`. See `CONTRIBUTING.md`.
 - **Releases:** release-please opens `chore(main): release x.y.z`; merging it tags and builds the
-  signed APK/AAB with the live server URL.
+  signed APK/AAB with the live server URL. The release stays in draft until full validation,
+  certificate/checksum verification and the server image smoke check succeed.
 
 ## Conventions that matter
 

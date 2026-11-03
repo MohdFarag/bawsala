@@ -48,5 +48,6 @@ Links point to the pull request or issue where it was made or built.
 18. **Hosting:** Render (free plan, cold starts accepted for now) + Neon PostgreSQL.
 19. **Local-first sync:** JSON-document entities with an outbox; the server validates known fields
     and keeps unknown ones.
-20. **Screenshot tests** with Roborazzi; images published to the `v3-screenshots` branch.
+20. **Screenshot tests** with Roborazzi; explicit recording and committed Arabic/English baselines,
+    verified in CI. Comparison artifacts and optional `v3-screenshots` publication support review.
 21. **Squash merges** on `main`; release-please for versions and changelog.
