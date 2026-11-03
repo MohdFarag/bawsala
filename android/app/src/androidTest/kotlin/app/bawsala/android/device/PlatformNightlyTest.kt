@@ -49,7 +49,7 @@ class PlatformNightlyTest : DeviceUiFixture() {
         compose.runOnIdle { vm().openCapture() }
         compose.onNodeWithContentDescription(text("voiceInstead")).performClick()
         permissionButton(true)
-        waitFor { ContextCompat.checkSelfPermission(app, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED }
+        waitFor { app.packageManager.checkPermission(Manifest.permission.RECORD_AUDIO, app.packageName) == PackageManager.PERMISSION_GRANTED }
         assertTrue(vm().captureOpen)
     }
 
