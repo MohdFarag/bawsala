@@ -4,6 +4,7 @@ import app.bawsala.android.data.RuleBinding
 import app.bawsala.android.data.Snapshot
 import app.bawsala.android.domain.DayPlanner
 import app.bawsala.android.ui.plan.PlanItemKind
+import app.bawsala.android.ui.plan.allDayEvents
 import app.bawsala.android.ui.plan.planItems
 import app.bawsala.android.ui.plan.unplannedTasks
 import app.bawsala.android.ui.plan.weekOf
@@ -11,6 +12,7 @@ import app.bawsala.android.ui.task.taskSchedule
 import app.bawsala.android.ui.today.DayRow
 import app.bawsala.android.ui.today.NextStop
 import app.bawsala.android.ui.today.buildTodayState
+import app.bawsala.core.model.CalendarEvent
 import app.bawsala.core.model.CaptureItem
 import app.bawsala.core.model.CaptureKind
 import app.bawsala.core.model.CaptureState
@@ -134,6 +136,33 @@ class StateBuildersTest {
     @Test
     fun `today - no free time after the workday ends`() {
         assertEquals(Duration.ZERO, buildTodayState(snapshot, planner, today, at("21:30")).freeTime)
+    }
+
+    @Test
+    fun `plan - all-day events leave the timeline for the strip, writable first`() {
+        val dayStart = today.atStartOfDay(cairo).toInstant()
+        val dayEnd = today.plusDays(1).atStartOfDay(cairo).toInstant()
+        val withEvents =
+            snapshot.copy(
+                events =
+                    listOf(
+                        CalendarEvent(
+                            "moon",
+                            "First quarter",
+                            dayStart,
+                            dayEnd,
+                            "astro",
+                            readOnly = true,
+                            allDay = true,
+                        ),
+                        CalendarEvent("trip", "Trip", dayStart, dayEnd, "me", allDay = true),
+                        CalendarEvent("call", "Call", at("15:00"), at("15:30"), "me"),
+                    )
+            )
+        val items = planItems(withEvents, planner, today)
+        assertEquals(listOf("call"), items.mapNotNull { it.eventId })
+        assertEquals(listOf("trip", "moon"), allDayEvents(withEvents, today).map { it.id })
+        assertTrue(allDayEvents(withEvents, today.plusDays(1)).isEmpty())
     }
 
     @Test

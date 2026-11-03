@@ -173,7 +173,10 @@ private fun BlockChoice(s: Snapshot, draft: EventDraft, onPick: (String?) -> Uni
 private fun ReadOnlyEvent(event: CalendarEvent, s: Snapshot, onClose: () -> Unit) {
     val calendar = s.calendars?.list?.firstOrNull { it.id == event.calendarId }?.summary
     SheetHeader(event.title, onClose = onClose)
-    Text(num(range(event.start, event.end, s.prayer.zone)), style = AppType.label)
+    Text(
+        if (event.allDay) tr("allDay") else num(range(event.start, event.end, s.prayer.zone)),
+        style = AppType.label,
+    )
     listOfNotNull(calendar, event.location, tr("readOnlyCalendar")).forEach {
         Text(it, style = AppType.small)
     }

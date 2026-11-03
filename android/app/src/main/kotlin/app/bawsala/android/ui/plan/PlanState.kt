@@ -2,6 +2,7 @@ package app.bawsala.android.ui.plan
 
 import app.bawsala.android.data.Snapshot
 import app.bawsala.android.domain.DayPlanner
+import app.bawsala.core.model.CalendarEvent
 import app.bawsala.core.model.PrayerName
 import app.bawsala.core.model.SessionState
 import app.bawsala.core.model.Task
@@ -73,6 +74,19 @@ fun planItems(snapshot: Snapshot, dayPlanner: DayPlanner, date: LocalDate): List
                 )
             }
     return (prayers + events + sessions).sortedBy { it.start }
+}
+
+/**
+ * All-day events on [date] (#93), writable calendars first, then by title. They sit in a strip
+ * above the grid instead of filling the whole day.
+ */
+fun allDayEvents(snapshot: Snapshot, date: LocalDate): List<CalendarEvent> {
+    val zone = snapshot.prayer.zone
+    val from = date.atStartOfDay(zone).toInstant()
+    val to = date.plusDays(1).atStartOfDay(zone).toInstant()
+    return snapshot.events
+        .filter { it.allDay && it.start.isBefore(to) && it.end.isAfter(from) }
+        .sortedWith(compareBy({ it.readOnly }, { it.title }))
 }
 
 /** Monday-to-Sunday week containing [date]. */
