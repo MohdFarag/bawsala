@@ -25,3 +25,11 @@ body:
     attributes:
       label: Acceptance criteria
       description: Testable results, in the style of the PRD's AC table.
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Observable outcomes and tests; include any requirement IDs and relevant design links.
+    validations:
+      required: true
