@@ -1,5 +1,6 @@
 package app.bawsala.android.ui.focus
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -56,6 +57,7 @@ import app.bawsala.android.ui.design.ActionButton
 import app.bawsala.android.ui.design.IconAction
 import app.bawsala.android.ui.design.LucideIcon
 import app.bawsala.android.ui.design.RoundCheck
+import app.bawsala.android.ui.design.motionSpec
 import app.bawsala.android.ui.format.clock
 import app.bawsala.android.ui.format.listName
 import app.bawsala.android.ui.i18n.num
@@ -286,9 +288,11 @@ private fun Ring(focus: FocusSession, open: Boolean, wide: Boolean, now: Instant
     val worked = focus.worked(now).seconds
     val remaining = focus.remaining(now).seconds
     val shown = if (open) worked else remaining
-    val progress =
+    val target =
         if (open) 1f
         else (remaining.toFloat() / focus.planned.seconds.coerceAtLeast(1)).coerceIn(0f, 1f)
+    // The ring glides between the once-a-second updates (#64).
+    val progress by animateFloatAsState(target, motionSpec(1_000), label = "ring")
     Box(
         Modifier.padding(bottom = if (wide) 22.dp else 23.dp).size(size),
         contentAlignment = Alignment.Center,

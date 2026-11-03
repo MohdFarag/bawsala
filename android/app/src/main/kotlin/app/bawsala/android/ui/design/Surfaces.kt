@@ -1,5 +1,7 @@
 package app.bawsala.android.ui.design
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -21,12 +23,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -119,10 +123,16 @@ fun Avatar(initial: String, modifier: Modifier = Modifier, onClick: (() -> Unit)
 fun ProgressLine(fraction: Float, modifier: Modifier = Modifier, onDark: Boolean = false) {
     val track = if (onDark) Color(0x25FFFFFF) else Palette.green100
     val fill = if (onDark) Palette.sage400 else Palette.green900
+    val shown by
+        animateFloatAsState(
+            fraction.coerceIn(0f, 1f),
+            motionSpec(Motion.SCREEN),
+            label = "progress",
+        )
     Box(modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(8.dp)).background(track)) {
         Box(
             Modifier.fillMaxHeight()
-                .fillMaxWidth(fraction.coerceIn(0f, 1f))
+                .fillMaxWidth(shown)
                 .clip(RoundedCornerShape(8.dp))
                 .background(fill)
         )
@@ -137,6 +147,21 @@ fun RoundCheck(
     label: String,
     modifier: Modifier = Modifier,
 ) {
+    // Checking fills the box and pops the tick in (#64); at rest it looks as before.
+    val fill by
+        animateColorAsState(
+            if (checked) Palette.green900 else Color.Transparent,
+            motionSpec(Motion.QUICK),
+            label = "checkFill",
+        )
+    val edge by
+        animateColorAsState(
+            if (checked) Palette.green900 else Color(0xFFBDCAB8),
+            motionSpec(Motion.QUICK),
+            label = "checkEdge",
+        )
+    val tick by
+        animateFloatAsState(if (checked) 1f else 0f, motionSpec(Motion.STANDARD), label = "tick")
     Box(
         modifier
             .size(48.dp)
@@ -147,15 +172,22 @@ fun RoundCheck(
         Box(
             Modifier.size(20.dp)
                 .clip(RoundedCornerShape(7.dp))
-                .background(if (checked) Palette.green900 else Color.Transparent)
-                .border(
-                    1.4.dp,
-                    if (checked) Palette.green900 else Color(0xFFBDCAB8),
-                    RoundedCornerShape(7.dp),
-                ),
+                .background(fill)
+                .border(1.4.dp, edge, RoundedCornerShape(7.dp)),
             contentAlignment = Alignment.Center,
         ) {
-            if (checked) LucideIcon(R.drawable.ic_lucide_check, tint = Palette.white, size = 13.dp)
+            if (tick > 0f)
+                LucideIcon(
+                    R.drawable.ic_lucide_check,
+                    tint = Palette.white,
+                    size = 13.dp,
+                    modifier =
+                        Modifier.graphicsLayer {
+                            scaleX = tick
+                            scaleY = tick
+                            alpha = tick
+                        },
+                )
         }
     }
 }
