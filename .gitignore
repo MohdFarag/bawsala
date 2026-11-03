@@ -16,3 +16,7 @@ __pycache__/
 
 # Android lint text report
 /android/app/stdout
+
+# Roborazzi failure evidence is uploaded, never accepted as a baseline
+/android/app/src/test/screenshots/**/*_actual.png
+/android/app/src/test/screenshots/**/*_compare.png

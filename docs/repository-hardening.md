@@ -1,7 +1,7 @@
 # Repository hardening
 
 The audit fixes are delivered as focused, dependent PRs. Merge in order: #81 (CI), #82 (releases),
-#83 (visual regression), #84 (device tests), #85 (security), then the documentation PR.
+#83 (visual regression), #84 (device tests), #85 (security), then #92 (documentation).
 The owner merges; updating a stacked branch means merging the latest base and reviewing conflicts,
 never force-pushing or automatically preferring one side.
 
@@ -54,6 +54,13 @@ No release is published merely by opening or reviewing these PRs.
 | Missing key, wrong certificate or mismatched version | Official release remains unpublished |
 | Server startup, image validation or package verification fails | Previous latest release stays available |
 | Interrupted draft build | Rerun the same release; reuse the tag, never overwrite published files |
+
+Local validation passed the Kotlin core tests, 140 app unit/screenshot tests, formatting, lint,
+debug and release builds. All 44 baseline hashes matched across two recording runs; changing one
+pixel failed verification and restoring it passed. The downloaded v0.10.0 APK/AAB passed signature,
+version and checksum verification. Missing signing configuration and a wrong certificate were rejected.
+The tooling tests also cover forward-only release promotion so retrying an older version cannot move
+`latest` backwards. Server CI smoke-tests the built image with a disposable PostgreSQL instance.
 
 The Python gate tests cover selection and rejection of failures/skips. Live checks complement them;
 GitHub settings, fork-token restrictions and signed upgrade behavior require their own acceptance runs.
