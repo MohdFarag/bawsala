@@ -30,6 +30,8 @@ android {
 
     defaultConfig {
         applicationId = "app.bawsala"
+        testInstrumentationRunner = "app.bawsala.android.device.DeviceTestRunner"
+        testInstrumentationRunnerArguments["clearPackageData"] = "true"
         minSdk = 26 // java.time without desugaring; open PRD decision (§1.1)
         targetSdk = 35
         versionCode = System.getenv("VERSION_CODE")?.toIntOrNull() ?: 1
@@ -77,6 +79,21 @@ android {
         buildConfig = true
     }
     testOptions {
+        execution = "ANDROIDX_TEST_ORCHESTRATOR"
+        managedDevices {
+            devices {
+                create<com.android.build.api.dsl.ManagedVirtualDevice>("phoneApi35") {
+                    device = "Pixel 2"
+                    apiLevel = 35
+                    systemImageSource = "aosp"
+                }
+                create<com.android.build.api.dsl.ManagedVirtualDevice>("phoneApi28") {
+                    device = "Pixel 2"
+                    apiLevel = 28
+                    systemImageSource = "aosp"
+                }
+            }
+        }
         unitTests.all { it.useJUnitPlatform() }
         // Screenshot tests render real resources (fonts, icons) under Robolectric.
         unitTests.isIncludeAndroidResources = true
@@ -112,6 +129,14 @@ dependencies {
     implementation(libs.glance.appwidget)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.play.services.auth)
+
+    androidTestImplementation(platform(libs.compose.bom))
+    androidTestImplementation(libs.compose.ui.test.junit4)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation("androidx.test:runner:1.6.2")
+    androidTestImplementation("androidx.test:rules:1.6.1")
+    androidTestImplementation("androidx.test.uiautomator:uiautomator:2.3.0")
+    androidTestUtil("androidx.test:orchestrator:1.5.1")
 
     testImplementation(libs.kotlin.test)
     testImplementation(libs.org.json) // android.jar's org.json is a stub in local unit tests
