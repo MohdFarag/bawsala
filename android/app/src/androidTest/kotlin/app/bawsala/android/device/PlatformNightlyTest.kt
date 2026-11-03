@@ -109,6 +109,7 @@ class PlatformNightlyTest : DeviceUiFixture() {
             waitFor { compose.onAllNodesWithText(text(key)).fetchSemanticsNodes().isNotEmpty() }
             compose.onNodeWithText(text(key)).performClick()
             waitFor { app.container.repository.state.value.items.single().state != CaptureState.INBOX }
+            waitFor { vm().inbox.canUndo }
             compose.runOnIdle { vm().inbox.undoLast() }
             waitFor { app.container.repository.state.value.items.single().state == CaptureState.INBOX }
             assertTrue(app.container.repository.state.value.tasks.isEmpty())
