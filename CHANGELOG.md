@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.11.0](https://github.com/MohdFarag/bawsala/compare/v0.10.0...v0.11.0) (2026-11-03)
+
+
+### Features
+
+* **android:** pull down to refresh ([#94](https://github.com/MohdFarag/bawsala/issues/94)) ([4c6fa7f](https://github.com/MohdFarag/bawsala/commit/4c6fa7fd02f371b703c0f242600e135a0fc8d40d))
+* **android:** transitions and small animations ([#95](https://github.com/MohdFarag/bawsala/issues/95)) ([b185dc9](https://github.com/MohdFarag/bawsala/commit/b185dc95387087e2d32600b7ec05cd0042544608))
+* **android:** triage card rises into place ([#97](https://github.com/MohdFarag/bawsala/issues/97)) ([168eb65](https://github.com/MohdFarag/bawsala/commit/168eb656fe5a4c4bf00e085afd70847205c6bcc0))
+* **planner:** all-day events in their own strip ([#98](https://github.com/MohdFarag/bawsala/issues/98)) ([da83b31](https://github.com/MohdFarag/bawsala/commit/da83b31630e95575f3dc287902605c48ac909f31))
+
 ## [0.10.0](https://github.com/MohdFarag/bawsala/compare/v0.9.0...v0.10.0) (2026-11-02)
 
 
