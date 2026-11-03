@@ -8,6 +8,12 @@ on:
   schedule:
     - cron: "30 3 * * *"
   workflow_dispatch:
+    inputs:
+      device_suite:
+        type: choice
+        options: [smoke, extended]
+        default: smoke
+        description: Device test coverage
   workflow_call:
     inputs:
       ref:
