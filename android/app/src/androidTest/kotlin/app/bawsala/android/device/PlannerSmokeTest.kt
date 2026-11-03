@@ -67,9 +67,11 @@ abstract class DeviceUiFixture {
     }
 
     protected fun text(key: String) = translate("en", key)
-    protected fun vm(): AppViewModel = ViewModelProvider(compose.activity)[AppViewModel::class.java]
+    private lateinit var model: AppViewModel
+    protected fun vm(): AppViewModel = model
     protected fun waitFor(check: () -> Boolean) = compose.waitUntil(15_000, check)
     protected fun start() {
+        compose.activityRule.scenario.onActivity { model = ViewModelProvider(it)[AppViewModel::class.java] }
         waitFor { app.container.repository.state.value.loaded }
         compose.onNodeWithText(text("skip")).performClick()
         compose.onNodeWithText(text("useWithoutAccount")).performScrollTo().performClick()
