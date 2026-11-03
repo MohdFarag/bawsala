@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.os.Build
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -80,6 +81,7 @@ abstract class DeviceUiFixture {
         waitFor { app.container.repository.state.value.prefs.onboarded }
     }
     protected fun capture(title: String) {
+        waitFor { compose.onAllNodesWithContentDescription(text("capture")).fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithContentDescription(text("capture")).performClick()
         compose.onAllNodes(hasSetTextAction()).onFirst().performTextInput(title)
         Espresso.closeSoftKeyboard()
