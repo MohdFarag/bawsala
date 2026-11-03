@@ -8,8 +8,19 @@ plugins {
 
 ktfmt { kotlinLangStyle() }
 
-// Release signing comes from the environment (CI secrets); without it, release builds are unsigned.
+// Official publication requires a stable release key; local builds may use the debug key.
 val keystorePath: String? = System.getenv("ANDROID_KEYSTORE_PATH")
+val officialRelease = System.getenv("OFFICIAL_RELEASE") == "true"
+
+if (officialRelease) {
+    listOf(
+            "ANDROID_KEYSTORE_PATH",
+            "ANDROID_KEYSTORE_PASSWORD",
+            "ANDROID_KEY_ALIAS",
+            "ANDROID_KEY_PASSWORD",
+        )
+        .forEach { require(!System.getenv(it).isNullOrBlank()) { "Official release requires $it" } }
+}
 
 android {
     namespace = "app.bawsala.android"
@@ -20,7 +31,7 @@ android {
         minSdk = 26 // java.time without desugaring; open PRD decision (§1.1)
         targetSdk = 35
         versionCode = System.getenv("VERSION_CODE")?.toIntOrNull() ?: 1
-        versionName = System.getenv("VERSION_NAME") ?: "0.1.0"
+        versionName = rootProject.file("../version.txt").readText().trim()
         // The app's server; self-hosted builds set their own with -PserverUrl=https://...
         // (an empty value brings back the sign-in form with a server address field).
         val serverUrl =
@@ -50,7 +61,9 @@ android {
             )
             // Without a release keystore, sign with the debug key so the APK still installs.
             signingConfig =
-                signingConfigs.findByName("release") ?: signingConfigs.getByName("debug")
+                signingConfigs.findByName("release")
+                    ?: if (officialRelease) error("Release signing is required")
+                    else signingConfigs.getByName("debug")
         }
     }
     compileOptions {

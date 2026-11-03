@@ -1,9 +1,5 @@
 name: Release
 
-# On every push to main, release-please updates a "chore(main): release x.y.z" PR with the next
-# version (from Conventional Commit titles) and the changelog. Merging that PR tags the release,
-# and the jobs below attach the Android APK/AAB and publish the server image to GHCR.
-# Pushing a tag by hand (v*) rebuilds the artifacts for that tag.
 on:
   push:
     branches: [main]
@@ -24,8 +20,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     permissions:
-      contents: write # tags and releases
-      pull-requests: write # the release PR
+      contents: write
+      pull-requests: write
     outputs:
       created: ${{ steps.rp.outputs.release_created }}
       tag: ${{ steps.rp.outputs.tag_name }}
@@ -39,28 +35,65 @@ jobs:
   target:
     name: Resolve release tag
     needs: release-please
-    # Runs for a new release from release-please, or for a pushed tag (release-please is skipped then).
     if: always() && (needs.release-please.outputs.created == 'true' || github.ref_type == 'tag')
     runs-on: ubuntu-24.04
-    timeout-minutes: 2
+    timeout-minutes: 5
     outputs:
-      tag: ${{ steps.tag.outputs.tag }}
+      tag: ${{ steps.target.outputs.tag }}
+      sha: ${{ steps.target.outputs.sha }}
+      published: ${{ steps.target.outputs.published }}
+      image: ${{ steps.target.outputs.image }}
     steps:
-      - id: tag
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - id: target
         env:
           FROM_RP: ${{ needs.release-please.outputs.tag }}
           REF_NAME: ${{ github.ref_name }}
-        run: echo "tag=${FROM_RP:-$REF_NAME}" >> "$GITHUB_OUTPUT"
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag="${FROM_RP:-$REF_NAME}"
+          [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          sha=$(git rev-parse "$tag^{commit}")
+          git merge-base --is-ancestor "$sha" origin/main
+          [[ "$(git show "$tag:version.txt")" == "${tag#v}" ]]
+          draft=$(gh release view "$tag" --json isDraft --jq .isDraft 2>/dev/null || echo missing)
+          {
+            echo "image=ghcr.io/${GITHUB_REPOSITORY,,}/server"
+            echo "tag=$tag"
+            echo "sha=$sha"
+            echo "published=$([[ "$draft" == false ]] && echo true || echo false)"
+          } >> "$GITHUB_OUTPUT"
+
+  validation:
+    name: Release validation
+    needs: target
+    if: ${{ !cancelled() && needs.target.result == 'success' }}
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: write
+      checks: write
+      pull-requests: write
+      security-events: write
+      actions: read
+    with:
+      ref: ${{ needs.target.outputs.sha }}
+      force_full: true
+      device_suite: smoke
 
   android:
-    name: Android APK and AAB
-    needs: target
-    if: always() && needs.target.result == 'success'
+    name: Verify Android packages
+    needs: [target, validation]
+    if: ${{ !cancelled() && needs.validation.result == 'success' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 45
-    environment: release # holds the signing secrets; can require approval
-    permissions:
-      contents: write # attach files to the release
+    environment: release
+    env:
+      ANDROID_SIGNING_CERT_SHA256: ${{ vars.ANDROID_SIGNING_CERT_SHA256 }}
+      VERSION_NAME: ${{ needs.target.outputs.tag }}
     defaults:
       run:
         working-directory: android
@@ -68,7 +101,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ needs.target.outputs.tag }}
+          ref: ${{ needs.target.outputs.sha }}
           persist-credentials: false
       - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
@@ -76,72 +109,71 @@ jobs:
           java-version: "17"
       - uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
         with:
-          cache-disabled: true # release artifacts never come from a cache another run could have written
-
-      - name: Decode keystore
+          cache-disabled: true
+      - name: Prepare version and signing
+        if: needs.target.outputs.published != 'true'
         env:
           KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
-          if [[ -n "$KEYSTORE_BASE64" ]]; then
-            echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
-            echo "ANDROID_KEYSTORE_PATH=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
-          else
-            echo "::warning::ANDROID_KEYSTORE_BASE64 is not set; signing with a throwaway debug key (updates will need a reinstall)."
-          fi
-
-      - name: Build release
+          set -euo pipefail
+          for name in KEYSTORE_BASE64 ANDROID_KEYSTORE_PASSWORD ANDROID_KEY_ALIAS ANDROID_KEY_PASSWORD ANDROID_SIGNING_CERT_SHA256; do
+            [[ -n "${!name:-}" ]] || { echo "::error::Missing official release configuration: $name"; exit 1; }
+          done
+          echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+          echo "ANDROID_KEYSTORE_PATH=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
+      - name: Build signed packages
+        if: needs.target.outputs.published != 'true'
         env:
+          OFFICIAL_RELEASE: "true"
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
           VERSION_CODE: ${{ github.run_number }}
-          VERSION_NAME: ${{ needs.target.outputs.tag }}
-          SERVER_URL: ${{ vars.API_SERVER_URL }} # pre-filled on the sign-in screen
+          SERVER_URL: ${{ vars.API_SERVER_URL }}
         run: |
-          set -o pipefail
-          # core is its own Gradle build (an included build of the app), so test it separately.
-          { ./gradlew -p core test --stacktrace &&
-            ./gradlew :app:assembleRelease :app:bundleRelease -PserverUrl="$SERVER_URL" --stacktrace; } 2>&1 | tee "$RUNNER_TEMP/gradle.log"
-      - name: Explain failure
-        if: failure()
-        run: ../.github/scripts/gradle-failure-annotations.sh "$RUNNER_TEMP/gradle.log"
-
-      - name: Checksums
-        run: |
-          cd app/build/outputs
-          sha256sum apk/release/*.apk bundle/release/*.aab | sed 's|[^ ]*/||' > SHA256SUMS.txt
-          cat SHA256SUMS.txt
-
-      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: android-${{ needs.target.outputs.tag }}
-          path: |
-            android/app/build/outputs/apk/release/*.apk
-            android/app/build/outputs/bundle/release/*.aab
-            android/app/build/outputs/SHA256SUMS.txt
-
-      - name: Attach to GitHub release
+          set -euo pipefail
+          [[ -n "$SERVER_URL" ]] || { echo '::error::API_SERVER_URL is required'; exit 1; }
+          ./gradlew :app:assembleRelease :app:bundleRelease -PserverUrl="$SERVER_URL" --stacktrace
+          mkdir -p release-artifacts
+          cp app/build/outputs/apk/release/app-release.apk app/build/outputs/bundle/release/app-release.aab release-artifacts/
+          (cd release-artifacts && sha256sum app-release.apk app-release.aab > SHA256SUMS.txt)
+      - name: Download immutable published packages on rerun
+        if: needs.target.outputs.published == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ needs.target.outputs.tag }}
+        run: gh release download "$TAG" --dir release-artifacts --pattern app-release.apk --pattern app-release.aab --pattern SHA256SUMS.txt
+      - name: Verify signatures, version and checksums
         run: |
-          gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" --generate-notes --verify-tag
-          gh release upload "$TAG" --clobber \
-            app/build/outputs/apk/release/*.apk app/build/outputs/bundle/release/*.aab app/build/outputs/SHA256SUMS.txt
+          export VERSION_NAME="${VERSION_NAME#v}"
+          bash ../.github/scripts/verify-android.sh release-artifacts
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: verified-android
+          path: android/release-artifacts/
+          if-no-files-found: error
+      - name: Remove temporary signing key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/release.jks"
 
   server-image:
-    name: Server image (GHCR)
-    needs: target
-    if: always() && needs.target.result == 'success'
+    name: Stage server image
+    needs: [target, validation]
+    if: ${{ !cancelled() && needs.validation.result == 'success' && needs.target.outputs.published != 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     permissions:
       contents: read
       packages: write
+    outputs:
+      digest: ${{ steps.build.outputs.digest }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ needs.target.outputs.tag }}
+          ref: ${{ needs.target.outputs.sha }}
           persist-credentials: false
       - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
       - uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
@@ -149,19 +181,85 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ github.token }}
-      - id: meta
-        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
-        with:
-          images: ghcr.io/${{ github.repository }}/server
-          tags: |
-            type=semver,pattern={{version}},value=${{ needs.target.outputs.tag }}
-            type=semver,pattern={{major}}.{{minor}},value=${{ needs.target.outputs.tag }}
-            type=raw,value=latest
-      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+      - id: build
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: server
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          provenance: mode=max # build provenance and SBOM stored with the image
+          tags: ${{ needs.target.outputs.image }}:candidate-${{ needs.target.outputs.sha }}
+          provenance: mode=max
           sbom: true
+      - name: Verify staged image starts with PostgreSQL
+        env:
+          IMAGE: ${{ needs.target.outputs.image }}@${{ steps.build.outputs.digest }}
+        run: bash .github/scripts/smoke-image.sh
+
+  publish:
+    name: Publish verified release
+    needs: [target, validation, android, server-image]
+    if: ${{ !cancelled() && needs.validation.result == 'success' && needs.android.result == 'success' && (needs.server-image.result == 'success' || (needs.target.outputs.published == 'true' && needs.server-image.result == 'skipped')) }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      packages: write
+    concurrency:
+      group: publish-${{ github.repository }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.target.outputs.sha }}
+          persist-credentials: false
+      - name: Determine forward-only release promotions
+        id: policy
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ needs.target.outputs.tag }}
+        run: |
+          gh api --paginate "repos/$GH_REPO/releases?per_page=100" --jq '.[] | select(.draft == false and .prerelease == false) | .tag_name' > published-tags
+          python3 .github/scripts/release_policy.py "$TAG" published-tags >> "$GITHUB_OUTPUT"
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: verified-android
+          path: packages
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+      - uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+      - name: Attach all files before publishing; never overwrite a published release
+        if: needs.target.outputs.published != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ needs.target.outputs.tag }}
+          IMAGE: ${{ needs.target.outputs.image }}
+          DIGEST: ${{ needs.server-image.outputs.digest }}
+          LATEST: ${{ steps.policy.outputs.latest }}
+        run: |
+          set -euo pipefail
+          (cd packages && sha256sum --check SHA256SUMS.txt)
+          if gh release view "$TAG" --json isDraft --jq .isDraft > release-state; then
+            [[ "$(cat release-state)" == true ]] || { echo '::error::Release was already published'; exit 1; }
+          else
+            gh release create "$TAG" --draft --generate-notes --verify-tag
+          fi
+          gh release upload "$TAG" --clobber packages/app-release.apk packages/app-release.aab packages/SHA256SUMS.txt
+          docker buildx imagetools create --tag "$IMAGE:${TAG#v}" "$IMAGE@$DIGEST"
+          gh release edit "$TAG" --draft=false --latest="$LATEST"
+      - name: Promote stable image aliases (also repairs an interrupted publication)
+        env:
+          LATEST: ${{ steps.policy.outputs.latest }}
+          SERIES: ${{ steps.policy.outputs.series }}
+          TAG: ${{ needs.target.outputs.tag }}
+          IMAGE: ${{ needs.target.outputs.image }}
+        run: |
+          set -euo pipefail
+          version="${TAG#v}"
+          tags=()
+          if [[ "$SERIES" == true ]]; then tags+=(--tag "$IMAGE:${version%.*}"); fi
+          if [[ "$LATEST" == true ]]; then tags+=(--tag "$IMAGE:latest"); fi
+          if (( ${#tags[@]} > 0 )); then docker buildx imagetools create "${tags[@]}" "$IMAGE:$version"; fi
