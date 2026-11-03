@@ -13,6 +13,10 @@ class QualityTests(unittest.TestCase):
         self.assertTrue(select(["android/old.kt", "docs/moved.kt"])["android"])
         self.assertTrue(select([".prettierrc.json"])["web"])
 
+    def test_invalid_selection_never_authorizes_a_skip(self):
+        with self.assertRaises(ValueError):
+            validate({"changes": {"result": "success", "outputs": {"server": "unknown"}}, "server": {"result": "skipped"}})
+
     def test_gate_rejects_failures_and_unexpected_skips(self):
         needs = {
             "changes": {"result": "success", "outputs": {"server": "true", "android": "false"}},
