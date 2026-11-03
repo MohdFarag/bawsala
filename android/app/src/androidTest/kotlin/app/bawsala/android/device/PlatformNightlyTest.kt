@@ -4,9 +4,6 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.view.accessibility.AccessibilityNodeInfo
-import androidx.activity.compose.setContent
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -20,7 +17,7 @@ import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
 import app.bawsala.android.LaunchExtras
 import app.bawsala.android.MainActivity
-import app.bawsala.android.location.rememberPlaceRequest
+import app.bawsala.android.navigation.Screen
 import app.bawsala.android.navigation.Tab
 import app.bawsala.core.model.CaptureState
 import java.util.regex.Pattern
@@ -61,32 +58,28 @@ class PlatformNightlyTest : DeviceUiFixture() {
         assertTrue(vm().captureOpen)
     }
 
-    @Test fun locationDenialReturnsToCaller() {
+    private fun requestLocationFromSettings() {
         start()
-        var answered = false
-        compose.activityRule.scenario.onActivity { activity ->
-            activity.setContent {
-                val request = rememberPlaceRequest { answered = true }
-                Button(onClick = request) { Text("Request test location") }
-            }
+        compose.runOnIdle {
+            vm().settings.savePrefs(app.container.repository.state.value.prefs.copy(prayerFeatures = true))
+            vm().navigator.open(Screen.PrayerSettings)
         }
-        compose.onNodeWithText("Request test location").performClick()
+        waitFor { compose.onAllNodesWithText(text("useMyLocation")).fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithText(text("useMyLocation")).performClick()
+    }
+
+    @Test fun locationDenialReturnsToCaller() {
+        requestLocationFromSettings()
         permissionButton(false)
-        waitFor { answered }
+        compose.onNodeWithText(text("locationUnavailable")).assertIsDisplayed()
         assertEquals(PackageManager.PERMISSION_DENIED, ContextCompat.checkSelfPermission(app, Manifest.permission.ACCESS_COARSE_LOCATION))
     }
 
     @Test fun locationCanBeGranted() {
-        start()
-        compose.activityRule.scenario.onActivity { activity ->
-            activity.setContent {
-                val request = rememberPlaceRequest { }
-                Button(onClick = request) { Text("Request test location") }
-            }
-        }
-        compose.onNodeWithText("Request test location").performClick()
+        requestLocationFromSettings()
         permissionButton(true)
         waitFor { ContextCompat.checkSelfPermission(app, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED }
+        compose.onNodeWithText(text("useMyLocation")).assertIsDisplayed()
     }
 
     @Test fun shareAndWidgetCaptureEntryPoints() {
@@ -109,6 +102,7 @@ class PlatformNightlyTest : DeviceUiFixture() {
             waitFor { compose.onAllNodesWithText(text(key)).fetchSemanticsNodes().isNotEmpty() }
             compose.onNodeWithText(text(key)).performClick()
             waitFor { app.container.repository.state.value.items.single().state != CaptureState.INBOX }
+            waitFor { vm().inbox.canUndo }
             compose.runOnIdle { vm().inbox.undoLast() }
             waitFor { app.container.repository.state.value.items.single().state == CaptureState.INBOX }
             assertTrue(app.container.repository.state.value.tasks.isEmpty())

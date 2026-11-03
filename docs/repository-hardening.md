@@ -14,11 +14,11 @@ never force-pushing or automatically preferring one side.
   ordinary repository read/write access may be insufficient. Do not temporarily disable protection.
 - [ ] Verify required checks, strict branch freshness, conversation resolution, squash-only merges,
   linear history, force-push/deletion blocks, and zero required external approvals.
-- [ ] Confirm private vulnerability reporting is enabled and the Security tab receives CodeQL results.
+- [x] Confirm private vulnerability reporting is enabled and the Security tab receives CodeQL results.
 - [ ] Review the 44 initial screenshot baselines against Penpot references. Subsequent changes must
   carry their baseline changes explicitly; never record during normal CI to hide a regression.
 - [ ] Exercise one fork PR: validation must pass without secrets or write-only annotation steps.
-- [ ] Confirm the API 35 smoke suite and API 28/35 extended suites pass on GitHub-hosted runners.
+- [x] Confirm the API 35 smoke suite and API 28/35 extended suites pass on GitHub-hosted runners.
 - [ ] In the `release` environment, retain the existing four signing secrets and configure
   `ANDROID_SIGNING_CERT_SHA256` from a previously trusted official APK. Do not derive trust from the
   new key being tested. With Android SDK build tools: `apksigner verify --print-certs app-release.apk`.
@@ -29,6 +29,9 @@ never force-pushing or automatically preferring one side.
   captures and account data remain. Missing original signing keys block this step and publication.
 
 The current private-reporting endpoint was confirmed enabled during implementation.
+The [#84 acceptance run](https://github.com/MohdFarag/bawsala/actions/runs/41610421295) passed
+the API 28 and API 35 extended suites. The [#85 CI run](https://github.com/MohdFarag/bawsala/actions/runs/41621599310)
+passed the API 35 smoke suite, both CodeQL scans and their Security-tab uploads, and the quality gate.
 The trusted v0.10.0 APK was downloaded and verified with Android `apksigner`; its certificate is
 `CN=Bawsala, O=MohdFarag, C=EG`, SHA-256:
 `1b046bd9e752c5d0044ebb99e86733039b7f6662a5f5870d2569ba6cf3deac3c`.

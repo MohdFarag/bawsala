@@ -84,6 +84,7 @@ jobs:
           ./gradlew ":app:${DEVICE}DebugAndroidTest" \
             -Pandroid.testInstrumentationRunnerArguments.testServer=http://10.0.2.2:8080 \
             -Pandroid.experimental.androidTest.numManagedDeviceShards=1 \
+            -Pandroid.testoptions.manageddevices.emulator.gpu=swiftshader_indirect \
             "${args[@]}" --stacktrace
       - name: Stop backend
         if: always()
@@ -99,5 +100,7 @@ jobs:
             android/app/build/outputs/managed_device_android_test_additional_output/
             android/app/build/intermediates/managed_device_android_test_additional_output/
             ${{ runner.temp }}/device-server.log
+            ~/.android/avd/**/*.log
+            ~/.gradle/caches/**/avd/**/*.log
           if-no-files-found: warn
           retention-days: 14
