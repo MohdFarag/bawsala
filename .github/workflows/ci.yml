@@ -39,9 +39,14 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ inputs.ref || github.sha }}
+          ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: false
+      - name: Reject a ref different from this workflow's commit
+        env:
+          REQUESTED_REF: ${{ inputs.ref }}
+          WORKFLOW_SHA: ${{ github.sha }}
+        run: test -z "$REQUESTED_REF" || test "$REQUESTED_REF" = "$WORKFLOW_SHA"
       - run: python3 -m unittest discover -s .github/scripts -p 'test_*.py'
       - id: select
         env:
@@ -97,7 +102,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ inputs.ref || github.sha }}
+          ref: ${{ github.sha }}
           persist-credentials: false
       - env:
           NEEDS_JSON: ${{ toJSON(needs) }}
