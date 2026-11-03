@@ -42,6 +42,7 @@ jobs:
       tag: ${{ steps.target.outputs.tag }}
       sha: ${{ steps.target.outputs.sha }}
       published: ${{ steps.target.outputs.published }}
+      image: ${{ steps.target.outputs.image }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -61,6 +62,7 @@ jobs:
           [[ "$(git show "$tag:version.txt")" == "${tag#v}" ]]
           draft=$(gh release view "$tag" --json isDraft --jq .isDraft 2>/dev/null || echo missing)
           {
+            echo "image=ghcr.io/${GITHUB_REPOSITORY,,}/server"
             echo "tag=$tag"
             echo "sha=$sha"
             echo "published=$([[ "$draft" == false ]] && echo true || echo false)"
@@ -184,12 +186,12 @@ jobs:
         with:
           context: server
           push: true
-          tags: ghcr.io/${{ github.repository }}/server:candidate-${{ needs.target.outputs.sha }}
+          tags: ${{ needs.target.outputs.image }}:candidate-${{ needs.target.outputs.sha }}
           provenance: mode=max
           sbom: true
       - name: Verify staged image starts with PostgreSQL
         env:
-          IMAGE: ghcr.io/${{ github.repository }}/server@${{ steps.build.outputs.digest }}
+          IMAGE: ${{ needs.target.outputs.image }}@${{ steps.build.outputs.digest }}
         run: bash .github/scripts/smoke-image.sh
 
   publish:
@@ -234,7 +236,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           TAG: ${{ needs.target.outputs.tag }}
-          IMAGE: ghcr.io/${{ github.repository }}/server
+          IMAGE: ${{ needs.target.outputs.image }}
           DIGEST: ${{ needs.server-image.outputs.digest }}
           LATEST: ${{ steps.policy.outputs.latest }}
         run: |
@@ -253,7 +255,7 @@ jobs:
           LATEST: ${{ steps.policy.outputs.latest }}
           SERIES: ${{ steps.policy.outputs.series }}
           TAG: ${{ needs.target.outputs.tag }}
-          IMAGE: ghcr.io/${{ github.repository }}/server
+          IMAGE: ${{ needs.target.outputs.image }}
         run: |
           set -euo pipefail
           version="${TAG#v}"
