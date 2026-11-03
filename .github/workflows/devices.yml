@@ -1,0 +1,90 @@
+name: Android device tests
+
+on:
+  workflow_call:
+    inputs:
+      suite:
+        type: string
+        default: smoke
+
+permissions:
+  contents: read
+
+jobs:
+  instrumentation:
+    name: Emulator (${{ matrix.device }}, ${{ inputs.suite }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        device: ${{ fromJSON(inputs.suite == 'extended' && '["phoneApi28", "phoneApi35"]' || '["phoneApi35"]') }}
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: planner_device
+        ports: ["5432:5432"]
+        options: --health-cmd "pg_isready -U postgres" --health-interval 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Start disposable backend
+        env:
+          TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/planner_device
+        run: |
+          cd server
+          npm ci
+          nohup node --import tsx test/device-server.ts > "$RUNNER_TEMP/device-server.log" 2>&1 &
+          echo "$!" > "$RUNNER_TEMP/device-server.pid"
+          for attempt in {1..60}; do
+            if curl -fsS http://127.0.0.1:8080/healthz; then exit 0; fi
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/device-server.log"
+          exit 1
+      - name: Run instrumentation without assertion retries
+        working-directory: android
+        env:
+          DEVICE: ${{ matrix.device }}
+          SUITE: ${{ inputs.suite }}
+        run: |
+          args=()
+          if [[ "$SUITE" == smoke ]]; then
+            args+=("-Pandroid.testInstrumentationRunnerArguments.class=app.bawsala.android.device.PlannerSmokeTest,app.bawsala.android.device.SyncSmokeTest")
+          fi
+          ./gradlew ":app:${DEVICE}DebugAndroidTest" \
+            -Pandroid.testInstrumentationRunnerArguments.testServer=http://10.0.2.2:8080 \
+            -Pandroid.experimental.androidTest.numManagedDeviceShards=1 \
+            "${args[@]}" --stacktrace
+      - name: Stop backend
+        if: always()
+        run: |
+          if [[ -f "$RUNNER_TEMP/device-server.pid" ]]; then kill "$(cat "$RUNNER_TEMP/device-server.pid")" || true; fi
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: device-reports-${{ matrix.device }}
+          path: |
+            android/app/build/reports/androidTests/
+            android/app/build/outputs/androidTest-results/
+            ${{ runner.temp }}/device-server.log
+          if-no-files-found: warn
+          retention-days: 14
