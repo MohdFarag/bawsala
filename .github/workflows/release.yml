@@ -202,9 +202,22 @@ jobs:
       contents: write
       packages: write
     concurrency:
-      group: publish-${{ needs.target.outputs.tag }}
+      group: publish-${{ github.repository }}
       cancel-in-progress: false
     steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.target.outputs.sha }}
+          persist-credentials: false
+      - name: Determine forward-only release promotions
+        id: policy
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ needs.target.outputs.tag }}
+        run: |
+          gh api --paginate "repos/$GH_REPO/releases?per_page=100" --jq '.[] | select(.draft == false and .prerelease == false) | .tag_name' > published-tags
+          python3 .github/scripts/release_policy.py "$TAG" published-tags >> "$GITHUB_OUTPUT"
       - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           name: verified-android
@@ -223,6 +236,7 @@ jobs:
           TAG: ${{ needs.target.outputs.tag }}
           IMAGE: ghcr.io/${{ github.repository }}/server
           DIGEST: ${{ needs.server-image.outputs.digest }}
+          LATEST: ${{ steps.policy.outputs.latest }}
         run: |
           set -euo pipefail
           (cd packages && sha256sum --check SHA256SUMS.txt)
@@ -233,12 +247,17 @@ jobs:
           fi
           gh release upload "$TAG" --clobber packages/app-release.apk packages/app-release.aab packages/SHA256SUMS.txt
           docker buildx imagetools create --tag "$IMAGE:${TAG#v}" "$IMAGE@$DIGEST"
-          gh release edit "$TAG" --draft=false --latest
+          gh release edit "$TAG" --draft=false --latest="$LATEST"
       - name: Promote stable image aliases (also repairs an interrupted publication)
         env:
+          LATEST: ${{ steps.policy.outputs.latest }}
+          SERIES: ${{ steps.policy.outputs.series }}
           TAG: ${{ needs.target.outputs.tag }}
           IMAGE: ghcr.io/${{ github.repository }}/server
         run: |
           set -euo pipefail
           version="${TAG#v}"
-          docker buildx imagetools create --tag "$IMAGE:${version%.*}" --tag "$IMAGE:latest" "$IMAGE:$version"
+          tags=()
+          if [[ "$SERIES" == true ]]; then tags+=(--tag "$IMAGE:${version%.*}"); fi
+          if [[ "$LATEST" == true ]]; then tags+=(--tag "$IMAGE:latest"); fi
+          if (( ${#tags[@]} > 0 )); then docker buildx imagetools create "${tags[@]}" "$IMAGE:$version"; fi

@@ -21,7 +21,7 @@ python3 - "$directory/apk-metadata.txt" <<'PY'
 import os, re, sys
 metadata = open(sys.argv[1]).read()
 assert "name='app.bawsala'" in metadata, 'Unexpected application ID'
-assert re.search(r"versionName='([^']+)'", metadata)[1] == os.environ['VERSION_NAME'], 'Version name mismatch'
+assert re.search(r"versionName='([^']+)'", metadata)[1].removeprefix("v") == os.environ['VERSION_NAME'], 'Version name mismatch'
 assert int(re.search(r"versionCode='(\d+)'", metadata)[1]) > 0, 'Invalid version code'
 PY
 (cd "$directory" && sha256sum --check SHA256SUMS.txt)
