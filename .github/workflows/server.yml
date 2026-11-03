@@ -61,3 +61,7 @@ jobs:
           persist-credentials: false
       - name: Build
         run: docker build -t bawsala-server:ci server
+      - name: Verify container startup and migrations
+        env:
+          IMAGE: bawsala-server:ci
+        run: bash .github/scripts/smoke-image.sh

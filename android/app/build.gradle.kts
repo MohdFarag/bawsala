@@ -32,6 +32,7 @@ android {
         applicationId = "app.bawsala"
         testInstrumentationRunner = "app.bawsala.android.device.DeviceTestRunner"
         testInstrumentationRunnerArguments["clearPackageData"] = "true"
+        testInstrumentationRunnerArguments["useTestStorageService"] = "true"
         minSdk = 26 // java.time without desugaring; open PRD decision (§1.1)
         targetSdk = 35
         versionCode = System.getenv("VERSION_CODE")?.toIntOrNull() ?: 1
@@ -137,6 +138,8 @@ dependencies {
     androidTestImplementation("androidx.test:rules:1.6.1")
     androidTestImplementation("androidx.test.uiautomator:uiautomator:2.3.0")
     androidTestUtil("androidx.test:orchestrator:1.5.1")
+    androidTestUtil("androidx.test.services:test-services:1.5.0")
+    androidTestImplementation("androidx.test.services:storage:1.5.0")
 
     testImplementation(libs.kotlin.test)
     testImplementation(libs.org.json) // android.jar's org.json is a stub in local unit tests
