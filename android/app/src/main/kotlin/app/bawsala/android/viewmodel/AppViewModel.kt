@@ -44,7 +44,7 @@ data class ScheduleTarget(
 @OptIn(FlowPreview::class) // debounce
 class AppViewModel(app: Application) : AndroidViewModel(app) {
     private val container = (app as PlannerApp).container
-    private val clock: Clock = Clock.systemDefaultZone()
+    val clock: Clock = container.clock
 
     val state: StateFlow<Snapshot> = container.repository.state
     val navigator = Navigator()
@@ -102,7 +102,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         // the same list instance, so the identity checks skip all other writes cheaply.
         viewModelScope.launch(failures) {
             state
-                .filter { it.loaded }
+                .filter { it.loaded && container.backgroundWork }
                 .distinctUntilChanged { a, b ->
                     a.tasks === b.tasks &&
                         a.sessions === b.sessions &&
@@ -114,7 +114,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         // of edits or a sync redraws it once).
         viewModelScope.launch(failures) {
             state
-                .filter { it.loaded }
+                .filter { it.loaded && container.backgroundWork }
                 .distinctUntilChanged { a, b ->
                     a.tasks === b.tasks &&
                         a.sessions === b.sessions &&

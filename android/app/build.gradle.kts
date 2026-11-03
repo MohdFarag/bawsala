@@ -8,6 +8,8 @@ plugins {
 
 ktfmt { kotlinLangStyle() }
 
+roborazzi { outputDir.set(file("src/test/screenshots")) }
+
 // Official publication requires a stable release key; local builds may use the debug key.
 val keystorePath: String? = System.getenv("ANDROID_KEYSTORE_PATH")
 val officialRelease = System.getenv("OFFICIAL_RELEASE") == "true"

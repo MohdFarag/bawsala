@@ -60,7 +60,7 @@ import app.bawsala.android.ui.design.PillStyle
 import app.bawsala.android.ui.design.ProgressLine
 import app.bawsala.android.ui.design.TextAction
 import app.bawsala.android.ui.format.itemTitle
-import app.bawsala.android.ui.format.relative
+import app.bawsala.android.ui.format.relativeTime
 import app.bawsala.android.ui.format.sourceLabel
 import app.bawsala.android.ui.i18n.tr
 import app.bawsala.android.ui.theme.Palette
@@ -312,7 +312,7 @@ private fun IdeaCard(item: CaptureItem, lang: String, wide: Boolean) {
                     style = TypeScale.tiny,
                 )
             }
-            Pill(relative(item.capturedAt, lang), style = PillStyle.Outline)
+            Pill(relativeTime(item.capturedAt, lang), style = PillStyle.Outline)
         }
         Text(
             itemTitle(item, lang),

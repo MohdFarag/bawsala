@@ -24,7 +24,7 @@ import app.bawsala.android.ui.components.kindIcon
 import app.bawsala.android.ui.design.lucide
 import app.bawsala.android.ui.format.itemTitle
 import app.bawsala.android.ui.format.kindKey
-import app.bawsala.android.ui.format.relative
+import app.bawsala.android.ui.format.relativeTime
 import app.bawsala.android.ui.format.sourceLabel
 import app.bawsala.android.ui.i18n.tr
 import app.bawsala.android.ui.theme.AppColors
@@ -38,7 +38,7 @@ fun InboxCard(item: CaptureItem, lang: String, badge: SyncBadge, onClick: () -> 
     val subtitle =
         (if (origin != null) tr("sharedFrom", origin) else tr(kindKey(item.kind))) +
             " · " +
-            relative(item.capturedAt, lang)
+            relativeTime(item.capturedAt, lang)
     val detail =
         when {
             item.kind == CaptureKind.LIST -> item.entries.joinToString(" · ") { it.text }

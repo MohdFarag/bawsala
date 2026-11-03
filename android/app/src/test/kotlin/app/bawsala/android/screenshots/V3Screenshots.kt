@@ -25,20 +25,30 @@ import org.robolectric.annotation.GraphicsMode
 @RunWith(AndroidJUnit4::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(application = ScreenshotApp::class, sdk = [34], qualifiers = "w390dp-h844dp-xxhdpi")
-class PhoneScreenshots : V3Screenshots("phone")
+class PhoneScreenshots : V3Screenshots("phone", "ar")
+
+@RunWith(AndroidJUnit4::class)
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
+@Config(application = ScreenshotApp::class, sdk = [34], qualifiers = "w390dp-h844dp-xxhdpi")
+class EnglishPhoneScreenshots : V3Screenshots("phone", "en")
 
 /** Tablet: the Penpot tablet boards are 1280 × 900, landscape. */
 @RunWith(AndroidJUnit4::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(application = ScreenshotApp::class, sdk = [34], qualifiers = "w1280dp-h900dp-land-mdpi")
-class TabletScreenshots : V3Screenshots("tablet")
+class TabletScreenshots : V3Screenshots("tablet", "ar")
+
+@RunWith(AndroidJUnit4::class)
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
+@Config(application = ScreenshotApp::class, sdk = [34], qualifiers = "w1280dp-h900dp-land-mdpi")
+class EnglishTabletScreenshots : V3Screenshots("tablet", "en")
 
 /**
  * The V3 screens with the sample data of the Penpot boards, rendered by Robolectric and saved as
  * PNGs (V3 phase 7). They are written only when recording (`./gradlew recordRoborazziDebug`) and
  * compared side by side with the boards in docs/design.
  */
-abstract class V3Screenshots(private val device: String) {
+abstract class V3Screenshots(private val device: String, private val lang: String) {
     @get:Rule val compose = createComposeRule()
 
     private fun shot(name: String, onboarded: Boolean = true, open: (AppViewModel) -> Unit = {}) {
@@ -47,17 +57,18 @@ abstract class V3Screenshots(private val device: String) {
         runBlocking {
             repository.load()
             SampleData.seed(repository)
-            repository.savePrefs(Prefs(prayerConfirmed = true, onboarded = onboarded))
+            repository.savePrefs(Prefs(lang = lang, prayerConfirmed = true, onboarded = onboarded))
         }
         val vm = AppViewModel(app)
         open(vm)
         compose.setContent { PlannerTheme { AppRoot(vm, onExit = {}) } }
         compose.waitForIdle()
+        compose.mainClock.advanceTimeBy(1000)
         // Background work that cannot run under Robolectric (alarms) reports a failure toast;
         // the screenshot shows the screen itself.
         compose.runOnIdle { vm.messages.dismiss() }
         compose.waitForIdle()
-        compose.onRoot().captureRoboImage("build/outputs/roborazzi/$device/$name.png")
+        compose.onRoot().captureRoboImage("src/test/screenshots/$device/$lang/$name.png")
         // Stop the screen's background work (reminders, sync scheduling) so it cannot fail after
         // this test, inside the next one.
         vm.viewModelScope.cancel()
