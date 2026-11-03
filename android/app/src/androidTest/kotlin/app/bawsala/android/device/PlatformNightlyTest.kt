@@ -7,6 +7,8 @@ import androidx.activity.compose.setContent
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.ui.test.assertIsDisplayed
+import android.view.accessibility.AccessibilityNodeInfo
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -34,7 +36,10 @@ class PlatformNightlyTest : DeviceUiFixture() {
         val button = device.wait(Until.findObject(By.res(Pattern.compile(id))), 10_000)
         assertNotNull("Expected a runtime permission dialog", button)
         device.waitForIdle()
-        device.findObject(By.res(Pattern.compile(id))).click()
+        val automation = InstrumentationRegistry.getInstrumentation().uiAutomation
+        val nodes = automation.rootInActiveWindow.findAccessibilityNodeInfosByViewId(button.resourceName)
+        assertEquals("Expected one permission action", 1, nodes.size)
+        assertTrue(nodes.single().performAction(AccessibilityNodeInfo.ACTION_CLICK))
         device.waitForIdle()
     }
 
@@ -100,6 +105,9 @@ class PlatformNightlyTest : DeviceUiFixture() {
         capture("Try every main triage decision")
         compose.runOnIdle { vm().navigator.switchTo(Tab.TRIAGE) }
         for (key in listOf("nextAction", "project", "reference", "later")) {
+            waitFor {
+                compose.onAllNodesWithText(text(key)).fetchSemanticsNodes().isNotEmpty()
+            }
             compose.onNodeWithText(text(key)).performClick()
             waitFor { app.container.repository.state.value.items.single().state != CaptureState.INBOX }
             compose.runOnIdle { vm().inbox.undoLast() }
