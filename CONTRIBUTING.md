@@ -89,6 +89,7 @@ and web changes run their own formatting/lint/tests/builds; Android or server ch
 API 35 device smoke suite. Workflow/tooling changes and release validation run every project.
 Security checks always run; PR titles/branch names are checked on PR events.
 Nightly device testing expands to API 28/35 permission, sharing, widget and triage flows.
+PRs that change the instrumented tests or their workflow also run this extended acceptance suite.
 Fork PRs need no secrets; annotation/publication extras are skipped when they require write tokens.
 Actions stay SHA-pinned, builds use read-only tokens, and checkout credentials are not persisted.
 
