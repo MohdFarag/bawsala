@@ -1,5 +1,9 @@
 package app.bawsala.android.device
 
+import android.graphics.Bitmap
+import androidx.test.services.storage.TestStorage
+import org.junit.rules.TestWatcher
+import org.junit.runner.Description
 import android.Manifest
 import android.os.Build
 import androidx.lifecycle.ViewModelProvider
@@ -11,6 +15,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import app.bawsala.android.MainActivity
@@ -47,12 +52,27 @@ abstract class DeviceUiFixture {
     }
 
     @get:Rule(order = 1) val compose = createAndroidComposeRule<MainActivity>()
+    @get:Rule(order = 2)
+    val failureScreenshot = object : TestWatcher() {
+        override fun failed(error: Throwable, description: Description) {
+            try {
+                val bitmap = InstrumentationRegistry.getInstrumentation().uiAutomation.takeScreenshot()
+                TestStorage().openOutputFile("${description.className}-${description.methodName}.png").use {
+                    bitmap?.compress(Bitmap.CompressFormat.PNG, 100, it)
+                }
+            } catch (captureError: Exception) {
+                error.addSuppressed(captureError)
+            }
+        }
+    }
+
     protected fun text(key: String) = translate("en", key)
     protected fun vm(): AppViewModel = ViewModelProvider(compose.activity)[AppViewModel::class.java]
     protected fun waitFor(check: () -> Boolean) = compose.waitUntil(15_000, check)
     protected fun start() {
         waitFor { app.container.repository.state.value.loaded }
         compose.onNodeWithText(text("skip")).performClick()
+        compose.onNodeWithText(text("useWithoutAccount")).performScrollTo().performClick()
         waitFor { app.container.repository.state.value.prefs.onboarded }
     }
     protected fun capture(title: String) {
