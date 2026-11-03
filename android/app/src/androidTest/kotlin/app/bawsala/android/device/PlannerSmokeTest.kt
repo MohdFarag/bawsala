@@ -1,23 +1,22 @@
 package app.bawsala.android.device
 
-import android.graphics.Bitmap
-import androidx.test.services.storage.TestStorage
-import org.junit.rules.TestWatcher
-import org.junit.runner.Description
 import android.Manifest
+import android.graphics.Bitmap
 import android.os.Build
+import androidx.compose.ui.test.hasSetTextAction
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onFirst
+import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performTextInput
 import androidx.lifecycle.ViewModelProvider
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.compose.ui.test.hasSetTextAction
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onFirst
-import androidx.compose.ui.test.onNodeWithContentDescription
-import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performScrollTo
-import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performTextInput
+import androidx.test.services.storage.TestStorage
 import app.bawsala.android.MainActivity
 import app.bawsala.android.PlannerApp
 import app.bawsala.android.data.Prefs
@@ -32,6 +31,8 @@ import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.ExternalResource
+import org.junit.rules.TestWatcher
+import org.junit.runner.Description
 import org.junit.runner.RunWith
 
 abstract class DeviceUiFixture {
@@ -102,10 +103,12 @@ class PlannerSmokeTest : DeviceUiFixture() {
         start()
         capture("Complete a protected flow")
         compose.runOnIdle { vm().navigator.switchTo(Tab.TRIAGE) }
+        waitFor { compose.onAllNodesWithText(text("nextAction")).fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText(text("nextAction")).performClick()
         waitFor { app.container.repository.state.value.tasks.isNotEmpty() }
         compose.runOnIdle { vm().inbox.undoLast() }
         waitFor { app.container.repository.state.value.tasks.isEmpty() }
+        waitFor { compose.onAllNodesWithText(text("nextAction")).fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText(text("nextAction")).performClick()
         waitFor { app.container.repository.state.value.tasks.isNotEmpty() }
         val task = app.container.repository.state.value.tasks.single()
