@@ -38,7 +38,11 @@ class DayPlanner(private val engine: PrayerEngine = PrayerEngine()) {
         return DayContext(
             date = date,
             zone = zone,
-            events = snapshot.events.filter { Interval(it.start, it.end).overlaps(day) },
+            // All-day events have no time to plan around; the planner shows them in a strip (#93).
+            events =
+                snapshot.events.filter {
+                    !it.allDay && Interval(it.start, it.end).overlaps(day)
+                },
             sessions =
                 snapshot.sessions
                     .filter { Interval(it.start, it.end).overlaps(day) }

@@ -70,6 +70,7 @@ import app.bawsala.android.ui.i18n.num
 import app.bawsala.android.ui.i18n.tr
 import app.bawsala.android.ui.plan.PlanItem
 import app.bawsala.android.ui.plan.PlanItemKind
+import app.bawsala.android.ui.plan.allDayEvents
 import app.bawsala.android.ui.plan.label
 import app.bawsala.android.ui.plan.openPlanItem
 import app.bawsala.android.ui.plan.opens
@@ -80,6 +81,7 @@ import app.bawsala.android.ui.theme.TypeScale
 import app.bawsala.android.viewmodel.AppViewModel
 import app.bawsala.android.viewmodel.EventTarget
 import app.bawsala.android.viewmodel.ScheduleTarget
+import app.bawsala.core.model.CalendarEvent
 import app.bawsala.core.model.Task
 import java.time.LocalDate
 import java.time.LocalTime
@@ -90,6 +92,8 @@ private const val WIDE_DP = 840
 
 private val HOUR_HEIGHT = 57.dp
 private val GUTTER = 50.dp
+private const val MAX_ALL_DAY = 2
+private val ALL_DAY_ROW = 22.dp
 private const val SCROLL_TO_HOUR = 8
 
 /** Where a dragged task is, and where each day column is on screen, to find the drop time. */
@@ -124,6 +128,7 @@ fun WeekPlannerScreen(vm: AppViewModel, s: Snapshot) {
     var weekOffset by rememberSaveable { mutableStateOf(0L) }
     var context by rememberSaveable { mutableStateOf<String?>(null) }
     var options by remember { mutableStateOf(false) }
+    var allDayOf by remember { mutableStateOf<LocalDate?>(null) }
     val start = reviewWeekStart(today).plusWeeks(weekOffset)
     val days = weekDays(start)
     val drag = remember { WeekDrag() }
@@ -132,6 +137,7 @@ fun WeekPlannerScreen(vm: AppViewModel, s: Snapshot) {
         remember(s.tasks, s.sessions, s.rules, s.events, s.blocks, s.prayer, s.prefs, start) {
             days.associateWith { placeDay(planItems(s, vm.dayPlanner, it), it, zone) }
         }
+    val allDay = remember(s.events, s.prayer, start) { days.associateWith { allDayEvents(s, it) } }
     val panel = nextActionsPanel(s, vm.now(), context)
 
     BoxWithConstraints(Modifier.fillMaxSize().background(Palette.paper)) {
@@ -157,7 +163,7 @@ fun WeekPlannerScreen(vm: AppViewModel, s: Snapshot) {
             ) {
                 Intro(weekOffset, wide) { weekOffset += it }
                 val grid: @Composable (Modifier) -> Unit = { m ->
-                    WeekGrid(vm, s, days, week, today, wide, drag, m)
+                    WeekGrid(vm, s, days, week, allDay, today, wide, drag, { allDayOf = it }, m)
                 }
                 val actions: @Composable (Modifier) -> Unit = { m ->
                     NextActions(vm, s, panel, context, { context = it }, drag, m)
@@ -174,7 +180,10 @@ fun WeekPlannerScreen(vm: AppViewModel, s: Snapshot) {
             }
         }
         DragGhost(drag)
-        if (options) Options(vm, today, wide) { options = false }
+        if (options) Options(vm, s, today, wide) { options = false }
+        allDayOf?.let { day ->
+            AllDaySheet(vm, s, day, allDay[day].orEmpty(), wide) { allDayOf = null }
+        }
     }
 }
 
@@ -210,11 +219,17 @@ private fun WeekGrid(
     s: Snapshot,
     days: List<LocalDate>,
     week: Map<LocalDate, List<Placed>>,
+    allDay: Map<LocalDate, List<CalendarEvent>>,
     today: LocalDate,
     wide: Boolean,
     drag: WeekDrag,
+    showAllDay: (LocalDate) -> Unit,
     modifier: Modifier,
 ) {
+    // The strip is only there when the week has all-day events, sized to the busiest day.
+    val stripRows =
+        allDay.values.maxOfOrNull { if (it.size > MAX_ALL_DAY) MAX_ALL_DAY + 1 else it.size } ?: 0
+    val stripHeight = if (stripRows == 0) 0.dp else ALL_DAY_ROW * stripRows + 6.dp
     val density = LocalDensity.current
     val loc = locale(s.lang)
     val dropping = drag.task != null
@@ -253,7 +268,7 @@ private fun WeekGrid(
         Row(Modifier.fillMaxWidth()) {
             // The hour labels stay put while the days scroll sideways on phones.
             Column(Modifier.width(GUTTER)) {
-                Spacer(Modifier.height(62.dp))
+                Spacer(Modifier.height(62.dp + stripHeight))
                 Box(Modifier.height(480.dp).verticalScroll(vScroll, enabled = false)) {
                     Column {
                         for (h in FIRST_HOUR until LAST_HOUR) Box(
@@ -277,6 +292,17 @@ private fun WeekGrid(
                             DayHeader(day, day == today, loc, cell)
                         }
                     }
+                    if (stripRows > 0)
+                        Row {
+                            days.forEach { day ->
+                                AllDayCell(
+                                    allDay[day].orEmpty(),
+                                    open = { vm.editingEvent = EventTarget(day, it) },
+                                    more = { showAllDay(day) },
+                                    modifier = cell.height(stripHeight),
+                                )
+                            }
+                        }
                     Box(
                         Modifier.height(480.dp)
                             .onGloballyPositioned { drag.viewport = it.boundsInRoot() }
@@ -352,6 +378,89 @@ private fun DayHeader(day: LocalDate, isToday: Boolean, loc: java.util.Locale, m
                 num(day.dayOfMonth),
                 style = TypeScale.button.copy(color = if (isToday) Palette.white else Palette.ink),
             )
+        }
+    }
+}
+
+/**
+ * A day's all-day events above the grid (#93): two at most, then "+N" for the rest. Events from
+ * read-only (information) calendars are quiet outlines.
+ */
+@Composable
+private fun AllDayCell(
+    events: List<CalendarEvent>,
+    open: (String) -> Unit,
+    more: () -> Unit,
+    modifier: Modifier,
+) {
+    Column(
+        modifier.border(0.5.dp, Palette.gridLine).padding(3.dp),
+        verticalArrangement = Arrangement.spacedBy(2.dp),
+    ) {
+        events.take(MAX_ALL_DAY).forEach { AllDayChip(it.title, it.readOnly) { open(it.id) } }
+        if (events.size > MAX_ALL_DAY)
+            Text(
+                tr("moreCount", num(events.size - MAX_ALL_DAY)),
+                style = TypeScale.tiny.copy(fontSize = 10.sp),
+                modifier =
+                    Modifier.fillMaxWidth()
+                        .height(ALL_DAY_ROW - 2.dp)
+                        .clip(RoundedCornerShape(6.dp))
+                        .clickable(onClick = more)
+                        .padding(horizontal = 4.dp),
+            )
+    }
+}
+
+@Composable
+private fun AllDayChip(title: String, quiet: Boolean, onClick: () -> Unit) {
+    val shape = RoundedCornerShape(6.dp)
+    Box(
+        Modifier.fillMaxWidth()
+            .height(ALL_DAY_ROW - 2.dp)
+            .clip(shape)
+            .then(
+                if (quiet) Modifier.border(1.dp, Palette.line, shape)
+                else Modifier.background(Palette.lilac)
+            )
+            .clickable(onClick = onClick)
+            .padding(horizontal = 5.dp),
+        contentAlignment = Alignment.CenterStart,
+    ) {
+        Text(
+            title,
+            style =
+                TypeScale.tiny.copy(
+                    fontSize = 10.sp,
+                    color = if (quiet) Palette.muted else Palette.ink,
+                ),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
+}
+
+/** Every all-day event on [day], opened from "+N". */
+@Composable
+private fun BoxScope.AllDaySheet(
+    vm: AppViewModel,
+    s: Snapshot,
+    day: LocalDate,
+    events: List<CalendarEvent>,
+    wide: Boolean,
+    close: () -> Unit,
+) {
+    val loc = locale(s.lang)
+    val title =
+        "${tr("allDay")} · ${day.dayOfWeek.getDisplayName(TextStyle.FULL, loc)} ${num(day.dayOfMonth)}"
+    PanelSheet(title, close, tr("close"), centered = wide) {
+        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            events.forEach { event ->
+                AllDayChip(event.title, event.readOnly) {
+                    close()
+                    vm.editingEvent = EventTarget(day, event.id)
+                }
+            }
         }
     }
 }
@@ -600,7 +709,13 @@ private fun BoxScope.DragGhost(drag: WeekDrag) {
 
 /** Page options: the day view (timeline and agenda), a new event, and time settings. */
 @Composable
-private fun BoxScope.Options(vm: AppViewModel, today: LocalDate, wide: Boolean, close: () -> Unit) {
+private fun BoxScope.Options(
+    vm: AppViewModel,
+    s: Snapshot,
+    today: LocalDate,
+    wide: Boolean,
+    close: () -> Unit,
+) {
     fun go(action: () -> Unit): () -> Unit = {
         close()
         action()
@@ -622,6 +737,13 @@ private fun BoxScope.Options(vm: AppViewModel, today: LocalDate, wide: Boolean, 
                 R.drawable.ic_lucide_layout_grid,
                 go { vm.navigator.open(Screen.Blocks) },
             )
+            // Which calendars show here, while Google is connected (#93).
+            if (s.calendars != null)
+                OptionRow(
+                    tr("calendars"),
+                    R.drawable.ic_lucide_calendar_days,
+                    go { vm.navigator.open(Screen.Calendars) },
+                )
             OptionRow(
                 tr("prayerTimes"),
                 R.drawable.ic_lucide_moon,

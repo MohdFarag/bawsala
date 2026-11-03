@@ -24,6 +24,7 @@ private val S: Map<String, Pair<String, String>> =
         "editEvent" to ("Edit event" to "تعديل الحدث"),
         "eventTitle" to ("What's happening?" to "ما الحدث؟"),
         "allDay" to ("All day" to "طوال اليوم"),
+        "moreCount" to ("+%s more" to "+%s أخرى"),
         "location" to ("Location" to "المكان"),
         "deleteEvent" to ("Delete event" to "حذف الحدث"),
         "calendar" to ("Calendar" to "التقويم"),
