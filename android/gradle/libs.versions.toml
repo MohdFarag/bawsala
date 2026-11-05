@@ -6,7 +6,7 @@ core-ktx = "1.15.0"
 activity-compose = "1.9.3"
 lifecycle = "2.8.7"
 work = "2.10.0"
-roborazzi = "1.32.2"
+roborazzi = "1.77.0"
 robolectric = "4.14.1"
 coroutines = "1.11.0"
 # 0.0.6+ is compiled for Java 21; 0.0.5 targets Java 17 like the rest of the app.
