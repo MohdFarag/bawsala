@@ -13,7 +13,7 @@ coroutines = "1.11.0"
 adhan = "0.0.5"
 json = "20260814"
 # Google Identity Services: AuthorizationClient for Sign in with Google with Tasks/Calendar scopes.
-play-services-auth = "21.3.0"
+play-services-auth = "22.0.0"
 ktfmt-plugin = "0.27.0"
 
 [libraries]
